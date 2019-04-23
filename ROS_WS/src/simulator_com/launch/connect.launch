@@ -1,0 +1,3 @@
+<launch>
+	<node name="connection_node" pkg="simulator_com" type="server.py" output="screen" />
+</launch>

@@ -1,0 +1,11 @@
+# Ignore any videos
+*.mp4
+
+# Ignore the catkin build files
+**/devel/
+**/build/
+**/logs/
+**/.catkin_tools/
+
+# Remove the builds file
+**/Builds/
