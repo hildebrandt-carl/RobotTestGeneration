@@ -9,6 +9,14 @@ namespace MessageSpec
         public string Name { get; set; }
         public IList<float> Position { get; set; }
         public IList<float> Rotation { get; set; }
+        public bool Reset { get; set; }
+    }
+
+    public class DroneState_t
+    {
+        public string ID { get; set; }
+        public string Name { get; set; }
+        public bool Collision { get; set; }
     }
     
 }
