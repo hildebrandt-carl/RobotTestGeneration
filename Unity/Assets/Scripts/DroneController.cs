@@ -35,8 +35,6 @@ public class DroneController : MonoBehaviour
             worldState = JsonConvert.DeserializeObject<WorldState_t>(data);
 
             // Display the different peices of informaiton
-            //Debug.Log(worldState.ID);
-            //Debug.Log(worldState.Name);
             //Debug.Log(ListToVector3(worldState.Position));
             //Debug.Log(ListToVector3(worldState.Rotation));
 
@@ -107,8 +105,7 @@ public class DroneController : MonoBehaviour
 
                 // Create the drone state
                 DroneState = new DroneState_t();
-                DroneState.ID = "drone1" ;
-                DroneState.Name = "drone" ;
+                DroneState.CollsionObject = "Test" ;
                 DroneState.Collision = Collision ;
                 
                 // Serialize the state of the drone

@@ -23,8 +23,6 @@ try:
 		yaw = 0.0
 
 		sentData = {}
-		sentData['ID'] = 2
-		sentData['Name'] = "ABC"
 		sentData['Position'] = [y, z, x]
 		sentData['Rotation'] = [roll, yaw, pitch]
 		sentData['Reset'] = ResetFlag

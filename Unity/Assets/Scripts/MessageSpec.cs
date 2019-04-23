@@ -5,8 +5,6 @@ namespace MessageSpec
     // Camera class for decoding the ZMQ messages.
     public class WorldState_t
     {
-        public string ID { get; set; }
-        public string Name { get; set; }
         public IList<float> Position { get; set; }
         public IList<float> Rotation { get; set; }
         public bool Reset { get; set; }
@@ -14,8 +12,7 @@ namespace MessageSpec
 
     public class DroneState_t
     {
-        public string ID { get; set; }
-        public string Name { get; set; }
+        public string CollsionObject { get; set; }
         public bool Collision { get; set; }
     }
     
