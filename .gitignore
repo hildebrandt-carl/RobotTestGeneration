@@ -1,11 +1,30 @@
 # Ignore any videos
 *.mp4
 
-# Ignore the catkin build files
-**/devel/
-**/build/
-**/logs/
-**/.catkin_tools/
+# Ignore any log files
+*.log
+*.dll
+*
 
-# Remove the builds file
-**/Builds/
+# Ignore the catkin build files
+**/devel/*
+**/build/*
+**/logs/*
+**/.catkin_tools/*
+
+# Remove unity generated files
+**/[Ll]ibrary/*
+**/[Tt]emp/*
+**/[Oo]bj/*
+**/[Bb]uild/*
+**/[Bb]uilds/*
+**/UnityGenerated/*
+
+# Remove the metadata files
+*.meta
+
+# Remove OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Trashes
