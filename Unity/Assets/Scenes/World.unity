@@ -577,6 +577,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   obstacleObject: {fileID: 5179014701330045333, guid: 8141d157ea7633949913f62ffc4ece51,
     type: 3}
+  wallObject: {fileID: 1955218987324027355, guid: bf29be6e66c698440af8b1b5d5a2150e,
+    type: 3}
   goalObject: {fileID: 4667868370430098, guid: 1e00a4340f4ae8a4b8253da4ffaa7c82, type: 3}
   rainObject: {fileID: 4856909547656952, guid: b51ab665c1c1eea41999ec5fb55022fa, type: 3}
   sun: {fileID: 170076733}
