@@ -32,3 +32,6 @@
 
 # Ignore ROS files
 *.rosinstall*
+
+# Ignore Zip Files
+*.zip
