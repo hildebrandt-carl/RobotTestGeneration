@@ -3,8 +3,9 @@
 
 # Ignore any log files
 *.log
+
+# Ignore compiled files
 *.dll
-*
 
 # Ignore the catkin build files
 **/devel/*
@@ -28,3 +29,6 @@
 .DS_Store?
 ._*
 .Trashes
+
+# Ignore ROS files
+*.rosinstall*
