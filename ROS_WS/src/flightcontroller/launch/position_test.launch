@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="ignore_collisions" default="false" />
+  <arg name="render_stereo" default="0" />
+
+  <include file="$(find flightcontroller)/launch/angle.launch"/>
+  <include file="$(find flightcontroller)/launch/velocity.launch"/>
+  <include file="$(find flightcontroller)/launch/position.launch"/>
+
+  <!--include core flightgoggles launch file-->
+  <include file="$(find flightgoggles)/launch/core.launch">
+    <arg name="render_stereo" value="$(arg render_stereo)"/>
+    <arg name="ignore_collisions" value="$(arg ignore_collisions)"/>
+  </include>
+
+
+  <node pkg="rqt_plot" type="rqt_plot" name="x_euler_plot" args="uav/sensors/gps/position/x uav/input/position/x">
+  </node>
+  <node pkg="rqt_plot" type="rqt_plot" name="y_euler_plot" args="uav/sensors/gps/position/y uav/input/position/y">
+  </node>
+  <node pkg="rqt_plot" type="rqt_plot" name="z_euler_plot" args="uav/sensors/gps/position/z uav/input/position/z">
+  </node>
+
+</launch>

@@ -90,6 +90,7 @@ class Connection():
   def shutdown_sequence(self):
     # Close the socket
     self.sock.close
+    rospy.loginfo(str(rospy.get_name()) + ": Shutting Down")
 
 def main():
   rospy.init_node('connection_node')

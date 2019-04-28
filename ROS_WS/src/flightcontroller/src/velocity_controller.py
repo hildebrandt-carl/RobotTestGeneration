@@ -107,7 +107,7 @@ class VelocityController():
 
 
 def main():
-  rospy.init_node('velocity_controller')
+  rospy.init_node('velocity_covelocity_controller_nodentroller')
   try:
     velcon = VelocityController()
   except rospy.ROSInterruptException:
