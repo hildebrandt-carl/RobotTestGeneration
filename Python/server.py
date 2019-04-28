@@ -18,9 +18,9 @@ try:
 		y = 0.0
 		z -= 0.01
 
-		roll = 0.0
-		pitch = 0.0
-		yaw = 0.0
+		roll += 0.0
+		pitch += 0
+		yaw += 0.5
 
 		sentData = {}
 		sentData['Position'] = [y, z, x]
