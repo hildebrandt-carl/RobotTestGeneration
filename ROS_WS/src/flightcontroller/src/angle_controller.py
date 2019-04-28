@@ -76,7 +76,7 @@ class AngleController():
       msg = RateThrust()
       msg.header.stamp = rospy.get_rostime()
       msg.thrust = Vector3(0,0,self.thrust_setpoint)
-      msg.angular_rates = Vector3(roll_output,pitch_output,yaw_output)
+      msg.angular_rates = Vector3(roll_output,pitch_output,0)
       self.rate_pub.publish(msg)
 
       # Sleep any excress time
@@ -104,7 +104,7 @@ class AngleController():
 
   
   # On collsion reset the PID's
-  def collision_callback(self):
+  def collision_callback(self, msg):
     self.rollPID.remove_buildup()
     self.pitchPID.remove_buildup()
     self.yawPID.remove_buildup()

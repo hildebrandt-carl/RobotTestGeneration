@@ -42,8 +42,10 @@ class Uav_Imu {
         //@{
         std::default_random_engine randomNumberGenerator_;
         std::normal_distribution<double> standardNormalDistribution_ = std::normal_distribution<double>(0.0,1.0);
-        double accMeasNoiseVariance_ = 0.005; // m^2/s^4
-        double gyroMeasNoiseVariance_ = 0.003; // rad^2/s^2
+        //double accMeasNoiseVariance_ = 0.005; // m^2/s^4
+        //double gyroMeasNoiseVariance_ = 0.003; // rad^2/s^2
+        double accMeasNoiseVariance_ = 0.00; // m^2/s^4
+        double gyroMeasNoiseVariance_ = 0.00; // rad^2/s^2
         //@}
 };
 

@@ -456,11 +456,11 @@ void Uav_Dynamics::publishState(void){
  */
 Uav_Imu::Uav_Imu(){
   if (!ros::param::get("/uav/flightgoggles_imu/accelerometer_variance", accMeasNoiseVariance_)) { 
-      std::cout << "Did not get the accelerometer variance from the params, defaulting to 0.005 m^2/s^4" << std::endl;
+      std::cout << "Did not get the accelerometer variance from the params, defaulting to " << accMeasNoiseVariance_ << " m^2/s^4" << std::endl;
   }
 
   if (!ros::param::get("/uav/flightgoggles_imu/gyroscope_variance", gyroMeasNoiseVariance_)) { 
-      std::cout << "Did not get the gyroscope variance from the params, defaulting to 0.003 rad^2/s^2" << std::endl;
+      std::cout << "Did not get the gyroscope variance from the params, defaulting to " << gyroMeasNoiseVariance_ << " rad^2/s^2" << std::endl;
   }
 }
 

@@ -67,7 +67,7 @@ class PositionController():
       z_vel = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
 
       # Create and publish the data
-      velocity = Vector3(x_vel, y_vel, z_vel)
+      velocity = Vector3(x_vel, -1* y_vel, z_vel)
       self.vel_set_sub.publish(velocity) 
 
       # Sleep any excress time
@@ -89,7 +89,7 @@ class PositionController():
 
     
   # On collsion reset the PID's
-  def collision_callback(self):
+  def collision_callback(self, msg):
     self.pos_x_PID.remove_buildup()
     self.pos_y_PID.remove_buildup()
     self.pos_z_PID.remove_buildup()

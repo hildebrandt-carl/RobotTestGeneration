@@ -22,21 +22,25 @@ class VelocityController():
     self.rate = 10.0
 
     # Getting the PID parameters
-    gains = rospy.get_param('/velocity_controller_node/gains', {'p': 1, 'i': 0.0, 'd': 0.0})
-    Kp, Ki, Kd = gains['p'], gains['i'], gains['d']
+    gains = rospy.get_param('/velocity_controller_node/gains', {'p_xy': 1, 'i_xy': 0.0, 'd_xy': 0.0, 'p_z': 1, 'i_z': 0.0, 'd_z': 0.0})
+    Kp_xy, Ki_xy, Kd_xy = gains['p_xy'], gains['i_xy'], gains['d_xy']
+    Kp_z, Ki_z, Kd_z = gains['p_z'], gains['i_z'], gains['d_z']
 
     # Display incoming parameters
     rospy.loginfo(str(rospy.get_name()) + ": Lauching with the following parameters:")
-    rospy.loginfo(str(rospy.get_name()) + ": p - " + str(Kp))
-    rospy.loginfo(str(rospy.get_name()) + ": i - " + str(Ki))
-    rospy.loginfo(str(rospy.get_name()) + ": d - " + str(Kd))
+    rospy.loginfo(str(rospy.get_name()) + ": p_xy - " + str(Kp_xy))
+    rospy.loginfo(str(rospy.get_name()) + ": i_xy - " + str(Ki_xy))
+    rospy.loginfo(str(rospy.get_name()) + ": d_xy - " + str(Kd_xy))
+    rospy.loginfo(str(rospy.get_name()) + ": p_z - " + str(Kp_z))
+    rospy.loginfo(str(rospy.get_name()) + ": i_z - " + str(Ki_z))
+    rospy.loginfo(str(rospy.get_name()) + ": d_z - " + str(Kd_z))
     rospy.loginfo(str(rospy.get_name()) + ": rate - " + str(self.rate))
 
     # Creating the PID's
-    self.vel_x_PID = PID(Kp, Ki, Kd, self.rate)
-    self.vel_y_PID = PID(Kp, Ki, Kd, self.rate)
-    self.vel_z_PID = PID(Kp, Ki, Kd, self.rate)
-
+    self.vel_x_PID = PID(Kp_xy, Ki_xy, Kd_xy, self.rate)
+    self.vel_y_PID = PID(Kp_xy, Ki_xy, Kd_xy, self.rate)
+    self.vel_z_PID = PID(Kp_z, Ki_z, Kd_z, self.rate)
+    
     # Get the setpoints
     self.x_setpoint = 0
     self.y_setpoint = 0
@@ -72,7 +76,7 @@ class VelocityController():
       z_output.data = self.vel_z_PID.get_output(self.z_setpoint, self.z_vel) + 9.8
 
       # Create and publish the data
-      attitude = Vector3(x_output, y_output, 1.6)
+      attitude = Vector3(y_output, x_output, 1.57)
       self.att_pub.publish(attitude) 
       self.thrust_pub.publish(z_output) 
 
@@ -95,7 +99,7 @@ class VelocityController():
 
     
   # On collsion reset the PID's
-  def collision_callback(self):
+  def collision_callback(self, msgs):
     self.vel_x_PID.remove_buildup()
     self.vel_y_PID.remove_buildup()
     self.vel_z_PID.remove_buildup()

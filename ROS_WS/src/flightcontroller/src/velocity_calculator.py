@@ -47,8 +47,8 @@ class VelocityCalculator():
       self.y_prev = self.y
       self.z_prev = self.z
 
-      # Publish the velocity
-      veldata = Vector3(xvel, yvel, zvel)
+      # Publish the velocity (Y axis is inverted)
+      veldata = Vector3(xvel, -1 * yvel, zvel)
       self.vel_pub.publish(veldata)
 
       # Sleep any excress time
@@ -62,7 +62,7 @@ class VelocityCalculator():
     self.z = gps_msg.position.z
 
   # On collision reset everything
-  def collision_callback(self, gps_msg):
+  def collision_callback(self, msg):
     self.x = 0
     self.y = 0
     self.z = 0
