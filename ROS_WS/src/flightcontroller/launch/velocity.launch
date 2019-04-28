@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node pkg="flightcontroller" type="velocity_calculator.py" name="velocity_calculator_node" output="screen">
+  </node>
+
+  <node pkg="flightcontroller" type="velocity_controller.py" name="velocity_controller_node" output="screen">
+    <param name="gains/p" type="double" value="0.035" />
+    <param name="gains/i" type="double" value="0.0" />
+    <param name="gains/d" type="double" value="0.09" />
+  </node>
+
+</launch>

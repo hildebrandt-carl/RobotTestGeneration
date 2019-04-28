@@ -8,14 +8,13 @@
     <remap from="/tf" to="/tf_odom"/>
   </node>
 
+  <node pkg="flightcontroller" type="angle_calculator.py" name="angle_calculator_node">
+  </node>
+
   <node pkg="flightcontroller" type="angle_controller.py" name="angle_controller_node" output="screen">
-    <param name="gains/p_z" type="double" value="22.0" />
-    <param name="gains/i_z" type="double" value="1.0" />
-    <param name="gains/d_z" type="double" value="7.0" />
-    <param name="gains/p_pr" type="double" value="5.0" />
-    <param name="gains/i_pr" type="double" value="0.0" />
-    <param name="gains/d_pr" type="double" value="0.5" />
-    <param name="initial_height" type="double" value="5" />
+    <param name="gains/p" type="double" value="5.0" />
+    <param name="gains/i" type="double" value="0.0" />
+    <param name="gains/d" type="double" value="0.5" />
   </node>
 
 </launch>

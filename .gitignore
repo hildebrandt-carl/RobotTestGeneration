@@ -6,6 +6,7 @@
 
 # Ignore compiled files
 *.dll
+*.pyc
 
 # Ignore the catkin build files
 **/devel/*

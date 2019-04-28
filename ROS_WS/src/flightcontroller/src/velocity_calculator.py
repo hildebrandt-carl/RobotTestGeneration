@@ -2,6 +2,7 @@
 import rospy
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import Vector3
+from std_msgs.msg import Empty
 
 class VelocityCalculator():
   def __init__(self):
@@ -11,6 +12,7 @@ class VelocityCalculator():
     # Create the subscribers and publishers
     self.vel_pub = rospy.Publisher('/uav/sensors/velocity', Vector3, queue_size=1)
     self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
+    self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
 
     # Set the rate
     self.rate = 10
@@ -58,6 +60,16 @@ class VelocityCalculator():
     self.x = gps_msg.position.x
     self.y = gps_msg.position.y
     self.z = gps_msg.position.z
+
+  # On collision reset everything
+  def collision_callback(self, gps_msg):
+    self.x = 0
+    self.y = 0
+    self.z = 0
+    self.x_prev = 0
+    self.y_prev = 0
+    self.z_prev = 0
+
 
   def shutdown_sequence(self):
     # Close the socket
