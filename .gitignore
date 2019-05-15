@@ -36,3 +36,6 @@
 
 # Ignore Zip Files
 *.zip
+
+# Ignore pycharm files
+*__pycache__
