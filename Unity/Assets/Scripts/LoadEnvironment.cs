@@ -6,86 +6,116 @@ using System.Text.RegularExpressions;
 
 public class LoadEnvironment : MonoBehaviour
 {
-    public Transform obstacleObject;
-    public Transform wallObject;
-    public Transform goalObject;
-    public Transform rainObject;
+	public Transform obstacleObject;
+	public Transform wallObject;
+	public Transform goalObject;
+	public Transform rainObject;
 
-    public GameObject sun;
+	public GameObject sun;
 
-    public bool Day = false;
-    public bool Raining = false;
-    public string FileName = "test1.txt";
+	public bool Day = false;
+	public bool Raining = false;
+	public string FileName = "test1.txt";
 
-    // Place the objects
-    void Start()
-    {
-        readTextFile(FileName);
-    }
+	// Place the objects
+	void Start()
+	{
+		readTextFile(FileName);
+	}
 
-    void readTextFile(string file_path)
-    {
-        StreamReader inp_stm = new StreamReader(file_path);
+	void readTextFile(string file_path)
+	{
+		StreamReader inp_stm = new StreamReader(file_path);
+		while (!inp_stm.EndOfStream)
+		{
+			string inp_ln = inp_stm.ReadLine();
+			if (inp_ln.Length > 0)
+			{ 
+				string FirstLetter = inp_ln.Substring(0, 1);
+				string Value = "";
+				//Debug.Log(FirstLetter);
 
-        while (!inp_stm.EndOfStream)
-        {
-            string inp_ln = inp_stm.ReadLine();
+				switch (FirstLetter)
+				{
+					// Block
+					case "B":
+						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value ;
+						string[] o_loc = Regex.Split(Value, @",");
+						Instantiate(obstacleObject, new Vector3(float.Parse(o_loc[0]), float.Parse(o_loc[1]), float.Parse(o_loc[2])), Quaternion.identity);
+						//Debug.Log("Here1");
+						break;
+					// Wall
+					case "W":
+						// Parse the string to get the information from it
+						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value ;
+						string[] w_loc = Regex.Split(Value, @",");
 
-            if (inp_ln.Length > 0)
-            { 
-                string FirstLetter = inp_ln.Substring(0, 1);
-                string Value = "";
-                Debug.Log(FirstLetter);
+						// Get the two points of the wall
+						Vector3 Pos1 = new Vector3(float.Parse(w_loc[0]), 0, float.Parse(w_loc[1])) ;
+						Vector3 Pos2 = new Vector3(float.Parse(w_loc[2]), 0, float.Parse(w_loc[3])) ;
 
-                switch (FirstLetter)
-                {
-                    // Block
-                    case "B":
-                        Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value ;
-                        string[] o_loc = Regex.Split(Value, @",");
-                        Instantiate(obstacleObject, new Vector3(float.Parse(o_loc[0]), float.Parse(o_loc[1]), float.Parse(o_loc[2])), Quaternion.identity);
-                        Debug.Log("Here1");
-                        break;
-                    // Wall
-                    case "W":
-                        Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value ;
-                        string[] w_loc = Regex.Split(Value, @",");
-                        Transform wallClone;
-                        wallClone = Instantiate(wallObject, new Vector3(float.Parse(w_loc[0]), float.Parse(w_loc[1]), float.Parse(w_loc[2])), Quaternion.identity);
-                        wallClone.transform.localScale = new Vector3(float.Parse(w_loc[3]),float.Parse(w_loc[4]),float.Parse(w_loc[5]));
-                        break;
-                    // Goal
-                    case "G":
-                        Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
-                        string[] g_loc = Regex.Split(Value, @",");
-                        Instantiate(goalObject, new Vector3(float.Parse(g_loc[0]), float.Parse(g_loc[1]), float.Parse(g_loc[2])), Quaternion.identity);
-                        break;
-                    // Rain
-                    case "R":
-                        Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
-                        Raining = (Value == "1");
-                        if (Raining)
-                        {
-                            Instantiate(rainObject, new Vector3(0, 0, 0), Quaternion.identity);
-                        }
-                        break;
-                    // Day
-                    case "D":
-                        Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
-                        Day = (Value == "1");
-                        sun.SetActive(Day);
-                        break;
-                    default:
-                        Debug.Log("Not Found");
-                        break;
-                }
-            }
-        }
+						// Caclulate the center of the wall
+						Vector3 centerPosition = (Pos1 + Pos2)/2 ;
+						centerPosition.y = float.Parse(w_loc[4])/2 ;
 
-        inp_stm.Close();
-    }
+						// Calculate the distance of the wall
+						float dx = Pos2.x - Pos1.x ;
+						float dy = Pos2.z - Pos1.z ;
+						float distance = Mathf.Sqrt(Mathf.Pow(dx, 2) + Mathf.Pow(dy, 2)) ;
+						Debug.Log(distance) ;
+
+						// Create the rotation of the wall
+						float wall_angle = Mathf.Atan2(dy, dx) * Mathf.Rad2Deg ;
+						Quaternion rotation = Quaternion.Euler(0, -1 * wall_angle, 0) ;
+						Debug.Log(wall_angle) ;
+
+						// Create the scaling parameters
+						Vector3 scaling = new Vector3(distance, float.Parse(w_loc[4]), 1) ;
+
+						// Create the wall and scale it
+						Transform wallClone = Instantiate(wallObject, centerPosition, rotation);
+						wallClone.transform.localScale = scaling;
+
+						// End of creating wall
+						break;
+					// Goal
+					case "G":
+						// Parse the string to get the information from it
+						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
+						string[] g_loc = Regex.Split(Value, @",");
+
+						// Get the cetner of the waypoint
+						float x = float.Parse(g_loc[0]) ;
+						float y = float.Parse(g_loc[1]) ;
+						float h = float.Parse(g_loc[2]) ;
+						Vector3 pos = new Vector3(x, h, y) ;
+
+						// Instantiate the goal
+						Instantiate(goalObject, pos, Quaternion.identity);
+
+						// End of creating waypoint (goal)
+						break;
+					// Rain
+					case "R":
+						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
+						Raining = (Value == "1");
+						if (Raining)
+						{
+							Instantiate(rainObject, new Vector3(0, 0, 0), Quaternion.identity);
+						}
+						break;
+					// Day
+					case "D":
+						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
+						Day = (Value == "1");
+						sun.SetActive(Day);
+						break;
+					default:
+						//Debug.Log("Not Found");
+						break;
+				}
+			}
+		}
+		inp_stm.Close();
+	}
 }
-
-
-
-

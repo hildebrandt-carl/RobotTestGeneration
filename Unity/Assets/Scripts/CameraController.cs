@@ -17,7 +17,7 @@ public class CameraController : MonoBehaviour
         float currentAngle = transform.eulerAngles.y;
         float desiredAngle = drone.transform.eulerAngles.y;
         float angle = Mathf.LerpAngle(currentAngle, desiredAngle, Time.deltaTime*5);
-         
+
         Quaternion rotation = Quaternion.Euler(0, angle, 0);
         transform.position = drone.transform.position + (rotation * offset);
          
