@@ -124,5 +124,4 @@ class dijkstra:
 	# # Print the solution 
 	# g.dijkstra(graph,0) 
 
-
-	# This code is contributed by Neelam Yadav 
+	# This code is contributed by Neelam Yadav

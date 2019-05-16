@@ -7,8 +7,9 @@ import matplotlib.pyplot as plt
 from bresenham import bresenham
 from Dijkstra import dijkstra
 
+
 class prm:
-	def __init__(self, map_in, start_pos = [0,0], end_pos=[1,1]):
+	def __init__(self, map_in, start_pos=[0, 0], end_pos=[1, 1]):
 		self.V = []
 		self.V.append(start_pos)
 		self.V.append(end_pos)
@@ -200,15 +201,15 @@ class prm:
 
 		edge_number = []
 		# For each edge in the path
-		for i in range(1,len(path)):
+		for i in range(1, len(path)):
 			cur_edge = [path[i-1], path[i]]
 			# For each edge in all edges
-			for edge_itt in range(0,len(self.E)):
-				crit1 = (self.E[edge_itt,0] == cur_edge[0] and self.E[edge_itt,1] == cur_edge[1]) 
-				crit2 = (self.E[edge_itt,0] == cur_edge[1] and self.E[edge_itt,1] == cur_edge[0]) 
+			for edge_itt in range(0, len(self.E)):
+				crit1 = (self.E[edge_itt, 0] == cur_edge[0] and self.E[edge_itt, 1] == cur_edge[1])
+				crit2 = (self.E[edge_itt, 0] == cur_edge[1] and self.E[edge_itt, 1] == cur_edge[0])
 				# If we have found matching edges
 				if (crit1 or crit2):
-					# Get the weight of that edge
+					# Add that edge to the edge list
 					edge_number.append(edge_itt)
 
 		return edge_number
@@ -262,9 +263,13 @@ class prm:
 				edge_num = [self.E[edge, 1], self.E[edge, 0]]
 				src = self.E[edge, 0]
 
-			# Get the x and y co-ordinates of the source vertex
+			# Get thoe x and y c-ordinates of the source vertex
 			single_vertex = self.V[edge_num[0]]
 			verticies.append(single_vertex)
+
+		# Add the end vertex
+		single_vertex = self.V[edge_num[1]]
+		verticies.append(single_vertex)
 
 		return verticies
 
@@ -289,9 +294,67 @@ class prm:
 
 			# Add the walls to the map
 			for cell in north_wall:
-				new_map[cell[1]][cell[0]] = 1
+				if cell[1] < self.map.shape[0]:
+					new_map[cell[1]][cell[0]] = 1
 			for cell in south_wall:
-				new_map[cell[1]][cell[0]] = 1
+				if cell[1] >= 0:
+					new_map[cell[1]][cell[0]] = 1
+
+		# Return the map
+		return new_map
+
+	def corridorMapFromWaypoints(self, waypoints, corridor_gap=1):
+		# Create a map of obstacles
+		new_map = np.ones(self.map.shape)
+
+		# Start and end of the segment
+		start_p = []
+		end_p = []
+
+		# For each point in the waypoints
+		for point in waypoints:
+			end_p = start_p
+			start_p = point
+			# If we have a segment
+			if len(end_p) >= 1:
+				corridor = list(bresenham(x0=int(round(start_p[0])),
+										  y0=int(round(start_p[1])),
+										  x1=int(round(end_p[0])),
+										  y1=int(round(end_p[1]))))
+
+				# Add the corridor to the map
+				for cell in corridor:
+					# Add buffing on each end for the gap
+					for gap in range(0, int(round(corridor_gap/2.0))+1):
+						space_above = cell[1] + gap < self.map.shape[0]
+						space_below = cell[1] - gap >= 0
+						space_right = cell[0] + gap < self.map.shape[1]
+						space_left = cell[0] - gap >= 0
+
+						# If we can add gaps above
+						if space_above:
+							new_map[cell[1] + gap][cell[0]] = 0
+						# If we can add gaps below
+						if space_below:
+							new_map[cell[1] - gap][cell[0]] = 0
+						# If we can add gaps to the right
+						if space_right:
+							new_map[cell[1]][cell[0] + gap] = 0
+						# If we can add gaps to the left
+						if space_left:
+							new_map[cell[1]][cell[0] - gap] = 0
+						# If we can add gaps above right
+						if space_above and space_right:
+							new_map[cell[1] + gap][cell[0] + gap] = 0
+						# If we can add gaps above left
+						if space_above and space_left:
+							new_map[cell[1] + gap][cell[0] - gap] = 0
+						# If we can add gaps below right
+						if space_below and space_right:
+							new_map[cell[1] - gap][cell[0] + gap] = 0
+						# If we can add gaps below left
+						if space_below and space_left:
+							new_map[cell[1] - gap][cell[0] - gap] = 0
 
 		# Return the map
 		return new_map

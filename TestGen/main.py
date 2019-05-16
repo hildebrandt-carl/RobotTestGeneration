@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Robot start and end locations
-r_start = [1, 10]
-r_end = [19, 10]
+r_start = [1, 20]
+r_end = [38, 20]
 
 # Get the map
 for map_num in range(1, 2):
@@ -20,9 +20,9 @@ for map_num in range(1, 2):
 
     # Generate the prm map
     p = prm(our_map, r_start, r_end)
-    p.find_valid_positions(num_nodes=30,
+    p.find_valid_positions(num_nodes=100,
                            wall_thresh=0.25)
-    p.plan(dist_thresh=7)
+    p.plan(dist_thresh=10)
 
     # Find paths
     path_details = p.findShortestPath()
@@ -50,17 +50,25 @@ for map_num in range(1, 2):
     p.plot(highest_variance_path, "Highest Variance")
     p.plot(lowest_variance_path, "Lowest Variance")
 
-    # Generate map from these plots
+    # Generate window map from these plots
     waypoints = p.getWaypointsFromPath(all_paths[highest_variance])
-    test = p.windowMapFromWaypoints(waypoints=waypoints,
-                                    window_gap=1.5)
+    window_test = p.windowMapFromWaypoints(waypoints=waypoints,
+                                           window_gap=2)
 
-    plt.imshow(test, cmap='binary')
-    plt.xlim([0, test.shape[1] - 1])
-    plt.ylim([0, test.shape[1] - 1])
+    # Generate corridor map from these plots
+    corridor_test = p.corridorMapFromWaypoints(waypoints=waypoints,
+                                               corridor_gap=2)
+
+    # Show the map 1
+    plt.imshow(window_test, cmap='binary')
+    plt.scatter(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1])
+    plt.xlim([0, window_test.shape[1] - 1])
+    plt.ylim([0, window_test.shape[1] - 1])
     plt.show()
 
-    
-    
-    
-
+    # Show the map 2
+    plt.imshow(corridor_test, cmap='binary')
+    plt.scatter(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1])
+    plt.xlim([0, corridor_test.shape[1] - 1])
+    plt.ylim([0, corridor_test.shape[1] - 1])
+    plt.show()
