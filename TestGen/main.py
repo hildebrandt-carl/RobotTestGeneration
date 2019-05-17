@@ -1,11 +1,12 @@
 import csv
 from PRM import prm
+from ConversionUtils import pythonMaptoUnityFile
 import numpy as np
 import matplotlib.pyplot as plt
 
 # Robot start and end locations
 r_start = [1, 20]
-r_end = [38, 20]
+r_end = [40, 20]
 
 # Get the map
 for map_num in range(1, 2):
@@ -19,7 +20,9 @@ for map_num in range(1, 2):
         our_map = np.array(our_map).astype(float)
 
     # Generate the prm map
-    p = prm(our_map, r_start, r_end)
+    p = prm(map_in=our_map,
+            start_pos=r_start,
+            end_pos=r_end)
     p.find_valid_positions(num_nodes=100,
                            wall_thresh=0.25)
     p.plan(dist_thresh=10)
@@ -53,7 +56,8 @@ for map_num in range(1, 2):
     # Generate window map from these plots
     waypoints = p.getWaypointsFromPath(all_paths[highest_variance])
     window_test = p.windowMapFromWaypoints(waypoints=waypoints,
-                                           window_gap=2)
+                                           window_gap=4,
+                                           min_wall_distance=2)
 
     # Generate corridor map from these plots
     corridor_test = p.corridorMapFromWaypoints(waypoints=waypoints,
@@ -62,6 +66,7 @@ for map_num in range(1, 2):
     # Show the map 1
     plt.imshow(window_test, cmap='binary')
     plt.scatter(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1])
+    plt.plot(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1], color='red')
     plt.xlim([0, window_test.shape[1] - 1])
     plt.ylim([0, window_test.shape[1] - 1])
     plt.show()
@@ -69,6 +74,16 @@ for map_num in range(1, 2):
     # Show the map 2
     plt.imshow(corridor_test, cmap='binary')
     plt.scatter(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1])
+    plt.plot(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1], color='red')
     plt.xlim([0, corridor_test.shape[1] - 1])
     plt.ylim([0, corridor_test.shape[1] - 1])
     plt.show()
+
+    pythonMaptoUnityFile(map=window_test,
+                         distance_threshold=1)
+    pythonMaptoUnityFile(map=window_test,
+                         distance_threshold=5)
+    pythonMaptoUnityFile(map=corridor_test,
+                         distance_threshold=1)
+    pythonMaptoUnityFile(map=corridor_test,
+                         distance_threshold=5)

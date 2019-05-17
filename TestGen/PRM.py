@@ -18,23 +18,23 @@ class prm:
 		self.map = map_in
 
 	def find_valid_positions(self, num_nodes, wall_thresh):
-		# itterate through the nodes
-		for i in range(0,num_nodes-2):
+		# iterate through the nodes
+		for i in range(0, num_nodes-2):
 			
 			while(True):
 				# Generate a random position
-				X = r.random() * (self.map.shape[0] -1)
-				Y = r.random() * (self.map.shape[1] -1)
+				x = r.random() * (self.map.shape[1] - 1)
+				y = r.random() * (self.map.shape[0] - 1)
 				# Check it is not near a wall
-				cond1 = self.map[round(Y + wall_thresh), round(X + wall_thresh)] == 0
-				cond2 = self.map[round(Y + wall_thresh), round(X - wall_thresh)] == 0
-				cond3 = self.map[round(Y - wall_thresh), round(X + wall_thresh)] == 0
-				cond4 = self.map[round(Y - wall_thresh), round(X - wall_thresh)] == 0
+				cond1 = self.map[round(y + wall_thresh), round(x + wall_thresh)] == 0
+				cond2 = self.map[round(y + wall_thresh), round(x - wall_thresh)] == 0
+				cond3 = self.map[round(y - wall_thresh), round(x + wall_thresh)] == 0
+				cond4 = self.map[round(y - wall_thresh), round(x - wall_thresh)] == 0
 				# If it is not near a wall exit
 				if (cond1 and cond2 and cond3 and cond4):
 					break	
 			# Stack the list into an array
-			self.V.append([X,Y])
+			self.V.append([x, y])
 		
 		# Save the vertices
 		self.V = np.vstack(self.V).astype(float)
@@ -45,21 +45,21 @@ class prm:
 	def plan(self, dist_thresh):
 		# Get all the edges
 		temp_edge = []
-		for each_node in range(0,len(self.V)):
-			for each_other_node in range(0,len(self.V)):
+		for each_node in range(0, len(self.V)):
+			for each_other_node in range(0, len(self.V)):
 				# Dont compare the same node
 				if(each_node != each_other_node):
-					dx = (self.V[each_node,0] - self.V[each_other_node,0])**2
-					dy = (self.V[each_node,1] - self.V[each_other_node,1])**2
+					dx = (self.V[each_node, 0] - self.V[each_other_node, 0])**2
+					dy = (self.V[each_node, 1] - self.V[each_other_node, 1])**2
 					dist = math.sqrt(dx + dy)
 					# Check to see if the nodes can be linked
 					if(dist < dist_thresh):
 						add = True
 						# Check to see if this line intersects any map points
-						grid_cells = list(bresenham(x0=int(round(self.V[each_node,1])),
-													y0=int(round(self.V[each_node,0])),
-													x1=int(round(self.V[each_other_node,1])),
-													y1=int(round(self.V[each_other_node,0]))))
+						grid_cells = list(bresenham(x0=int(round(self.V[each_node, 1])),
+													y0=int(round(self.V[each_node, 0])),
+													x1=int(round(self.V[each_other_node, 1])),
+													y1=int(round(self.V[each_other_node, 0]))))
 						for each_cell in range(0,len(grid_cells)):
 							x = grid_cells[each_cell][0]
 							y = grid_cells[each_cell][1]
@@ -67,13 +67,13 @@ class prm:
 								add = False
 								break
 						# Check the opposite is not in the list
-						if add == True:
+						if (add):
 							for each_edge in range(0,len(temp_edge)):
 								if (temp_edge[each_edge] == [each_other_node, each_node]):
 									add = False
 									break
 							# Add the edge to the list
-							if add == True:
+							if (add):
 								temp_edge.append([each_node, each_other_node])
 								self.W.append(dist)
 
@@ -273,7 +273,7 @@ class prm:
 
 		return verticies
 
-	def windowMapFromWaypoints(self, waypoints, window_gap=1):
+	def windowMapFromWaypoints(self, waypoints, window_gap=1, min_wall_distance=1):
 		new_map = copy.deepcopy(self.map)
 		# For each of the waypoints
 		for point in waypoints:
@@ -292,13 +292,44 @@ class prm:
 										x1=int(round(south_wall_end[0])),
 										y1=int(round(south_wall_end[1]))))
 
-			# Add the walls to the map
-			for cell in north_wall:
-				if cell[1] < self.map.shape[0]:
-					new_map[cell[1]][cell[0]] = 1
-			for cell in south_wall:
-				if cell[1] >= 0:
-					new_map[cell[1]][cell[0]] = 1
+			# add the walls to a list
+			walls = [north_wall, south_wall]
+
+			# Check if we already have a wall in this line
+			if not (1 in new_map[:, walls[0][0][0]]):
+				insert_wall = True
+				# Check there is no walls within the minimum distance constraint
+				for dc in range(1, min_wall_distance + 1):
+					# Check there is no wall to the left
+					if walls[0][0][0] - dc >= 0:
+						if 1 in new_map[:, walls[0][0][0] - dc]:
+							insert_wall = False
+
+					# Check there is no wall to the right
+					if walls[0][0][0] + dc < new_map.shape[1]:
+						if 1 in new_map[:, walls[0][0][0] + dc]:
+							insert_wall = False
+
+				if insert_wall:
+					# For each of the walls
+					for wall in walls:
+						# For each cell in a wall
+						for cell in wall:
+							# If we can place the wall:
+							if 0 <= cell[1] < new_map.shape[0] and 0 <= cell[0] < new_map.shape[1]:
+								new_map[cell[1], cell[0]] = 1
+			# There was already a wall so add an opening
+			else:
+				# Calculate the new opening:
+				opening = list(bresenham(x0=north_wall[0][0],
+										 y0=north_wall[0][1],
+										 x1=south_wall[0][0],
+										 y1=south_wall[0][1]))
+
+				# Add the opening
+				for cell in opening:
+					if 0 <= cell[1] < new_map.shape[0] and 0 <= cell[0] < new_map.shape[1]:
+						new_map[cell[1], cell[0]] = 0
 
 		# Return the map
 		return new_map
