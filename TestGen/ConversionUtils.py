@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage import measure
 
-def pythonMaptoUnityFile(map, distance_threshold):
+def pythonMaptoWalls(map, distance_threshold):
 
 	# Find contours at a constant value of 0.8
 	contours = measure.find_contours(map, 0.8)
@@ -11,7 +11,7 @@ def pythonMaptoUnityFile(map, distance_threshold):
 	fig, ax = plt.subplots()
 	ax.imshow(map, interpolation='nearest', cmap='binary')
 
-	# Convert each contour into line segements
+	# Convert each contour into line segments
 	lines = []
 	for n, contour in enumerate(contours):
 
@@ -65,6 +65,8 @@ def pythonMaptoUnityFile(map, distance_threshold):
 			stacked = np.stack(line)
 			plt.plot(stacked[:, 1], stacked[:, 0], color='red')
 
+		lines.append(final_lines)
+
 	# Plot each contour
 	for n, contour in enumerate(contours):
 		ax.plot(contour[:, 1], contour[:, 0], linewidth=2, color='blue')
@@ -72,3 +74,30 @@ def pythonMaptoUnityFile(map, distance_threshold):
 	plt.xlim([0, map.shape[1] - 1])
 	plt.ylim([0, map.shape[1] - 1])
 	plt.show()
+
+	return lines
+
+def wallsToUnityFile(walls, waypoints, savename="default", raining=False, day=True):
+	file = open(savename + ".txt", "w")
+
+	file.write("# waypoints\n")
+	# Go through each waypoint
+	for waypoint in waypoints:
+		file.write("g: (" + str(waypoint[0]) + ',' + str(waypoint[1]) + ",15)\n")
+
+	file.write("\n\n# wall segments\n")
+	# For each segment of walls
+	for wallsegment in walls:
+		# For each wall
+		for wall in wallsegment:
+			x_start = str(wall[0][0])
+			y_start = str(wall[0][1])
+			x_end = str(wall[1][0])
+			y_end = str(wall[1][1])
+			file.write("w: (" + x_start + "," + y_start + "," + x_end + "," + y_end + ",3)\n")
+
+	file.write("\n\n# environment settings\n")
+	file.write("R: (" + str(raining) + ")\n")
+	file.write("D: (" + str(day) + ")\n")
+
+	file.close()

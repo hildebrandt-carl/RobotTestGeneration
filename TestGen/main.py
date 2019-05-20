@@ -1,6 +1,6 @@
 import csv
 from PRM import prm
-from ConversionUtils import pythonMaptoUnityFile
+from ConversionUtils import *
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -79,11 +79,17 @@ for map_num in range(1, 2):
     plt.ylim([0, corridor_test.shape[1] - 1])
     plt.show()
 
-    pythonMaptoUnityFile(map=window_test,
-                         distance_threshold=1)
-    pythonMaptoUnityFile(map=window_test,
-                         distance_threshold=5)
-    pythonMaptoUnityFile(map=corridor_test,
-                         distance_threshold=1)
-    pythonMaptoUnityFile(map=corridor_test,
-                         distance_threshold=5)
+    walls1 = pythonMaptoWalls(map=window_test,
+                              distance_threshold=1)
+    walls2 = pythonMaptoWalls(map=window_test,
+                              distance_threshold=5)
+    walls3 = pythonMaptoWalls(map=corridor_test,
+                              distance_threshold=1)
+    walls4 = pythonMaptoWalls(map=corridor_test,
+                              distance_threshold=5)
+
+    wallsToUnityFile(walls1, waypoints, "/home/autosoftlab/Desktop/window1")
+    wallsToUnityFile(walls2, waypoints, "/home/autosoftlab/Desktop/window5")
+    wallsToUnityFile(walls3, waypoints, "/home/autosoftlab/Desktop/corridor1")
+    wallsToUnityFile(walls4, waypoints, "/home/autosoftlab/Desktop/corridor5")
+
