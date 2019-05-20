@@ -83,7 +83,7 @@ def wallsToUnityFile(walls, waypoints, savename="default", raining=False, day=Tr
 	file.write("# waypoints\n")
 	# Go through each waypoint
 	for waypoint in waypoints:
-		file.write("G: (" + str(waypoint[1] + 10) + ',' + str(waypoint[0]) + ",15)\n")
+		file.write("G: (" + str(waypoint[0] + 10) + ',' + str(waypoint[1] - 25) + ",15)\n")
 
 	file.write("\n\n# wall segments\n")
 	# For each segment of walls
@@ -91,9 +91,9 @@ def wallsToUnityFile(walls, waypoints, savename="default", raining=False, day=Tr
 		# For each wall
 		for wall in wallsegment:
 			x_start = str(wall[0][1] + 10)
-			y_start = str(wall[0][0])
+			y_start = str(wall[0][0] - 25)
 			x_end = str(wall[1][1] + 10)
-			y_end = str(wall[1][0])
+			y_end = str(wall[1][0] - 25)
 			file.write("W: (" + x_start + "," + y_start + "," + x_end + "," + y_end + ",3)\n")
 
 	file.write("\n\n# environment settings\n")

@@ -56,7 +56,7 @@ for map_num in range(1, 2):
     # Generate window map from these plots
     waypoints = p.getWaypointsFromPath(all_paths[highest_variance])
     window_test = p.windowMapFromWaypoints(waypoints=waypoints,
-                                           window_gap=4,
+                                           window_gap=8,
                                            min_wall_distance=2)
 
     # Generate corridor map from these plots
