@@ -5,8 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Robot start and end locations
-r_start = [1, 20]
-r_end = [40, 20]
+r_start = [1, 25]
+r_end = [49, 25]
 
 # Get the map
 for map_num in range(1, 2):

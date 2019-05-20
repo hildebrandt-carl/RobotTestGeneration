@@ -60,7 +60,7 @@ class prm:
 													y0=int(round(self.V[each_node, 0])),
 													x1=int(round(self.V[each_other_node, 1])),
 													y1=int(round(self.V[each_other_node, 0]))))
-						for each_cell in range(0,len(grid_cells)):
+						for each_cell in range(0, len(grid_cells)):
 							x = grid_cells[each_cell][0]
 							y = grid_cells[each_cell][1]
 							if self.map[x,y] == 1:
