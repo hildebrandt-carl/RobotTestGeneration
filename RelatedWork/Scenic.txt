@@ -1,0 +1,8 @@
+This paper is about a domain-speicifc scenario description language scenic. They use this language to generate images of good, bad and general images. Where generate is 1-4 cars each facing 0-10 degrees of the road direction. The good and bad days consisted of good or bad road conditions (day/night) (clear/rainy). They show that squeezeDet a CNN real time object detector for autonmous cars performs worse on the bad set as compared to the good or general (which is expected).
+They then ask the question "in synthetic data setting we are limited not by data availability but by the cost of training". They show that they can over-represent the hard cases, without loosing accuracy on the easy case. They show that they can increase the networks performance on hard cases by over-representing the hard cases in the data.
+Basically they show that they can measure where networks do badly and then increase the number of images of that type of scenario into the training.
+
+Large amount of work on generating artificial data sets for speicic applications
+Closely related work: domain adaption, which attempts to correct differences between synthetic and real world input distributions
+Scenes have been generated using constraints and procedural generation from shape grammars
+
