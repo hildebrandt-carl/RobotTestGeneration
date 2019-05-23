@@ -17,11 +17,11 @@ class prm:
 		self.W = []
 		self.map = map_in
 
-	def find_valid_positions(self, num_nodes, wall_thresh):
-		# iterate through the nodes
-		for i in range(0, num_nodes-2):
+	def find_valid_positions(self, num_vertices, wall_thresh):
+		# iterate through the vertices
+		for i in range(0, num_vertices-2):
 			
-			while(True):
+			while True:
 				# Generate a random position
 				x = r.random() * (self.map.shape[1] - 1)
 				y = r.random() * (self.map.shape[0] - 1)
@@ -45,38 +45,43 @@ class prm:
 	def plan(self, dist_thresh):
 		# Get all the edges
 		temp_edge = []
-		for each_node in range(0, len(self.V)):
-			for each_other_node in range(0, len(self.V)):
-				# Dont compare the same node
-				if(each_node != each_other_node):
-					dx = (self.V[each_node, 0] - self.V[each_other_node, 0])**2
-					dy = (self.V[each_node, 1] - self.V[each_other_node, 1])**2
+		for each_vertex in range(0, len(self.V)):
+			for each_other_vertex in range(0, len(self.V)):
+				# Dont compare the same vertex
+				if each_vertex != each_other_vertex:
+					# Get the distance between the vertices
+					dx = (self.V[each_vertex, 0] - self.V[each_other_vertex, 0])**2
+					dy = (self.V[each_vertex, 1] - self.V[each_other_vertex, 1])**2
 					dist = math.sqrt(dx + dy)
 					# Check to see if the nodes can be linked
-					if(dist < dist_thresh):
+					if dist < dist_thresh:
 						add = True
-						# Check to see if this line intersects any map points
-						grid_cells = list(bresenham(x0=int(round(self.V[each_node, 1])),
-													y0=int(round(self.V[each_node, 0])),
-													x1=int(round(self.V[each_other_node, 1])),
-													y1=int(round(self.V[each_other_node, 0]))))
+						# Check to see if the line intersects
+						grid_cells = list(bresenham(x0=int(round(self.V[each_vertex, 1])),
+													y0=int(round(self.V[each_vertex, 0])),
+													x1=int(round(self.V[each_other_vertex, 1])),
+													y1=int(round(self.V[each_other_vertex, 0]))))
 						for each_cell in range(0, len(grid_cells)):
 							x = grid_cells[each_cell][0]
 							y = grid_cells[each_cell][1]
-							if self.map[x,y] == 1:
+							if self.map[x, y] == 1:
 								add = False
 								break
-						# Check the opposite is not in the list
-						if (add):
-							for each_edge in range(0,len(temp_edge)):
-								if (temp_edge[each_edge] == [each_other_node, each_node]):
+						# Check a edge in the opposite direction is not in the list
+						if add:
+							for each_edge in range(0, len(temp_edge)):
+								if temp_edge[each_edge] == [each_other_vertex, each_vertex]:
 									add = False
 									break
 							# Add the edge to the list
-							if (add):
-								temp_edge.append([each_node, each_other_node])
+							if add:
+								temp_edge.append([each_vertex, each_other_vertex])
 								self.W.append(dist)
 
+			# Check if any edges were found
+			if len(temp_edge) <= 0:
+				print("No edges found")
+				exit()
 
 			# Save the edges
 			self.E = np.vstack(temp_edge)
@@ -109,7 +114,7 @@ class prm:
 			# Get the adjacency matrix
 			matrix = self.adjacencyMatrix()
 			d = dijkstra() 
-			pathdetails = d.shortest_path(matrix,0)
+			pathdetails = d.shortest_path(matrix, 0)
 		except:
 			print("Graph not connected")
 			pathdetails = {}
@@ -117,11 +122,11 @@ class prm:
 	
 		return pathdetails
 
-	def findAllPaths(self):
+	def findAllPathsUsingShortest(self):
 		edges_copy = copy.deepcopy(self.E)
 		weights_copy = copy.deepcopy(self.W)
 		all_paths = []
-		while(True):
+		while True:
 			try:
 				pathdetails = self.findShortestPath()
 				# if no path was found
@@ -154,7 +159,72 @@ class prm:
 
 		return all_paths
 
-	def generateLineHeadings(self, path):
+	def getEdgesConnectedToVertex(self, vertex):
+		edges_found = []
+		# For each edge
+		for edge in self.E:
+			# If the edge is connected to the vertex
+			if np.all(self.V[edge[0]] == vertex) or np.all(self.V[edge[1]] == vertex):
+				edges_found.append(edge)
+
+		return edges_found
+
+	def findAllPaths(self, source_index, goal_index, heading, min_turn=-90, max_turn=90):
+		# Create a stack containing the source index and current path
+		stack = [(source_index, heading, [source_index])]
+		goal_paths = []
+
+		# Use DFS to explore all paths
+		while stack:
+			# Get the vertex and he path on top of the stack
+			(vertex, robot_heading, path) = stack.pop()
+
+			# Get all the edges leading out of that vertex
+			edges = self.getEdgesConnectedToVertex(self.V[vertex])
+
+			# Make sure each of the edges is ordered correctly
+			for edge in edges:
+				if edge[0] != vertex:
+					next_vertex = edge[0]
+				else:
+					next_vertex = edge[1]
+
+				# Get the line heading
+				edge_angle = self.calculateLineHeading([vertex, next_vertex])
+
+				# If the next vertex is within our reachability set
+				delta_angle = edge_angle - robot_heading
+				if delta_angle > 180:
+					delta_angle -= 360
+				if delta_angle < -180:
+					delta_angle += 360
+
+				if min_turn <= delta_angle <= max_turn:
+					# If the next vertex is not the goal
+					if next_vertex != goal_index:
+						# Check that the next vertex has not been visited on this path
+						if next_vertex not in path:
+							stack.append((next_vertex, edge_angle, path + [next_vertex]))
+					else:
+						goal_paths.append(path + [next_vertex])
+
+		return goal_paths
+
+	def calculateLineHeading(self, edge):
+		# Get the x and y co-ordinates of each vertex
+		[start_coord_x, start_coord_y] = self.V[edge[0]]
+		[end_coord_x, end_coord_y] = self.V[edge[1]]
+
+		# Use these-coordinates to calculate a heading
+		dx = float(end_coord_x) - start_coord_x
+		dy = float(end_coord_y) - start_coord_y
+
+		# Calculate the heading between -180 and 180 (0 == East)
+		heading = math.degrees(math.atan2(dy, dx))
+
+		return heading
+
+	def generateLineHeadingsFromPath(self, path):
 		# Check if the path is non empty
 		if len(path) <= 0:
 			return []
@@ -174,28 +244,124 @@ class prm:
 				edge_num = [self.E[edge, 1], self.E[edge, 0]]
 				src = self.E[edge, 0]
 
-			# Get the x and y co-ordinates of each vertex
-			[start_coord_x, start_coord_y] = self.V[edge_num[0]]
-			[end_coord_x, end_coord_y] = self.V[edge_num[1]]
-
-			# Use these-cordinates to calculate a heading
-			dx = float(end_coord_x) - start_coord_x
-			dy = float(end_coord_y) - start_coord_y
-
 			# Calculate the heading between -180 and 180 (0 == East)
-			heading = math.degrees(math.atan2(dy, dx))
+			heading = self.calculateLineHeading(edge_num)
 			edge_headings.append(heading)
 
 		return edge_headings
 
-	def scoreAllPaths(self, paths):
+	def scoreAllPaths(self, paths, source_index=0, heading=0, min_turn=-90, max_turn=90, coverage_segments=1):
+
+		# Count how many unique elements are between min and max
+		coverage_range = max_turn - min_turn
+		segmentsize = coverage_range / float(coverage_segments)
+
+		# List for the scores
 		scores = []
+		# For each path in the scores
 		for path in paths:
-			headings = self.generateLineHeadings(path)
-			standard_deviation = statistics.stdev(headings)
-			scores.append(standard_deviation)
+			edges_indices = self.getEdgeIndicesFromPath(path)
+			edges = self.E[edges_indices]
+
+			# Used to calculate reachability
+			direction_travelled = []
+
+			# Traverse the path
+			vertex = source_index
+			robot_heading = heading
+			for edge in edges:
+				# Make sure you are traversing it correctly
+				if edge[0] != vertex:
+					next_vertex = edge[0]
+				else:
+					next_vertex = edge[1]
+				# Get the edge angle
+				edge_angle = self.calculateLineHeading([vertex, next_vertex])
+				# Get how much the robot had to turn
+				delta_angle = edge_angle - robot_heading
+				if delta_angle > 180:
+					delta_angle -= 360
+				if delta_angle < -180:
+					delta_angle += 360
+
+				# Save the end of this edge as the start of the next
+				vertex = next_vertex
+				robot_heading = edge_angle
+
+				# Reachability Set Coverage
+				direction_travelled.append(round(delta_angle))
+
+			# Reachability Set Coverage
+			coverage_array = np.zeros(coverage_segments)
+			direction_travelled = list(set(direction_travelled))
+			for i in range(0, len(direction_travelled)):
+				for cov in range(0, coverage_segments):
+					left_segment = (cov * segmentsize) + min_turn
+					right_segment = ((cov + 1) * segmentsize) + min_turn
+					if left_segment <= direction_travelled[i] <= right_segment:
+						coverage_array[cov] = 1
+
+			coverage = float(np.sum(coverage_array))/len(coverage_array)
+
+			# Average Segment Length
+			distances = []
+			total_segments = len(edges)
+			for edge in edges:
+				# Get the points from the edges
+				point1 = self.V[edge[0]]
+				point2 = self.V[edge[1]]
+
+				# Get the distance of those two points
+				dx = (point1[0] - point2[0]) ** 2
+				dy = (point1[1] - point2[1]) ** 2
+				distances.append(math.sqrt(dx + dy))
+
+			average_length = np.sum(distances) / total_segments
+
+			# Segment Variance
+			segment_length_variance = statistics.variance(distances)
+
+			# Variance Line Headings
+			headings = self.generateLineHeadingsFromPath(path)
+			path_heading_variance = statistics.variance(headings)
+
+			# Total path length
+			path_length = np.sum(distances)
+
+			# Number of turns
+			total_turns = total_segments
+
+			# Save the scores
+			scores.append([coverage, average_length, segment_length_variance, path_heading_variance, path_length, total_turns])
 
 		return scores
+
+	def normalizeScores(self, scores):
+
+		print(scores)
+		for metric_num in range(0, 6):
+			metric = []
+			for score in scores:
+				metric.append(score[metric_num])
+
+			norm = np.linalg.norm(metric)
+			# normalize the values
+			i = 0
+			for score in scores:
+				score[metric_num] = metric[i] / norm
+				i += 1
+
+		return scores
+
+	def getEdgeIndex(self, edge):
+		# For each edge in all edges
+		for edge_itt in range(0, len(self.E)):
+			crit1 = (self.E[edge_itt, 0] == edge[0] and self.E[edge_itt, 1] == edge[1])
+			crit2 = (self.E[edge_itt, 0] == edge[1] and self.E[edge_itt, 1] == edge[0])
+			# If we have found matching edge
+			if (crit1 or crit2):
+				# Add that edge to the edge list
+				return edge_itt
 
 	def getEdgeIndicesFromPath(self, path):
 
@@ -203,14 +369,9 @@ class prm:
 		# For each edge in the path
 		for i in range(1, len(path)):
 			cur_edge = [path[i-1], path[i]]
-			# For each edge in all edges
-			for edge_itt in range(0, len(self.E)):
-				crit1 = (self.E[edge_itt, 0] == cur_edge[0] and self.E[edge_itt, 1] == cur_edge[1])
-				crit2 = (self.E[edge_itt, 0] == cur_edge[1] and self.E[edge_itt, 1] == cur_edge[0])
-				# If we have found matching edges
-				if (crit1 or crit2):
-					# Add that edge to the edge list
-					edge_number.append(edge_itt)
+			# Get the index from the current edge
+			cur_index = self.getEdgeIndex(cur_edge)
+			edge_number.append(cur_index)
 
 		return edge_number
 
@@ -221,29 +382,32 @@ class prm:
 		else:
 			plt.title('Occupancy Map')
 		plt.imshow(self.map, cmap='binary')
-		plt.xlim([0,self.map.shape[1]-1])
-		plt.ylim([0,self.map.shape[1]-1])
+		plt.xlim([0, self.map.shape[1]-1])
+		plt.ylim([0, self.map.shape[0]-1])
 
-		# Print the random points and give them labels
-		plt.scatter(self.V[:,0], self.V[:,1], s=2)
-		labels = np.arange(len(self.V))
-		labels = [str(i) for i in labels]
-		for l in range(0,len(labels)):
-			plt.text(self.V[l,0]+.03, self.V[l,1]+.03, labels[l], fontsize=9)
+		# Check if we have added more than the start and end vertex
+		if len(self.V) > 2:
+			# Print the random points and give them labels
+			plt.scatter(self.V[:, 0], self.V[:, 1], s=2)
+			labels = np.arange(len(self.V))
+			labels = [str(i) for i in labels]
+			for l in range(0,len(labels)):
+				plt.text(self.V[l,0]+.03, self.V[l,1]+.03, labels[l], fontsize=9)
 
-		# Display the edges in the map
-		for edge in range(0,len(self.E)):
-			linex = [self.V[self.E[edge,0],0],self.V[self.E[edge,1],0]]
-			liney = [self.V[self.E[edge,0],1],self.V[self.E[edge,1],1]]
-			plt.plot(linex,liney,color='b')
 
-		# Highlight the paths in the map
-		for path in highlighted_paths:
-			edge_indices = self.getEdgeIndicesFromPath(path)
-			for edge in edge_indices:
+			# Display the edges in the map
+			for edge in range(0,len(self.E)):
 				linex = [self.V[self.E[edge,0],0],self.V[self.E[edge,1],0]]
 				liney = [self.V[self.E[edge,0],1],self.V[self.E[edge,1],1]]
-				plt.plot(linex,liney,color='r')
+				plt.plot(linex,liney,color='b')
+
+			# Highlight the paths in the map
+			for path in highlighted_paths:
+				edge_indices = self.getEdgeIndicesFromPath(path)
+				for edge in edge_indices:
+					linex = [self.V[self.E[edge,0],0],self.V[self.E[edge,1],0]]
+					liney = [self.V[self.E[edge,0],1],self.V[self.E[edge,1],1]]
+					plt.plot(linex,liney,color='r')
 
 		plt.show()
 
@@ -389,3 +553,4 @@ class prm:
 
 		# Return the map
 		return new_map
+
