@@ -1,0 +1,3 @@
+They use GTA to generate 1.4 million images which they then use to train a CNN to recognise stops signs and the distance to a stop sign. They are able to achive 95% accuracy and an average error in distance of between 1.2m and 2.4m
+They put a stop sign in the game and use the AI to drive towards it recording images. They then repeat this process with no stop sign. They do this for all weather and all hours and end up with the dataset. It is not very accurate at a distance but close (<20m) it achieves 95% accuracy.
+They suggest that one needs to intelligenty increase the dataset with images it finds difficult.
