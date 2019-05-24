@@ -6,6 +6,7 @@ import statistics
 import matplotlib.pyplot as plt
 from bresenham import bresenham
 from Dijkstra import dijkstra
+from functools import lru_cache
 
 
 class prm:
@@ -15,9 +16,15 @@ class prm:
 		self.V.append(end_pos)
 		self.E = []
 		self.W = []
+		self.E_headings = []
 		self.map = map_in
+		self.Ajmatrix = []
 
 	def find_valid_positions(self, num_vertices, wall_thresh):
+		# We know the number of verticies so we can initilize the line heading array
+		self.E_headings = np.empty((num_vertices, num_vertices))
+		self.E_headings[:] = np.nan
+
 		# iterate through the vertices
 		for i in range(0, num_vertices-2):
 			
@@ -75,6 +82,12 @@ class prm:
 									break
 							# Add the edge to the list
 							if add:
+								# Get the line headings and save them
+								edge_angle = self.calculateLineHeading([each_vertex, each_other_vertex])
+								self.E_headings[each_vertex, each_other_vertex] = edge_angle
+								edge_angle = self.calculateLineHeading([each_other_vertex, each_vertex])
+								self.E_headings[each_other_vertex, each_vertex] = edge_angle
+
 								temp_edge.append([each_vertex, each_other_vertex])
 								self.W.append(dist)
 
@@ -85,6 +98,9 @@ class prm:
 
 			# Save the edges
 			self.E = np.vstack(temp_edge)
+
+			# Turn our graph into an adjancency Matrix to speed up finding edges connected to it
+			self.Ajmatrix = self.adjacencyMatrix()
 
 		# Return that it worked
 		return True
@@ -102,11 +118,11 @@ class prm:
 		# Create the adjacency matrix
 		m = np.zeros((len(self.V), len(self.V)))
 		# Go through the list of edges and add each to the matrix
-		for edge_itt in range(0,len(self.E)):
+		for edge_itt in range(0, len(self.E)):
 			e = self.E[edge_itt]
 			# Add the weight in both directions
-			m[e[0],e[1]] = self.W[edge_itt]
-			m[e[1],e[0]] = self.W[edge_itt]
+			m[e[0], e[1]] = self.W[edge_itt]
+			m[e[1], e[0]] = self.W[edge_itt]
 		return m
 
 	def findShortestPath(self):
@@ -169,6 +185,17 @@ class prm:
 
 		return edges_found
 
+	@lru_cache(maxsize=None)
+	def getEdgesConnectedToVertexFromAjMatrix(self, vertex):
+		edges_found = []
+		for col in range(0, self.Ajmatrix.shape[1]):
+			if self.Ajmatrix[vertex, col] != 0:
+				# Convert it to an array so it functions like the other get Edges function
+				#edges_found.append(np.array([vertex, col]))
+				edges_found.append([vertex, col])
+
+		return edges_found
+
 	def findAllPaths(self, source_index, goal_index, heading, min_turn=-90, max_turn=90):
 		# Create a stack containing the source index and current path
 		stack = [(source_index, heading, [source_index])]
@@ -180,7 +207,9 @@ class prm:
 			(vertex, robot_heading, path) = stack.pop()
 
 			# Get all the edges leading out of that vertex
-			edges = self.getEdgesConnectedToVertex(self.V[vertex])
+			edges = self.getEdgesConnectedToVertexFromAjMatrix(vertex)
+			# Removed for being super slow
+			#edges1 = self.getEdgesConnectedToVertex(self.V[vertex])
 
 			# Make sure each of the edges is ordered correctly
 			for edge in edges:
@@ -189,8 +218,15 @@ class prm:
 				else:
 					next_vertex = edge[1]
 
+				# Check that the next vertex has not been visited on this path
+				if next_vertex in path:
+					# Skip everything after this
+					continue
+
 				# Get the line heading
-				edge_angle = self.calculateLineHeading([vertex, next_vertex])
+				edge_angle = self.readLineHeadings(tuple([vertex, next_vertex]))
+				# Read it from the saved array rather than recalculating
+				# edge_angle = self.calculateLineHeading([vertex, next_vertex])
 
 				# If the next vertex is within our reachability set
 				delta_angle = edge_angle - robot_heading
@@ -202,11 +238,11 @@ class prm:
 				if min_turn <= delta_angle <= max_turn:
 					# If the next vertex is not the goal
 					if next_vertex != goal_index:
-						# Check that the next vertex has not been visited on this path
-						if next_vertex not in path:
-							stack.append((next_vertex, edge_angle, path + [next_vertex]))
+						stack.append((next_vertex, edge_angle, path + [next_vertex]))
 					else:
 						goal_paths.append(path + [next_vertex])
+						if len(goal_paths) > 750:
+							return goal_paths
 
 		return goal_paths
 
@@ -223,6 +259,10 @@ class prm:
 		heading = math.degrees(math.atan2(dy, dx))
 
 		return heading
+
+	@lru_cache(maxsize=None)
+	def readLineHeadings(self, edge):
+		return self.E_headings[edge[0], edge[1]]
 
 	def generateLineHeadingsFromPath(self, path):
 		# Check if the path is non empty
@@ -245,7 +285,8 @@ class prm:
 				src = self.E[edge, 0]
 
 			# Calculate the heading between -180 and 180 (0 == East)
-			heading = self.calculateLineHeading(edge_num)
+			#heading = self.calculateLineHeading(edge_num)
+			heading = self.readLineHeadings(tuple(edge_num))
 			edge_headings.append(heading)
 
 		return edge_headings
@@ -257,7 +298,8 @@ class prm:
 		segmentsize = coverage_range / float(coverage_segments)
 
 		# List for the scores
-		scores = []
+		scores = np.zeros((len(paths), 6))
+		score_counter = 0
 		# For each path in the scores
 		for path in paths:
 			edges_indices = self.getEdgeIndicesFromPath(path)
@@ -276,7 +318,8 @@ class prm:
 				else:
 					next_vertex = edge[1]
 				# Get the edge angle
-				edge_angle = self.calculateLineHeading([vertex, next_vertex])
+				#edge_angle = self.calculateLineHeading([vertex, next_vertex])
+				edge_angle = self.readLineHeadings(tuple([vertex, next_vertex]))
 				# Get how much the robot had to turn
 				delta_angle = edge_angle - robot_heading
 				if delta_angle > 180:
@@ -332,27 +375,34 @@ class prm:
 			total_turns = total_segments
 
 			# Save the scores
-			scores.append([coverage, average_length, segment_length_variance, path_heading_variance, path_length, total_turns])
+			scores[score_counter, 0] = coverage
+			scores[score_counter, 1] = average_length
+			scores[score_counter, 2] = segment_length_variance
+			scores[score_counter, 3] = path_heading_variance
+			scores[score_counter, 4] = path_length
+			scores[score_counter, 5] = total_turns
+			score_counter += 1
 
 		return scores
 
 	def normalizeScores(self, scores):
 
-		print(scores)
-		for metric_num in range(0, 6):
-			metric = []
-			for score in scores:
-				metric.append(score[metric_num])
+		if scores.shape[0] > 1:
+			min_scores = np.min(scores, axis=0)
+			# Reachability set coverage actually has a min of 0
+			min_scores[0] = 0
+			max_scores = np.max(scores, axis=0)
+			# Reachability set coverage actually has a max of 1
+			max_scores[0] = 1
+			range = max_scores - min_scores
+			normalized_scores = (scores - min_scores) / range
+		else:
+			print("No scores to normalize")
+			return None
 
-			norm = np.linalg.norm(metric)
-			# normalize the values
-			i = 0
-			for score in scores:
-				score[metric_num] = metric[i] / norm
-				i += 1
+		return normalized_scores
 
-		return scores
-
+	@lru_cache(maxsize=None)
 	def getEdgeIndex(self, edge):
 		# For each edge in all edges
 		for edge_itt in range(0, len(self.E)):
@@ -370,12 +420,13 @@ class prm:
 		for i in range(1, len(path)):
 			cur_edge = [path[i-1], path[i]]
 			# Get the index from the current edge
-			cur_index = self.getEdgeIndex(cur_edge)
+			cur_index = self.getEdgeIndex(tuple(cur_edge))
 			edge_number.append(cur_index)
 
 		return edge_number
 
-	def plot(self, highlighted_paths=[], tsuffix=""):
+	def get_plot(self, highlighted_paths=[], tsuffix="", color_map="jet_r"):
+
 		# Print Map
 		if len(tsuffix) >= 0:
 			plt.title('Occupancy Map - ' + str(tsuffix))
@@ -391,25 +442,30 @@ class prm:
 			plt.scatter(self.V[:, 0], self.V[:, 1], s=2)
 			labels = np.arange(len(self.V))
 			labels = [str(i) for i in labels]
-			for l in range(0,len(labels)):
-				plt.text(self.V[l,0]+.03, self.V[l,1]+.03, labels[l], fontsize=9)
+			for l in range(0, len(labels)):
+				plt.text(self.V[l, 0]+.03, self.V[l, 1]+.03, labels[l], fontsize=9)
 
 
 			# Display the edges in the map
 			for edge in range(0,len(self.E)):
-				linex = [self.V[self.E[edge,0],0],self.V[self.E[edge,1],0]]
-				liney = [self.V[self.E[edge,0],1],self.V[self.E[edge,1],1]]
-				plt.plot(linex,liney,color='b')
+				linex = [self.V[self.E[edge, 0], 0], self.V[self.E[edge, 1], 0]]
+				liney = [self.V[self.E[edge, 0], 1], self.V[self.E[edge, 1], 1]]
+				plt.plot(linex, liney, color='b', linestyle=":")
 
 			# Highlight the paths in the map
+			i = 0
+			total_paths = len(highlighted_paths)
+			cmap = plt.get_cmap(color_map)
 			for path in highlighted_paths:
-				edge_indices = self.getEdgeIndicesFromPath(path)
-				for edge in edge_indices:
-					linex = [self.V[self.E[edge,0],0],self.V[self.E[edge,1],0]]
-					liney = [self.V[self.E[edge,0],1],self.V[self.E[edge,1],1]]
-					plt.plot(linex,liney,color='r')
+				selected_color = cmap(float(i) / total_paths)
+				i += 1
 
-		plt.show()
+				for v1, v2 in zip(path, path[1:]):
+					linex = [self.V[v1, 0], self.V[v2, 0]]
+					liney = [self.V[v1, 1], self.V[v2, 1]]
+					plt.plot(linex, liney, color=selected_color)
+
+		return plt
 
 	def getWaypointsFromPath(self, path):
 		# Keep track of the source so we can move in a constant direction
