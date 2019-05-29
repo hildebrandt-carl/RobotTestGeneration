@@ -13,7 +13,7 @@ class dijkstra:
 	# A utility function to find the  
 	# vertex with minimum dist value, from 
 	# the set of vertices still in queue 
-	def minDistance(self,dist,queue): 
+	def minDistance(self, dist, queue):
 		# Initialize min value and min_index as -1 
 		minimum = float("Inf") 
 		min_index = -1

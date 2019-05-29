@@ -77,6 +77,7 @@ def pythonMaptoWalls(map, distance_threshold):
 
 	return lines
 
+
 def wallsToUnityFile(walls, waypoints, savename="default", raining=False, day=True):
 	file = open(savename + ".txt", "w")
 
