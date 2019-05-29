@@ -17,6 +17,7 @@ robot_min_turn = -45
 for map_num in range(1, 2):
     # Load the map file
     filename = "maps/map" + str(map_num) + ".csv"
+    print("UPDATE: Loading Map")
     with open(filename, 'r') as f:
         reader = csv.reader(f, delimiter=',')
         # get all the rows as a list
@@ -27,30 +28,36 @@ for map_num in range(1, 2):
         our_map = np.array(our_map).astype(float)
 
     # Generate the prm map
+    print("UPDATE: Populating Trajectory Graph")
     p = prm(map_in=our_map,
             start_pos=r_start,
             end_pos=r_end)
-    p.find_valid_positions(num_vertices=100,
+    p.findValidPositions(num_vertices=500,
                            wall_thresh=0.25)
-    p.plan(dist_thresh=4)
+    p.plan(dist_thresh=2.5)
 
     # Show the map after the prm construction phase
-    map_plt = p.get_plot()
+    print("UPDATE: Displaying Map")
+    map_plt = p.getPlot(tsuffix="Graph",
+                        figure_size=(10, 10))
     map_plt.show()
 
+    print("UPDATE: Finding Possible Paths")
     # Find all paths from vertex (0) with robot heading = 0
     all_paths = p.findAllPaths(source_index=0,
                                goal_index=1,
                                heading=robot_heading,
                                min_turn=robot_min_turn,
-                               max_turn=robot_max_turn)
+                               max_turn=robot_max_turn,
+                               max_traj=2000)
 
-    print("Total unique paths found: " + str(len(all_paths)))
+    print("DATA: Total unique paths found: " + str(len(all_paths)))
 
     if len(all_paths) <= 0:
         exit()
 
     # Score each of the paths
+    print("UPDATE: Scoring Each Path")
     scores = p.scoreAllPaths(paths=all_paths,
                              source_index=0,
                              heading=robot_heading,
@@ -58,34 +65,39 @@ for map_num in range(1, 2):
                              max_turn=robot_max_turn,
                              coverage_segments=20)
 
+    print("UPDATE: Normalizing Scores")
     scores = p.normalizeScores(scores)
-    #print(scores)
 
-    # Generate the colors we want to use
-    #path_plot = p.get_plot(all_paths, color_map='jet_r')
-    #path_plot.show()
-    print('---------------------')
+    # Display the trajectories
+    print("UPDATE: Displaying Trajectories")
+    path_plot = p.getPlot(highlighted_paths=all_paths,
+                          tsuffix="Possible Trajectories",
+                          figure_size=(10, 10),
+                          color_map='jet_r')
+    path_plot.show()
 
+    # Display the scores
+    print("UPDATE: Displaying Scores")
     labels = ['Reachability Set Coverage',
-              'Average\nSegement\nLength',
-              'Segement\nLength\nVariance',
+              'Average\nSegment\nLength',
+              'Segment\nLength\nVariance',
               'Heading Variance',
               'Path\nLength',
               'Number\nTurns']
     title = "Path Comparison"
-
-    # radar_plt = get_radar(case_data=scores,
-    #                       title="Path Comparison",
-    #                       spoke_labels=labels,
-    #                       color_map='jet_r')
-
-    #radar_plt.show()
+    radar_plt = get_radar(case_data=scores,
+                          title="Path Comparison",
+                          spoke_labels=labels,
+                          color_map='jet_r')
+    radar_plt.show()
 
     # This will calculate the convex hull of the score
     # Convex hell takes in of the shape (#points, #values)
+    print("UPDATE: Calculating Convex Hull")
     hull = ConvexHull(scores)
 
     # This goes through each points along the hull
+    print("UPDATE: Selecting Tests")
     testsAlongHull = []
     for simplex in hull.simplices:
         # Simplex is an array which contains the vertices forming a face of the convex hull
@@ -93,9 +105,8 @@ for map_num in range(1, 2):
 
     # Get the unique set of tests selected
     selected_tests_indices = list(set(testsAlongHull))
-    print("All Tests Selected: " + str(selected_tests_indices))
-    print("Total Tests Found: " + str(len(scores)))
-    print("Total Tests Selected: " + str(len(selected_tests_indices)))
+    print("DATA: Total Tests Found: " + str(len(scores)))
+    print("DATA: Total Tests Selected: " + str(len(selected_tests_indices)))
 
     # Get the list of selected paths and scores
     selected_tests = np.array(all_paths)[selected_tests_indices]
@@ -107,45 +118,65 @@ for map_num in range(1, 2):
     not_selected_tests = np.array(all_paths)[not_selected_indices]
     not_selected_scores = scores[not_selected_indices, :]
 
+    print("UPDATE: Updating Tests")
     # Calculate some base differences
     metric_lab = ['Reachability Set Coverage\t',
-                  'Average Segement Length\t',
-                  'Segement Length Variance\t',
-                  'Heading Variance\t\t\t',
-                  'Path Length\t\t\t\t',
-                  'Number Turns\t\t\t\t']
+                  'Average Segment Length\t\t',
+                  'Segment Length Variance\t\t',
+                  'Heading Variance \t\t\t',
+                  'Path Length\t\t\t\t\t',
+                  'Number Turns \t\t\t\t']
     print("---------------------------------------------------------")
     for i in range(0, 6):
         average_selected = np.average(selected_scores[:, i])
         average_rejected = np.average(not_selected_scores[:, i])
         variance_selected = np.var(selected_scores[:, i])
         variance_rejected = np.var(not_selected_scores[:, i])
-        print("Average: " + metric_lab[i] + "\t[Selected Tests]: " + str(average_selected))
-        print("Variance: " + metric_lab[i] + "\t[Selected Tests]: " + str(variance_selected))
-        print("Average: " + metric_lab[i] + "[Not Selected Tests]: " + str(average_rejected))
-        print("Variance: " + metric_lab[i] + "[Not Selected Tests]: " + str(variance_rejected))
+        print("Data: Average: " + metric_lab[i] + "\t[Selected Tests]: " + str(average_selected))
+        print("Data: Variance: " + metric_lab[i] + "\t[Selected Tests]: " + str(variance_selected))
+        print("Data: Average: " + metric_lab[i] + "[Not Selected Tests]: " + str(average_rejected))
+        print("Data: Variance: " + metric_lab[i] + "[Not Selected Tests]: " + str(variance_rejected))
         print()
     print("---------------------------------------------------------")
 
-    # Plot the scores
-    path_plot = p.get_plot(selected_tests, tsuffix="Selected", color_map='jet_r')
+    # Show the display the not selected graphs
+    print("UPDATE: Displaying Selected Paths")
+    path_plot = p.getPlot(highlighted_paths=selected_tests,
+                          tsuffix="Selected",
+                          color_map='jet_r',
+                          figure_size=(10, 10))
     path_plot.show()
+
+    # Show the score selection for the selected scores
+    print("UPDATE: Displaying Scores Selected Tests")
     radar_plt = get_radar(case_data=selected_scores,
                           title="Selected - Path Comparison",
                           spoke_labels=labels,
                           color_map='jet_r')
     radar_plt.show()
 
-    path_plot = p.get_plot(not_selected_tests, tsuffix="Selected", color_map='jet_r')
+    # Show the display the not selected graphs
+    print("UPDATE: Displaying Not Selected Paths")
+    path_plot = p.getPlot(highlighted_paths=not_selected_tests,
+                          tsuffix="Not Selected",
+                          color_map='jet_r',
+                          figure_size=(10, 10))
     path_plot.show()
+
+    # Show the scores graph for the not selected scores
+    print("UPDATE: Displaying Scores Of Not Selected Tests")
     radar_plt = get_radar(case_data=not_selected_scores,
                           title="Not Selected - Path Comparison",
                           spoke_labels=labels,
                           color_map='jet_r')
     radar_plt.show()
 
-
-
+    # Randomly select 100 tests and plot them individually
+    print("UPDATE: Displaying Selected Paths Individually")
+    score_plot = p.plotTrajectories(selected_tests=selected_tests,
+                                    total_plots=100,
+                                    figure_size=(50, 50))
+    score_plot.show()
 
 
 
@@ -216,8 +247,4 @@ for map_num in range(1, 2):
     # wallsToUnityFile(walls3, waypoints, "/home/autosoftlab/Desktop/corridor1")
     # wallsToUnityFile(walls4, waypoints, "/home/autosoftlab/Desktop/corridor5")
     #
-
-
-
-
 

@@ -20,7 +20,7 @@ class prm:
 		self.map = map_in
 		self.Ajmatrix = []
 
-	def find_valid_positions(self, num_vertices, wall_thresh):
+	def findValidPositions(self, num_vertices, wall_thresh):
 		# We know the number of verticies so we can initilize the line heading array
 		self.E_headings = np.empty((num_vertices, num_vertices))
 		self.E_headings[:] = np.nan
@@ -196,7 +196,7 @@ class prm:
 
 		return edges_found
 
-	def findAllPaths(self, source_index, goal_index, heading, min_turn=-90, max_turn=90):
+	def findAllPaths(self, source_index, goal_index, heading, min_turn=-90, max_turn=90, max_traj=1000):
 		# Create a stack containing the source index and current path
 		stack = [(source_index, heading, [source_index])]
 		goal_paths = []
@@ -241,7 +241,7 @@ class prm:
 						stack.append((next_vertex, edge_angle, path + [next_vertex]))
 					else:
 						goal_paths.append(path + [next_vertex])
-						if len(goal_paths) > 750:
+						if len(goal_paths) >= max_traj:
 							return goal_paths
 
 		return goal_paths
@@ -425,7 +425,9 @@ class prm:
 
 		return edge_number
 
-	def get_plot(self, highlighted_paths=[], tsuffix="", color_map="jet_r"):
+	def getPlot(self, highlighted_paths=[], tsuffix="", color_map="jet_r", figure_size=(15, 13)):
+
+		plt.figure(figsize=figure_size)
 
 		# Print Map
 		if len(tsuffix) >= 0:
@@ -447,7 +449,7 @@ class prm:
 
 
 			# Display the edges in the map
-			for edge in range(0,len(self.E)):
+			for edge in range(0, len(self.E)):
 				linex = [self.V[self.E[edge, 0], 0], self.V[self.E[edge, 1], 0]]
 				liney = [self.V[self.E[edge, 0], 1], self.V[self.E[edge, 1], 1]]
 				plt.plot(linex, liney, color='b', linestyle=":")
@@ -460,10 +462,16 @@ class prm:
 				selected_color = cmap(float(i) / total_paths)
 				i += 1
 
+				linex = []
+				liney = []
 				for v1, v2 in zip(path, path[1:]):
-					linex = [self.V[v1, 0], self.V[v2, 0]]
-					liney = [self.V[v1, 1], self.V[v2, 1]]
-					plt.plot(linex, liney, color=selected_color)
+					if len(linex) == 0:
+						linex = [self.V[v1, 0], self.V[v2, 0]]
+						liney = [self.V[v1, 1], self.V[v2, 1]]
+					else:
+						linex.append(self.V[v2, 0])
+						liney.append(self.V[v2, 1])
+				plt.plot(linex, liney, color=selected_color)
 
 		return plt
 
@@ -610,3 +618,40 @@ class prm:
 		# Return the map
 		return new_map
 
+	def plotTrajectories(self, selected_tests, total_plots=100, figure_size=(70, 70)):
+		# Calculate the axis lengths
+		axis_length = int(round(math.sqrt(total_plots)))
+		total = axis_length**2
+
+		# Check if the total is less than the number of tests
+		if total > len(selected_tests):
+			print("Not enough tests given")
+			return None
+
+		# Create the figure
+		fig, axes = plt.subplots(axis_length, axis_length, figsize=figure_size)
+
+		# Select and plot the tests
+		plotted_tests = np.random.choice(selected_tests, total, replace=False)
+		for row in range(0, axis_length):
+			for col in range(0, axis_length):
+				# Draw the path in the
+				path = plotted_tests[(row * axis_length) + col]
+				# Create the lines we are going to plot
+				linex = []
+				liney = []
+				# Build the line
+				for v1, v2 in zip(path, path[1:]):
+					if len(linex) == 0:
+						linex = [self.V[v1, 0], self.V[v2, 0]]
+						liney = [self.V[v1, 1], self.V[v2, 1]]
+					else:
+						linex.append(self.V[v2, 0])
+						liney.append(self.V[v2, 1])
+				# Plot the trajectory's
+				axes[row, col].plot(linex, liney, color='b', linewidth=10)
+				axes[row, col].set_xlim([0, self.map.shape[1] - 1])
+				axes[row, col].set_ylim([0, self.map.shape[0] - 1])
+				axes[row, col].axis('off')
+
+		return fig
