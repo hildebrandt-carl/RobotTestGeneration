@@ -196,7 +196,7 @@ class prm:
 
 		return edges_found
 
-	def findAllPaths(self, source_index, goal_index, heading, min_turn=-90, max_turn=90, max_traj=1000):
+	def findAllPaths(self, source_index, goal_index, heading, min_turn=-90, max_turn=90, depth=100, max_traj=1000):
 		# Create a stack containing the source index and current path
 		stack = [(source_index, heading, [source_index])]
 		goal_paths = []
@@ -205,6 +205,10 @@ class prm:
 		while stack:
 			# Get the vertex and he path on top of the stack
 			(vertex, robot_heading, path) = stack.pop()
+
+			# Dont consider paths greater
+			if len(path) > depth:
+				continue
 
 			# Get all the edges leading out of that vertex
 			edges = self.getEdgesConnectedToVertexFromAjMatrix(vertex)
@@ -618,25 +622,40 @@ class prm:
 		# Return the map
 		return new_map
 
-	def plotTrajectories(self, selected_tests, total_plots=100, figure_size=(70, 70)):
+	def plotTrajectories(self, selected_tests, total_plots=100, figure_size=(70, 70), tsuffix=""):
 		# Calculate the axis lengths
 		axis_length = int(round(math.sqrt(total_plots)))
 		total = axis_length**2
 
 		# Check if the total is less than the number of tests
-		if total > len(selected_tests):
-			print("Not enough tests given")
-			return None
+		if len(selected_tests) < total:
+			print("Not enough tests given appending blank tests")
+			while len(selected_tests) < total:
+				selected_tests.append=[0, 0]
 
 		# Create the figure
-		fig, axes = plt.subplots(axis_length, axis_length, figsize=figure_size)
+		fig = plt.figure(figsize=figure_size)
+		axes = fig.subplots(nrows=axis_length+1, ncols=axis_length)
+		# Print Map
+		if len(tsuffix) >= 0:
+			fig.suptitle(t='Individual Trajectories - ' + str(tsuffix),
+						 fontsize=60)
+		else:
+			fig.suptitle(t='Individual Trajectories',
+						 fontsize=60)
+		# Add some space above the plots
 
 		# Select and plot the tests
 		plotted_tests = np.random.choice(selected_tests, total, replace=False)
-		for row in range(0, axis_length):
+		for row in range(1, axis_length+1):
 			for col in range(0, axis_length):
+				# Make sure the first row is blank
+				if row == 1:
+					axes[row-1, col].set_xlim([0, self.map.shape[1] - 1])
+					axes[row-1, col].set_ylim([0, self.map.shape[0] - 1])
+					axes[row-1, col].axis('off')
 				# Draw the path in the
-				path = plotted_tests[(row * axis_length) + col]
+				path = plotted_tests[((row - 1) * axis_length) + col]
 				# Create the lines we are going to plot
 				linex = []
 				liney = []
@@ -648,10 +667,47 @@ class prm:
 					else:
 						linex.append(self.V[v2, 0])
 						liney.append(self.V[v2, 1])
+
 				# Plot the trajectory's
-				axes[row, col].plot(linex, liney, color='b', linewidth=10)
+				axes[row, col].plot(linex, liney, color='b', linewidth=5)
 				axes[row, col].set_xlim([0, self.map.shape[1] - 1])
 				axes[row, col].set_ylim([0, self.map.shape[0] - 1])
 				axes[row, col].axis('off')
 
+
 		return fig
+
+	def getEdgeListFromPath(self, path):
+		edgeList = []
+		# Get the edge list
+		for v1, v2 in zip(path, path[1:]):
+			edgeList.append([v1, v2])
+
+		return edgeList
+
+	def selectTestsBasedOnCoverage(self, selected_tests):
+		# Keep track of which edges where visited
+		edgesVisited = []
+		selected_paths = []
+		new_edges_count = []
+
+		# For each path in selected_tests
+		for path in selected_tests:
+			edgeList = self.getEdgeListFromPath(path)
+			# For each edge
+			firstTimeVists = 0
+			for edge in edgeList:
+				# Check if the edge has been visited
+				if edge not in edgesVisited:
+					# We have now visited it
+					edgesVisited.append(edge)
+					firstTimeVists += 1
+
+			if firstTimeVists > 0:
+				selected_paths.append(path)
+				new_edges_count.append(firstTimeVists)
+
+			#print("Path: " + str(path))
+			#print("Unvisited Edges In Path: " + str(firstTimeVists))
+
+		return selected_paths

@@ -32,8 +32,8 @@ for map_num in range(1, 2):
     p = prm(map_in=our_map,
             start_pos=r_start,
             end_pos=r_end)
-    p.findValidPositions(num_vertices=500,
-                           wall_thresh=0.25)
+    p.findValidPositions(num_vertices=200,
+                         wall_thresh=0.25)
     p.plan(dist_thresh=2.5)
 
     # Show the map after the prm construction phase
@@ -49,7 +49,8 @@ for map_num in range(1, 2):
                                heading=robot_heading,
                                min_turn=robot_min_turn,
                                max_turn=robot_max_turn,
-                               max_traj=2000)
+                               depth=15,
+                               max_traj=10000)
 
     print("DATA: Total unique paths found: " + str(len(all_paths)))
 
@@ -171,17 +172,43 @@ for map_num in range(1, 2):
                           color_map='jet_r')
     radar_plt.show()
 
-    # Randomly select 100 tests and plot them individually
+    # Randomly select 100 tests from the selected tests and plot them individually
     print("UPDATE: Displaying Selected Paths Individually")
-    score_plot = p.plotTrajectories(selected_tests=selected_tests,
-                                    total_plots=100,
-                                    figure_size=(50, 50))
-    score_plot.show()
+    selectedpathplot = p.plotTrajectories(selected_tests=selected_tests,
+                                          total_plots=100,
+                                          figure_size=(25, 25),
+                                          tsuffix="Selected")
+    selectedpathplot.show()
+
+    # Randomly select 100 tests from the not selected tests and plot them individually
+    print("UPDATE: Displaying Not Selected Paths Individually")
+    notselectedpathplot = p.plotTrajectories(selected_tests=not_selected_tests,
+                                             total_plots=100,
+                                             figure_size=(25, 25),
+                                             tsuffix="Not Selected")
+    notselectedpathplot.show()
 
 
 
+    # Selecting tests based on edge coverage
+    final_tests = p.selectTestsBasedOnCoverage(selected_tests=selected_tests)
+    print("DATA: Total Tests Selected: " + str(len(final_tests)))
+
+    print("UPDATE: Displaying Final Paths")
+    path_plot = p.getPlot(highlighted_paths=final_tests,
+                          tsuffix="Final Paths",
+                          color_map='jet_r',
+                          figure_size=(10, 10))
+    path_plot.show()
 
 
+    # Display the final test cases found
+    print("UPDATE: Displaying Finally Selected Trajectories")
+    finalselectedtestsplot = p.plotTrajectories(selected_tests=final_tests,
+                                                total_plots=100,
+                                                figure_size=(25, 25),
+                                                tsuffix="Final Paths")
+    finalselectedtestsplot.show()
 
 
 
@@ -246,5 +273,3 @@ for map_num in range(1, 2):
     # wallsToUnityFile(walls2, waypoints, "/home/autosoftlab/Desktop/window5")
     # wallsToUnityFile(walls3, waypoints, "/home/autosoftlab/Desktop/corridor1")
     # wallsToUnityFile(walls4, waypoints, "/home/autosoftlab/Desktop/corridor5")
-    #
-
