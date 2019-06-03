@@ -32,15 +32,15 @@ for map_num in range(1, 2):
     p = prm(map_in=our_map,
             start_pos=r_start,
             end_pos=r_end)
-    p.findValidPositions(num_vertices=200,
+    p.findValidPositions(num_vertices=300,
                          wall_thresh=0.25)
     p.plan(dist_thresh=2.5)
 
     # Show the map after the prm construction phase
-    print("UPDATE: Displaying Map")
-    map_plt = p.getPlot(tsuffix="Graph",
-                        figure_size=(10, 10))
-    map_plt.show()
+    # print("UPDATE: Displaying Map")
+    # map_plt = p.getPlot(tsuffix="Graph",
+    #                     figure_size=(10, 10))
+    # map_plt.show()
 
     print("UPDATE: Finding Possible Paths")
     # Find all paths from vertex (0) with robot heading = 0
@@ -50,7 +50,7 @@ for map_num in range(1, 2):
                                min_turn=robot_min_turn,
                                max_turn=robot_max_turn,
                                depth=15,
-                               max_traj=10000)
+                               max_traj=15000)
 
     print("DATA: Total unique paths found: " + str(len(all_paths)))
 
@@ -70,27 +70,27 @@ for map_num in range(1, 2):
     scores = p.normalizeScores(scores)
 
     # Display the trajectories
-    print("UPDATE: Displaying Trajectories")
-    path_plot = p.getPlot(highlighted_paths=all_paths,
-                          tsuffix="Possible Trajectories",
-                          figure_size=(10, 10),
-                          color_map='jet_r')
-    path_plot.show()
+    # print("UPDATE: Displaying Trajectories")
+    # path_plot = p.getPlot(highlighted_paths=all_paths,
+    #                       tsuffix="Possible Trajectories",
+    #                       figure_size=(10, 10),
+    #                       color_map='jet_r')
+    # path_plot.show()
 
     # Display the scores
-    print("UPDATE: Displaying Scores")
-    labels = ['Reachability Set Coverage',
-              'Average\nSegment\nLength',
-              'Segment\nLength\nVariance',
-              'Heading Variance',
-              'Path\nLength',
-              'Number\nTurns']
-    title = "Path Comparison"
-    radar_plt = get_radar(case_data=scores,
-                          title="Path Comparison",
-                          spoke_labels=labels,
-                          color_map='jet_r')
-    radar_plt.show()
+    # print("UPDATE: Displaying Scores")
+    # labels = ['Reachability Set Coverage',
+    #           'Average\nSegment\nLength',
+    #           'Segment\nLength\nVariance',
+    #           'Heading Variance',
+    #           'Path\nLength',
+    #           'Number\nTurns']
+    # title = "Path Comparison"
+    # radar_plt = get_radar(case_data=scores,
+    #                       title="Path Comparison",
+    #                       spoke_labels=labels,
+    #                       color_map='jet_r')
+    # radar_plt.show()
 
     # This will calculate the convex hull of the score
     # Convex hell takes in of the shape (#points, #values)
@@ -141,56 +141,57 @@ for map_num in range(1, 2):
     print("---------------------------------------------------------")
 
     # Show the display the not selected graphs
-    print("UPDATE: Displaying Selected Paths")
-    path_plot = p.getPlot(highlighted_paths=selected_tests,
-                          tsuffix="Selected",
-                          color_map='jet_r',
-                          figure_size=(10, 10))
-    path_plot.show()
+    # print("UPDATE: Displaying Selected Paths")
+    # path_plot = p.getPlot(highlighted_paths=selected_tests,
+    #                       tsuffix="Selected",
+    #                       color_map='jet_r',
+    #                       figure_size=(10, 10))
+    # path_plot.show()
 
     # Show the score selection for the selected scores
-    print("UPDATE: Displaying Scores Selected Tests")
-    radar_plt = get_radar(case_data=selected_scores,
-                          title="Selected - Path Comparison",
-                          spoke_labels=labels,
-                          color_map='jet_r')
-    radar_plt.show()
+    # print("UPDATE: Displaying Scores Selected Tests")
+    # radar_plt = get_radar(case_data=selected_scores,
+    #                       title="Selected - Path Comparison",
+    #                       spoke_labels=labels,
+    #                       color_map='jet_r')
+    # radar_plt.show()
 
     # Show the display the not selected graphs
-    print("UPDATE: Displaying Not Selected Paths")
-    path_plot = p.getPlot(highlighted_paths=not_selected_tests,
-                          tsuffix="Not Selected",
-                          color_map='jet_r',
-                          figure_size=(10, 10))
-    path_plot.show()
+    # print("UPDATE: Displaying Not Selected Paths")
+    # path_plot = p.getPlot(highlighted_paths=not_selected_tests,
+    #                       tsuffix="Not Selected",
+    #                       color_map='jet_r',
+    #                       figure_size=(10, 10))
+    # path_plot.show()
 
     # Show the scores graph for the not selected scores
-    print("UPDATE: Displaying Scores Of Not Selected Tests")
-    radar_plt = get_radar(case_data=not_selected_scores,
-                          title="Not Selected - Path Comparison",
-                          spoke_labels=labels,
-                          color_map='jet_r')
-    radar_plt.show()
+    # print("UPDATE: Displaying Scores Of Not Selected Tests")
+    # radar_plt = get_radar(case_data=not_selected_scores,
+    #                       title="Not Selected - Path Comparison",
+    #                       spoke_labels=labels,
+    #                       color_map='jet_r')
+    # radar_plt.show()
 
     # Randomly select 100 tests from the selected tests and plot them individually
-    print("UPDATE: Displaying Selected Paths Individually")
-    selectedpathplot = p.plotTrajectories(selected_tests=selected_tests,
-                                          total_plots=100,
-                                          figure_size=(25, 25),
-                                          tsuffix="Selected")
-    selectedpathplot.show()
+    # print("UPDATE: Displaying Selected Paths Individually")
+    # selectedpathplot = p.plotTrajectories(selected_tests=selected_tests,
+    #                                       total_plots=100,
+    #                                       figure_size=(25, 25),
+    #                                       tsuffix="Selected")
+    # selectedpathplot.show()
 
     # Randomly select 100 tests from the not selected tests and plot them individually
-    print("UPDATE: Displaying Not Selected Paths Individually")
-    notselectedpathplot = p.plotTrajectories(selected_tests=not_selected_tests,
-                                             total_plots=100,
-                                             figure_size=(25, 25),
-                                             tsuffix="Not Selected")
-    notselectedpathplot.show()
+    # print("UPDATE: Displaying Not Selected Paths Individually")
+    # notselectedpathplot = p.plotTrajectories(selected_tests=not_selected_tests,
+    #                                          total_plots=100,
+    #                                          figure_size=(25, 25),
+    #                                          tsuffix="Not Selected")
+    # notselectedpathplot.show()
 
 
 
     # Selecting tests based on edge coverage
+    print("UPDATE: Finding Tests Based on Coverage")
     final_tests = p.selectTestsBasedOnCoverage(selected_tests=selected_tests)
     print("DATA: Total Tests Selected: " + str(len(final_tests)))
 

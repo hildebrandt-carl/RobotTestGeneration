@@ -39,3 +39,4 @@
 
 # Ignore pycharm files
 *__pycache__
+**/.idea/*
