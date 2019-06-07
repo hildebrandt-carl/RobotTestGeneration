@@ -72,10 +72,9 @@ def pythonMaptoWalls(map, distance_threshold):
 		ax.plot(contour[:, 1], contour[:, 0], linewidth=2, color='blue')
 
 	plt.xlim([0, map.shape[1] - 1])
-	plt.ylim([0, map.shape[1] - 1])
-	plt.show()
+	plt.ylim([0, map.shape[0] - 1])
 
-	return lines
+	return lines, plt
 
 
 def wallsToUnityFile(walls, waypoints, savename="default", raining=False, day=True):

@@ -49,7 +49,7 @@ class prm:
 		# Return that it worked
 		return True
 
-	def plan(self, dist_thresh):
+	def plan(self, max_distance=2, min_distance=1):
 		# Get all the edges
 		temp_edge = []
 		for each_vertex in range(0, len(self.V)):
@@ -61,7 +61,7 @@ class prm:
 					dy = (self.V[each_vertex, 1] - self.V[each_other_vertex, 1])**2
 					dist = math.sqrt(dx + dy)
 					# Check to see if the nodes can be linked
-					if dist < dist_thresh:
+					if min_distance < dist < max_distance:
 						add = True
 						# Check to see if the line intersects
 						grid_cells = list(bresenham(x0=int(round(self.V[each_vertex, 1])),
@@ -196,24 +196,72 @@ class prm:
 
 		return edges_found
 
-	def findAllPaths(self, source_index, goal_index, heading, min_turn=-90, max_turn=90, depth=100, max_traj=1000):
+	def classifyPathsReachability(self, paths, source_index=0, heading=0, min_turn_deg=90, max_turn_deg=90, delta=5):
+		# List to save the reachability variables
+		classification = []
+
+		# For each path in the paths
+		for path in paths:
+			# Get the edges
+			edges_indices = self.getEdgeIndicesFromPath(path)
+			edges = self.E[edges_indices]
+
+			# Assume the path is inside the reachability set
+			path_pass = True
+
+			# Traverse the path
+			vertex = source_index
+			robot_heading = heading
+			for edge in edges:
+				# Make sure you are traversing it correctly
+				if edge[0] != vertex:
+					next_vertex = edge[0]
+				else:
+					next_vertex = edge[1]
+				# Get the edge angle
+				# edge_angle = self.calculateLineHeading([vertex, next_vertex])
+				edge_angle = self.readLineHeadings(tuple([vertex, next_vertex]))
+				# Get how much the robot had to turn
+				delta_angle = edge_angle - robot_heading
+				if delta_angle > 180:
+					delta_angle -= 360
+				if delta_angle < -180:
+					delta_angle += 360
+
+				# Save the end of this edge as the start of the next
+				vertex = next_vertex
+				robot_heading = edge_angle
+
+				# If the robot is outside of the reachable set
+				if not (min_turn_deg < delta_angle < max_turn_deg):
+					path_pass = False
+
+			# Append whether the path failed or passed
+			classification.append(path_pass)
+
+		return classification
+
+	def findAllPaths(self, source_index, goal_index, heading, min_turn_deg=-90, max_turn_deg=90, depth=100, max_traj=1000):
 		# Create a stack containing the source index and current path
 		stack = [(source_index, heading, [source_index])]
 		goal_paths = []
 
+		# Used to count the number of early stops
+		number_early_stop = 0
+
 		# Use DFS to explore all paths
 		while stack:
-			# Get the vertex and he path on top of the stack
+			# Get the vertex and the path on top of the stack
 			(vertex, robot_heading, path) = stack.pop()
 
-			# Dont consider paths greater
+			# Dont consider paths greater than certain depth
 			if len(path) > depth:
 				continue
 
 			# Get all the edges leading out of that vertex
 			edges = self.getEdgesConnectedToVertexFromAjMatrix(vertex)
 			# Removed for being super slow
-			#edges1 = self.getEdgesConnectedToVertex(self.V[vertex])
+			# edges1 = self.getEdgesConnectedToVertex(self.V[vertex])
 
 			# Make sure each of the edges is ordered correctly
 			for edge in edges:
@@ -227,6 +275,10 @@ class prm:
 					# Skip everything after this
 					continue
 
+				# Count the number of paths we stopped early
+
+
+
 				# Get the line heading
 				edge_angle = self.readLineHeadings(tuple([vertex, next_vertex]))
 				# Read it from the saved array rather than recalculating
@@ -239,7 +291,7 @@ class prm:
 				if delta_angle < -180:
 					delta_angle += 360
 
-				if min_turn <= delta_angle <= max_turn:
+				if min_turn_deg <= delta_angle <= max_turn_deg:
 					# If the next vertex is not the goal
 					if next_vertex != goal_index:
 						stack.append((next_vertex, edge_angle, path + [next_vertex]))
@@ -247,8 +299,11 @@ class prm:
 						goal_paths.append(path + [next_vertex])
 						if len(goal_paths) >= max_traj:
 							return goal_paths
+				else:
+					# Increment the count for how many possible trees we were able to stop searching
+					number_early_stop += 1
 
-		return goal_paths
+		return goal_paths, number_early_stop
 
 	def calculateLineHeading(self, edge):
 		# Get the x and y co-ordinates of each vertex
@@ -392,13 +447,21 @@ class prm:
 	def normalizeScores(self, scores):
 
 		if scores.shape[0] > 1:
+			# Get the minimum and maximum score for each of the metrics
 			min_scores = np.min(scores, axis=0)
-			# Reachability set coverage actually has a min of 0
-			min_scores[0] = 0
 			max_scores = np.max(scores, axis=0)
-			# Reachability set coverage actually has a max of 1
+
+			# Reachability set coverage actually has a min of 0 and max of 1
+			min_scores[0] = 0
 			max_scores[0] = 1
+
+			# Calculate the range
 			range = max_scores - min_scores
+
+			# If the range is 0 divide by 1 (this means that normalized score will be 0)
+			range[range == 0] = 1
+
+			# Normalize the scores
 			normalized_scores = (scores - min_scores) / range
 		else:
 			print("No scores to normalize")
@@ -429,7 +492,7 @@ class prm:
 
 		return edge_number
 
-	def getPlot(self, highlighted_paths=[], tsuffix="", color_map="jet_r", figure_size=(15, 13)):
+	def getPlot(self, highlighted_paths=[], path_class=[], tsuffix="", color_map="jet_r", figure_size=(15, 13)):
 
 		plt.figure(figsize=figure_size)
 
@@ -443,39 +506,44 @@ class prm:
 		plt.ylim([0, self.map.shape[0]-1])
 
 		# Check if we have added more than the start and end vertex
-		if len(self.V) > 2:
+		# Check if we have highlighted paths
+		if (len(self.V) > 2) and highlighted_paths == []:
 			# Print the random points and give them labels
 			plt.scatter(self.V[:, 0], self.V[:, 1], s=2)
 			labels = np.arange(len(self.V))
 			labels = [str(i) for i in labels]
 			for l in range(0, len(labels)):
-				plt.text(self.V[l, 0]+.03, self.V[l, 1]+.03, labels[l], fontsize=9)
+				plt.text(self.V[l, 0]+ .03, self.V[l, 1]+.03, labels[l], fontsize=9)
 
 
 			# Display the edges in the map
 			for edge in range(0, len(self.E)):
 				linex = [self.V[self.E[edge, 0], 0], self.V[self.E[edge, 1], 0]]
 				liney = [self.V[self.E[edge, 0], 1], self.V[self.E[edge, 1], 1]]
-				plt.plot(linex, liney, color='b', linestyle=":")
+				plt.plot(linex, liney, color='b', linestyle=":", linewidth=0.3)
 
-			# Highlight the paths in the map
-			i = 0
-			total_paths = len(highlighted_paths)
-			cmap = plt.get_cmap(color_map)
-			for path in highlighted_paths:
-				selected_color = cmap(float(i) / total_paths)
-				i += 1
+		# Highlight the paths in the map
+		i = 0
+		# total_paths = len(highlighted_paths)
+		# cmap = plt.get_cmap(color_map)
+		for path in highlighted_paths:
+			if path_class[i] == True:
+				selected_color = 'green'
+			else:
+				selected_color = 'red'
+			# selected_color = cmap(float(i) / total_paths)
+			i += 1
 
-				linex = []
-				liney = []
-				for v1, v2 in zip(path, path[1:]):
-					if len(linex) == 0:
-						linex = [self.V[v1, 0], self.V[v2, 0]]
-						liney = [self.V[v1, 1], self.V[v2, 1]]
-					else:
-						linex.append(self.V[v2, 0])
-						liney.append(self.V[v2, 1])
-				plt.plot(linex, liney, color=selected_color)
+			linex = []
+			liney = []
+			for v1, v2 in zip(path, path[1:]):
+				if len(linex) == 0:
+					linex = [self.V[v1, 0], self.V[v2, 0]]
+					liney = [self.V[v1, 1], self.V[v2, 1]]
+				else:
+					linex.append(self.V[v2, 0])
+					liney.append(self.V[v2, 1])
+			plt.plot(linex, liney, color=selected_color)
 
 		return plt
 
@@ -622,31 +690,45 @@ class prm:
 		# Return the map
 		return new_map
 
-	def plotTrajectories(self, selected_tests, total_plots=100, figure_size=(70, 70), tsuffix=""):
+	def plotTrajectories(self, selected_tests, path_class, path_scores, total_plots=100, figure_size=(70, 70), tsuffix=""):
+		# For use in plotting
+		tests = copy.deepcopy(list(selected_tests))
+
 		# Calculate the axis lengths
 		axis_length = int(round(math.sqrt(total_plots)))
 		total = axis_length**2
-
-		# Check if the total is less than the number of tests
-		if len(selected_tests) < total:
-			print("Not enough tests given appending blank tests")
-			while len(selected_tests) < total:
-				selected_tests.append=[0, 0]
 
 		# Create the figure
 		fig = plt.figure(figsize=figure_size)
 		axes = fig.subplots(nrows=axis_length+1, ncols=axis_length)
 		# Print Map
 		if len(tsuffix) >= 0:
-			fig.suptitle(t='Individual Trajectories - ' + str(tsuffix),
-						 fontsize=60)
+			fig.suptitle(t='Individual Trajectories (Sorted by Score) - ' + str(tsuffix),
+						 fontsize=54)
 		else:
-			fig.suptitle(t='Individual Trajectories',
-						 fontsize=60)
-		# Add some space above the plots
+			fig.suptitle(t='Individual Trajectories (Sorted by Score)',
+						 fontsize=54)
 
-		# Select and plot the tests
-		plotted_tests = np.random.choice(selected_tests, total, replace=False)
+		# Get the individual scores for the tests
+		path_scores = np.sum(path_scores, axis=1)
+		# Sort decending
+		sorted_indicies = (np.argsort(path_scores))[::-1]
+
+
+		# Select tests with the highest score
+		path_scores = list(np.array(path_scores)[sorted_indicies])
+		plotted_tests = list(np.array(tests)[sorted_indicies])
+		plotted_class = list(np.array(path_class)[sorted_indicies])
+
+		# Check if the total is less than the number of tests
+		if len(plotted_tests) < total:
+			print("Not enough tests given appending blank tests")
+			while len(plotted_tests) < total:
+				path_scores.append(6)
+				plotted_tests.append([0, 0])
+				plotted_class.append("False")
+
+		i = 0
 		for row in range(1, axis_length+1):
 			for col in range(0, axis_length):
 				# Make sure the first row is blank
@@ -655,7 +737,7 @@ class prm:
 					axes[row-1, col].set_ylim([0, self.map.shape[0] - 1])
 					axes[row-1, col].axis('off')
 				# Draw the path in the
-				path = plotted_tests[((row - 1) * axis_length) + col]
+				path = plotted_tests[i]
 				# Create the lines we are going to plot
 				linex = []
 				liney = []
@@ -668,11 +750,20 @@ class prm:
 						linex.append(self.V[v2, 0])
 						liney.append(self.V[v2, 1])
 
+				# Determine what class the path is
+				if plotted_class[i] == 1:
+					c = 'green'
+				else:
+					c = 'red'
+
 				# Plot the trajectory's
-				axes[row, col].plot(linex, liney, color='b', linewidth=5)
+				axes[row, col].plot(linex, liney, color=c, linewidth=5)
 				axes[row, col].set_xlim([0, self.map.shape[1] - 1])
 				axes[row, col].set_ylim([0, self.map.shape[0] - 1])
 				axes[row, col].axis('off')
+
+				# Increment i to get the next path
+				i += 1
 
 
 		return fig
@@ -687,11 +778,13 @@ class prm:
 
 	def selectTestsBasedOnCoverage(self, selected_tests):
 		# Keep track of which edges where visited
+		indices = []
 		edgesVisited = []
 		selected_paths = []
 		new_edges_count = []
 
 		# For each path in selected_tests
+		i = 0
 		for path in selected_tests:
 			edgeList = self.getEdgeListFromPath(path)
 			# For each edge
@@ -704,10 +797,13 @@ class prm:
 					firstTimeVists += 1
 
 			if firstTimeVists > 0:
+				indices.append(i)
 				selected_paths.append(path)
 				new_edges_count.append(firstTimeVists)
 
+			# Increment the indices
+			i += 1
 			#print("Path: " + str(path))
 			#print("Unvisited Edges In Path: " + str(firstTimeVists))
 
-		return selected_paths
+		return selected_paths, indices
