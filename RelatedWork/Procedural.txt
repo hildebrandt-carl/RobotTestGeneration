@@ -1,4 +1,0 @@
-This paper is about testing autonmous robot control algorithms. They generate scenarios and score them. Situations which show dangerous behaviour are flagged.
-In this paper they want to use procedural content generation to generate a wide range of diverse situations that have a high likelyhood of finding dangerous behaviour.
-They score each of the log files and allow humans to then select the log files with the highest score
-
