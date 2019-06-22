@@ -23,16 +23,16 @@ class GoalTester():
     self.goal_number = 0
 
     # Create an array of goal positions
-    self.goal_positions = [Vector3(0,0,10),
-                           Vector3(15,10,10),
-                           Vector3(35,-10,10),
-                           Vector3(55,10,10)]
+    self.goal_positions = [Vector3(4.0,-2.0,10),
+                           Vector3(19.36236951376521,-4.5928347890067585,10),
+                           Vector3(30.579011065124746,-11.457877703236363,10),
+                           Vector3(38.16060852511661,-25.130029532083878,10)]
 
     # Init the drone position
     self.drone_pos = Vector3(0, 0, 0)
 
     # The distance which a goal is accepted
-    self.acceptance_distance = 2
+    self.acceptance_distance = 1
 
     # Run the communication node
     self.ControlLoop()
@@ -51,16 +51,16 @@ class GoalTester():
       # Check if we have listed enough goals
       if self.goal_number <= len(self.goal_positions):
 
+        # Publish the goal
+        current_goal = self.goal_positions[self.goal_number]
+        self.goal_pub.publish(current_goal)
+
         # Calculated the distance to the goal
         distance_to_goal = self.distance(current_goal, self.drone_pos)
         print("Current Goal: x-" + str(current_goal.x) + "  y-" + str(current_goal.y) + "  z-" + str(current_goal.z))
         print("Current Pos : x-" + str(self.drone_pos.x) + "  y-" + str(self.drone_pos.y) + "  z-" + str(self.drone_pos.z))
         print("Distance: " + str(distance_to_goal))
         print("----------------------------")
-
-        # Publish the goal
-        current_goal = self.goal_positions[self.goal_number]
-        self.goal_pub.publish(current_goal)
       
         if distance_to_goal < self.acceptance_distance:
           self.goal_number += 1
