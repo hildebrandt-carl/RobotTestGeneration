@@ -111,11 +111,3 @@ def wallsToUnityFile(walls, waypoints, savename="default", raining=False, day=Tr
 	file.write("D: (" + str(int(day)) + ")\n")
 
 	file.close()
-
-
-# Note +ve X is north
-# Note +ve Y is West
-# x1, y1, x2, y2, z
-W: (-10,50,90,50,3)
-
-# x, y, height

@@ -16,7 +16,7 @@ robot_heading = 0
 robot_max_turn = 30
 robot_min_turn = -30
 delta_angle = 5
-plotting = True
+plotting = False
 plot_maps = False
 
 # Save location
