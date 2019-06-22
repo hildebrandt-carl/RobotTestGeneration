@@ -51,8 +51,8 @@ public class LoadEnvironment : MonoBehaviour
 						string[] w_loc = Regex.Split(Value, @",");
 
 						// Get the two points of the wall
-						Vector3 Pos1 = new Vector3(float.Parse(w_loc[0]), 0, float.Parse(w_loc[1])) ;
-						Vector3 Pos2 = new Vector3(float.Parse(w_loc[2]), 0, float.Parse(w_loc[3])) ;
+						Vector3 Pos1 = new Vector3(float.Parse(w_loc[1]), 0, float.Parse(w_loc[0])) ;
+						Vector3 Pos2 = new Vector3(float.Parse(w_loc[3]), 0, float.Parse(w_loc[2])) ;
 
 						// Caclulate the center of the wall
 						Vector3 centerPosition = (Pos1 + Pos2)/2 ;
@@ -88,7 +88,7 @@ public class LoadEnvironment : MonoBehaviour
 						float x = float.Parse(g_loc[0]) ;
 						float y = float.Parse(g_loc[1]) ;
 						float h = float.Parse(g_loc[2]) ;
-						Vector3 pos = new Vector3(x, h, y) ;
+						Vector3 pos = new Vector3(y, h, x) ;
 
 						// Instantiate the goal
 						Instantiate(goalObject, pos, Quaternion.identity);
