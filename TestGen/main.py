@@ -10,8 +10,8 @@ from scipy.spatial import ConvexHull
 import random
 
 # Robot start and end locations
-r_start = [1, 8]
-r_end = [19, 8]
+r_start = [1, 13]
+r_end = [24, 13]
 robot_heading = 0
 robot_max_turn = 30
 robot_min_turn = -30
