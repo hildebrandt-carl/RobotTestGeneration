@@ -18,4 +18,7 @@
   <node pkg="flightcontroller" type="navigation.py" name="goal_tester_node" output="screen">
   </node>
 
+  <node pkg="flightcontroller" type="performance_analyzer.py" name="performance_tester_node" output="screen">
+  </node>
+
 </launch>
