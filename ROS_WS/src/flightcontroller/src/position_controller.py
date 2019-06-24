@@ -62,8 +62,19 @@ class PositionController():
     while not rospy.is_shutdown():
 
       # Use a PID to calculate the velocity you want
-      x_vel = self.pos_x_PID.get_output(self.x_setpoint, self.x_pos)
-      y_vel = self.pos_y_PID.get_output(self.y_setpoint, self.y_pos)
+      x_proportion = self.pos_x_PID.get_output(self.x_setpoint, self.x_pos)
+      y_proportion = self.pos_y_PID.get_output(self.y_setpoint, self.y_pos)
+
+      total = abs(x_proportion) + abs(y_proportion)
+      if total == 0:
+        total = 1
+
+      velocity_total = 10.0 # m/s
+
+      x_vel = velocity_total * (x_proportion/total) 
+      y_vel = velocity_total * (y_proportion/total) 
+
+
       z_vel = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
 
       # Create and publish the data

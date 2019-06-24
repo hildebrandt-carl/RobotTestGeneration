@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 import rospy
 import math
+import time
+import re
+
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
@@ -19,23 +22,57 @@ class GoalTester():
     # Variable to set the rate
     self.rate = 2
 
+    # File location of the goals
+    file_location = "/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build/unity_corridor.txt"
+
     # Create a goal number
     self.goal_number = 0
-
-    # Create an array of goal positions
-    self.goal_positions = [Vector3(4.0,-2.0,10),
-                           Vector3(19.36236951376521,-4.5928347890067585,10),
-                           Vector3(30.579011065124746,-11.457877703236363,10),
-                           Vector3(38.16060852511661,-25.130029532083878,10)]
 
     # Init the drone position
     self.drone_pos = Vector3(0, 0, 0)
 
+    # Init the goal positions
+    self.goal_positions = []
+
     # The distance which a goal is accepted
-    self.acceptance_distance = 1
+    self.acceptance_distance = 10
+
+    # Load the goal positions
+    self.LoadGoalPositions(file_location)
+
+    # Sleep to make sure the robot is ready to go
+    time.sleep(5)
 
     # Run the communication node
     self.ControlLoop()
+
+
+  # This loads the goals positions from a file
+  def LoadGoalPositions(self, filename):
+    # Load the file and save the data
+    with open(filename, "r") as f:
+      filedata = f.readlines()
+    
+    # For each line in the data
+    for line in filedata:
+      # Get the first character
+      initial_char = line[0]
+      # If the first character is a G save the location
+      if initial_char == "G":
+        # Get the goal locations
+        result = re.search('[(](.*)[)]', line)
+        goal_string = result.group(0)
+
+        # Remove the first character '(' an last charcter ')' from the strong
+        goal_string = goal_string[1:-1]
+
+        # Get the goal positions
+        goals = goal_string.split(',')
+
+        # Add the goals to the final goal array (Y is inverted)
+        self.goal_positions.append(Vector3(x=float(goals[0]), 
+                                           y=-1*float(goals[1]),
+                                           z=float(goals[2])))
 
 
   # This is the main loop of this class
@@ -49,10 +86,11 @@ class GoalTester():
     # While running
     while not rospy.is_shutdown():
       # Check if we have listed enough goals
-      if self.goal_number <= len(self.goal_positions):
+      if self.goal_number < len(self.goal_positions):
 
         # Publish the goal
         current_goal = self.goal_positions[self.goal_number]
+        print(current_goal)
         self.goal_pub.publish(current_goal)
 
         # Calculated the distance to the goal
