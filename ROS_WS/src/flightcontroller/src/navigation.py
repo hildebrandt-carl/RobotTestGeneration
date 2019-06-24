@@ -90,7 +90,6 @@ class GoalTester():
 
         # Publish the goal
         current_goal = self.goal_positions[self.goal_number]
-        print(current_goal)
         self.goal_pub.publish(current_goal)
 
         # Calculated the distance to the goal

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import math
+import time
 
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
@@ -34,6 +35,9 @@ class PerformanceTester():
     self.goal_position = Vector3(0, 0, 0)
     self.goal_counter = 0
 
+    # Used to record the time between goals:
+    self.start_time = time.time()
+
     # Run the communication node
     self.ProcessLoop()
 
@@ -49,8 +53,7 @@ class PerformanceTester():
     while not rospy.is_shutdown():
       # Report the distance to the goal
       distance = self.calculate_distance(self.goal_position, self.drone_pos)
-      self.filehandler.write("Goal Counter: " + str(self.goal_counter) + "\n")
-      self.filehandler.write("Distance to Goal: " + str(distance) + "\n")
+      self.filehandler.write("Distance to Goal " + str(self.goal_counter) + ":" + str(distance) + "\n")
 
       # Sleep any excress time
       rate.sleep()
@@ -74,10 +77,15 @@ class PerformanceTester():
 
     # Check if the goal has changed
     if self.goal_position != new_goal_position:
+      # Update the time to get to that goal
+      end_time = time.time()
+      self.filehandler.write("Time between goals: " + str(end_time - self.start_time) + "\n")
       # Update the number of goals gone through
       self.goal_counter += 1
       # Save the new goal position
       self.goal_position = new_goal_position
+      # Reset the time between goals
+      self.start_time = time.time()
     
   # Return the distance between two Vector3 points
   def calculate_distance(self, pos1, pos2):
