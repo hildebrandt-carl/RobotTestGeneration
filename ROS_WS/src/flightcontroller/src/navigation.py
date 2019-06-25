@@ -22,8 +22,17 @@ class GoalTester():
     # Variable to set the rate
     self.rate = 2
 
+    # Getting the load file parameters
+    test_location = rospy.get_param("goal_tester_node/test_location")
+    test_name = rospy.get_param("goal_tester_node/test_name")
+
+    # Display incoming parameters
+    rospy.loginfo(str(rospy.get_name()) + ": Lauching with the following parameters:")
+    rospy.loginfo(str(rospy.get_name()) + ": test_location - " + str(test_location))
+    rospy.loginfo(str(rospy.get_name()) + ": test_name - " + str(test_name))
+
     # File location of the goals
-    file_location = "/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build/unity_corridor.txt"
+    file_location = test_location + "/" + test_name
 
     # Create a goal number
     self.goal_number = 0

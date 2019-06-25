@@ -21,8 +21,19 @@ class PerformanceTester():
     # Variable to set the rate
     self.rate = 2
 
+    # Getting the save file parameters
+    save_location = rospy.get_param("performance_tester_node/save_location")
+    save_name = rospy.get_param("performance_tester_node/save_name")
+
+    # Display incoming parameters
+    rospy.loginfo(str(rospy.get_name()) + ": Lauching with the following parameters:")
+    rospy.loginfo(str(rospy.get_name()) + ": save_location - " + str(save_location))
+    rospy.loginfo(str(rospy.get_name()) + ": save_name - " + str(save_name))
+
+    # File location of the goals
+    file_location = save_location + "/" + save_name
+
     # Open a file writer to save the information
-    file_location = "/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build/performance.txt"
     self.filehandler = open(file_location, "w") 
     
     # Create a collision number

@@ -16,9 +16,13 @@
 
 
   <node pkg="flightcontroller" type="navigation.py" name="goal_tester_node" output="screen">
+    <param name="test_location" type="string" value="/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build"/>
+    <param name="test_name" type="string" value="test.txt" />
   </node>
 
   <node pkg="flightcontroller" type="performance_analyzer.py" name="performance_tester_node" output="screen">
+    <param name="save_location" type="string" value="/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build"/>
+    <param name="save_name" type="string" value="performance.txt" />
   </node>
 
 </launch>
