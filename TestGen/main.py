@@ -13,14 +13,14 @@ import random
 r_start = [1, 13]
 r_end = [24, 13]
 robot_heading = 0
-robot_max_turn = 30
-robot_min_turn = -30
-delta_angle = 5
+robot_max_turn = 179
+robot_min_turn = -179
+delta_angle = 0
 plotting = False
 plot_maps = False
 
 # Save location
-save_path = "Results/TestGen/run1/"
+save_path = "Results/TestGen/run2/"
 if not os.path.isdir(save_path):
     os.makedirs(save_path)
 
@@ -51,10 +51,10 @@ print("UPDATE: Populating Trajectory Graph")
 p = prm(map_in=our_map,
         start_pos=r_start,
         end_pos=r_end)
-p.findValidPositions(num_vertices=600,
+p.findValidPositions(num_vertices=250,
                      wall_thresh=0.25)
-p.plan(max_distance=4,
-       min_distance=3)
+p.plan(max_distance=5,
+       min_distance=4)
 
 if plotting:
     # Show the map after the prm construction phase
@@ -72,7 +72,7 @@ all_paths, early_stops = p.findAllPaths(source_index=0,
                                         heading=robot_heading,
                                         min_turn_deg=robot_min_turn - delta_angle,
                                         max_turn_deg=robot_max_turn + delta_angle,
-                                        depth=15,
+                                        depth=8,
                                         max_traj=200000)
 
 print("DATA: Total unique paths found: " + str(len(all_paths)))
@@ -392,6 +392,9 @@ for path in randomly_selected_tests:
                      raining=False,
                      day=True)
 
+    plt.close("all")
+
+
 # Create the maps for the final tests
 path_i = -1
 for path in final_tests:
@@ -457,4 +460,5 @@ for path in final_tests:
                      raining=False,
                      day=True)
 
+    plt.close("all")
 print("Process Completed")
