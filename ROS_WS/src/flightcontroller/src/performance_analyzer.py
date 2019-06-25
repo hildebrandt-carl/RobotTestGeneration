@@ -53,7 +53,7 @@ class PerformanceTester():
     while not rospy.is_shutdown():
       # Report the distance to the goal
       distance = self.calculate_distance(self.goal_position, self.drone_pos)
-      self.filehandler.write("Distance to Goal " + str(self.goal_counter) + ":" + str(distance) + "\n")
+      self.filehandler.write("Distance to Goal " + str(self.goal_counter) + ": " + str(distance) + "\n")
 
       # Sleep any excress time
       rate.sleep()
