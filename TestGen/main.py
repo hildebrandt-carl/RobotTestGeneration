@@ -1,41 +1,64 @@
 import csv
-import math
 import os
 from PRM import prm
-from ConversionUtils import *
 import numpy as np
-from Radar import get_radar
 import matplotlib.pyplot as plt
-from scipy.spatial import ConvexHull
-import random
+from Trajectory import Trajectory
+from TrajectoryManager import TrajectoryManager
+from FigureManager import FigureManager
+from EquivalenceChecker import EquivalenceChecker
+from UnityConverter import UnityConverter
 
-# Robot start and end locations
-r_start = [1, 13]
-r_end = [24, 13]
-robot_heading = 0
-robot_max_turn = 179
-robot_min_turn = -179
-delta_angle = 0
-plotting = False
-plot_maps = False
+# Flags
+plotting = True
+plot_maps = True
 
-# Save location
-save_path = "Results/TestGen/run2/"
-if not os.path.isdir(save_path):
-    os.makedirs(save_path)
+# Save locations
+save_path = "Results/TestGen/run10/"
 
-# Create the directory where the maps will be saved
-maps_save_path = save_path + "maps/"
-if not os.path.isdir(maps_save_path):
-    os.makedirs(maps_save_path)
-
-# The original map
+# Load a map file
 map_name = "map1.csv"
 
-# Load the map file
-filename = "maps/" + str(map_name)
+# Robot start and end locations
+robot_kinematics = {"max_turn": 30,
+                    "min_turn": -30,
+                    "max_velocity": 5,
+                    "min_velocity": 1}
 
+# Test initial conditions
+initial_conditions = {"map_x_bounds": [0, 25],
+                      "map_y_bounds": [0, 25],
+                      "start_point": [1, 13],
+                      "end_point": [24, 13],
+                      "robot_heading": 0,
+                      "unity_bounds": [100, 100]}
+
+# Specified by the tester
+human_specified_factors = {"epsilon_angle": 2.5,
+                           "epsilon_velocity": 1,
+                           "epsilon_class_equivalence": 1,
+                           "selected_per_class": 10}
+
+# Used to limit our search
+traj_search_conditions = {"number_nodes": 200,
+                          "max_trajectories": 3000,
+                          "search_depth": 15}
+
+# Give the trajectory class the correct bounds
+Trajectory.x_range = {"lower": initial_conditions["map_x_bounds"][0],
+                      "upper": initial_conditions["map_x_bounds"][1]}
+Trajectory.y_range = {"lower": initial_conditions["map_y_bounds"][0],
+                      "upper": initial_conditions["map_y_bounds"][1]}
+
+# Create the Figure manager
+fig_manager = FigureManager(save_path)
+
+# Make sure the directory we want to save our files in is created
+fig_manager.create_directory()
+
+# Load the map file
 print("UPDATE: Loading Map - " + str(map_name))
+filename = "maps/" + str(map_name)
 
 with open(filename, 'r') as f:
     reader = csv.reader(f, delimiter=',')
@@ -48,417 +71,172 @@ with open(filename, 'r') as f:
 
 # Generate the prm map
 print("UPDATE: Populating Trajectory Graph")
+# Create the PRM object
 p = prm(map_in=our_map,
-        start_pos=r_start,
-        end_pos=r_end)
-p.findValidPositions(num_vertices=250,
+        start_pos=initial_conditions["start_point"],
+        end_pos=initial_conditions["end_point"])
+
+# Find valid positions for waypoints
+p.findValidPositions(num_vertices=traj_search_conditions["number_nodes"],
                      wall_thresh=0.25)
-p.plan(max_distance=5,
-       min_distance=4)
+
+# Connect waypoints
+p.plan(max_distance=robot_kinematics["max_velocity"],
+       min_distance=robot_kinematics["min_velocity"])
 
 if plotting:
     # Show the map after the prm construction phase
     print("UPDATE: Displaying Map")
     map_plt = p.getPlot(tsuffix="Graph",
                         figure_size=(10, 10))
-    map_plt.savefig(save_path + str('00-original_map.png'))
-    map_plt.show()
+
+    # Display the figure
+    fig_manager.display_and_save(fig=map_plt,
+                                 save_name='original_map')
 
 
 print("UPDATE: Finding Possible Paths")
-# Find all paths from vertex (0) with robot heading = 0
-all_paths, early_stops = p.findAllPaths(source_index=0,
-                                        goal_index=1,
-                                        heading=robot_heading,
-                                        min_turn_deg=robot_min_turn - delta_angle,
-                                        max_turn_deg=robot_max_turn + delta_angle,
-                                        depth=8,
-                                        max_traj=200000)
+# Find all paths between start and end position
+all_paths = p.findAllPaths(heading=initial_conditions["robot_heading"],
+                           min_turn_deg=robot_kinematics["min_turn"] - human_specified_factors["epsilon_angle"],
+                           max_turn_deg=robot_kinematics["max_turn"] + human_specified_factors["epsilon_angle"],
+                           depth=traj_search_conditions["search_depth"],
+                           max_traj=traj_search_conditions["max_trajectories"])
 
+# Assert that we have found some paths
+assert(len(all_paths) > 0)
 print("DATA: Total unique paths found: " + str(len(all_paths)))
-print("DATA: Early stopping count: " + str(early_stops))
 
-
+# Classify if the tests pass or fail
 print("UPDATE: Classifying each path into fail or pass test")
-path_class = p.classifyPathsReachability(paths=all_paths,
-                                         source_index=0,
-                                         heading=robot_heading,
-                                         min_turn_deg=robot_min_turn,
-                                         max_turn_deg=robot_max_turn,
-                                         delta=delta_angle)
+for path in all_paths:
+    path.check_if_passing(max_turn=robot_kinematics["max_turn"],
+                          min_turn=robot_kinematics["min_turn"])
 
-print("DATA: Total paths which are passable: " + str(path_class.count(True)))
-print("DATA: Total paths which should fail: " + str(path_class.count(False)))
+# Count the number of tests which are passable
+print("UPDATE: Checking how many tests can pass and fail")
+passing_test_count = 0
+for path in all_paths:
+    if path.get_passing():
+        passing_test_count += 1
+print("DATA: Total paths which are passable: " + str(passing_test_count))
+print("DATA: Total paths which should fail: " + str(len(all_paths) - passing_test_count))
 
-if len(all_paths) <= 0:
-    exit()
+# Create a scorer class and score the trajectories
+manager = TrajectoryManager(kinematics=robot_kinematics)
+scorer_success = manager.calculate_score(trajectories=all_paths)
 
-# Score each of the paths
-print("UPDATE: Scoring Each Path")
-scores = p.scoreAllPaths(paths=all_paths,
-                         source_index=0,
-                         heading=robot_heading,
-                         min_turn=robot_min_turn,
-                         max_turn=robot_max_turn,
-                         coverage_segments=20)
+# Make sure all trajectories have scores
+assert(scorer_success == 1)
 
-print("UPDATE: Normalizing Scores")
-scores = p.normalizeScores(scores)
+# Sort the trajectories based on score
+all_paths = manager.sort_by_score(trajectories=all_paths)
 
 if plotting:
     # Display the trajectories
-    print("UPDATE: Displaying Trajectories")
-    path_plot = p.getPlot(highlighted_paths=all_paths,
-                          path_class=path_class,
-                          tsuffix="Possible Trajectories",
-                          figure_size=(10, 10),
-                          color_map='jet_r')
-    path_plot.savefig(save_path + str('01-all_paths.png'))
-    path_plot.show()
-
+    print("UPDATE: Displaying Trajectories Over Each Other")
+    path_plot = fig_manager.plot_allpaths(trajectories=all_paths,
+                                      tsuffix="Possible Trajectories",
+                                      figure_size=(10, 10))
+    # Display the figure
+    fig_manager.display_and_save(fig=path_plot,
+                                 save_name='all_paths')
 
 if plotting:
-    # Display the scores
-    print("UPDATE: Displaying Scores")
-    labels = ['Reachability Set Coverage',
-              'Average\nSegment\nLength',
-              'Segment\nLength\nVariance',
-              'Heading Variance',
-              'Path\nLength',
-              'Number\nTurns']
-    title = "Path Comparison"
-    radar_plt = get_radar(case_data=scores,
-                          title="Path Comparison",
-                          spoke_labels=labels,
-                          color_map='jet_r')
-    radar_plt.savefig(save_path + str('02-all_paths_score.png'))
-    radar_plt.show()
+    # Get the scores
+    scores = manager.get_all_scores(trajectories=all_paths)
+
+    # Create the plot
+    print("UPDATE: Displaying the scores")
+    score_plt = fig_manager.plot_scores(score_array=scores)
+
+    # Display the figure
+    fig_manager.display_and_save(fig=plt,
+                                 save_name='scores_graph')
 
 
-# This will calculate the convex hull of the score
-# Convex hell takes in of the shape (#points, #values)
-print("UPDATE: Calculating Convex Hull")
-hull = ConvexHull(scores)
+# Group the trajectories into different classes
+grouper = EquivalenceChecker(epsilon=human_specified_factors["epsilon_class_equivalence"])
+total_classes = grouper.find_equivalence(all_paths)
 
-# This goes through each points along the hull
-print("UPDATE: Selecting Tests")
-testsAlongHull = []
-for simplex in hull.simplices:
-    # Simplex is an array which contains the vertices forming a face of the convex hull
-    testsAlongHull.extend(list(simplex))
-
-# Get the unique set of tests selected
-selected_tests_indices = list(set(testsAlongHull))
-print("DATA: Total Tests Found: " + str(len(scores)))
-print("DATA: Total Tests Selected: " + str(len(selected_tests_indices)))
-
-# Get the list of selected paths, scores and classifications
-selected_tests = np.array(all_paths)[selected_tests_indices]
-selected_scores = scores[selected_tests_indices, :]
-selected_classification = np.array(path_class)[selected_tests_indices]
-
-# Get the list of unselected paths, scores and unselected tests
-all_paths_indices = np.arange(len(all_paths))
-not_selected_indices = all_paths_indices[~np.isin(all_paths_indices, selected_tests_indices)]
-not_selected_tests = np.array(all_paths)[not_selected_indices]
-not_selected_scores = scores[not_selected_indices, :]
-not_selected_classifcation = np.array(path_class)[not_selected_indices]
-
-# Generate a list of random indices the same length as selected indices
-total_selected_tests = len(selected_tests_indices)
-randomly_selected_tests_indices = random.sample(population=list(all_paths_indices),
-                                                k=total_selected_tests)
-# Get the randomly selected paths
-print("UPDATE: Randomly Selecting Tests")
-print("UPDATE: Total Randomly Selected Tests: " + str(len(randomly_selected_tests_indices)))
-randomly_selected_tests = np.array(all_paths)[randomly_selected_tests_indices]
-randomly_selected_scores = scores[randomly_selected_tests_indices, :]
-randomly_selected_classification = np.array(path_class)[randomly_selected_tests_indices]
-
-
-print("UPDATE: Updating Tests")
-# Calculate some base differences
-metric_lab = ['Reachability Set Coverage\t',
-              'Average Segment Length\t\t',
-              'Segment Length Variance\t\t',
-              'Heading Variance \t\t\t',
-              'Path Length\t\t\t\t\t',
-              'Number Turns \t\t\t\t']
-print("---------------------------------------------------------")
-for i in range(0, 6):
-    average_selected = np.average(selected_scores[:, i])
-    average_rejected = np.average(not_selected_scores[:, i])
-    variance_selected = np.var(selected_scores[:, i])
-    variance_rejected = np.var(not_selected_scores[:, i])
-    print("Data: Average: " + metric_lab[i] + "\t[Selected Tests]: " + str(average_selected))
-    print("Data: Variance: " + metric_lab[i] + "\t[Selected Tests]: " + str(variance_selected))
-    print("Data: Average: " + metric_lab[i] + "[Not Selected Tests]: " + str(average_rejected))
-    print("Data: Variance: " + metric_lab[i] + "[Not Selected Tests]: " + str(variance_rejected))
-    print()
-print("---------------------------------------------------------")
-
-# Display the selected graphs
-if plotting:
-    print("UPDATE: Displaying Selected Paths")
-    path_plot = p.getPlot(highlighted_paths=selected_tests,
-                          path_class=selected_classification,
-                          tsuffix="Selected",
-                          color_map='jet_r',
-                          figure_size=(10, 10))
-    path_plot.savefig(save_path + str('03-selected_paths.png'))
-    path_plot.show()
-
-
-# Display the randomly selected paths
-if plotting:
-    print("UPDATE: Displaying Selected Randomly Paths")
-    path_plot = p.getPlot(highlighted_paths=randomly_selected_tests,
-                          path_class=randomly_selected_classification,
-                          tsuffix="Randomly Selected",
-                          color_map='jet_r',
-                          figure_size=(10, 10))
-    path_plot.savefig(save_path + str('04-randomly_selected_paths.png'))
-    path_plot.show()
-
+print("DATA: Total classes: " + str(total_classes))
 
 if plotting:
-    # Show the score selection for the selected scores
-    print("UPDATE: Displaying Scores Selected Tests")
-    radar_plt = get_radar(case_data=selected_scores,
-                          title="Selected - Path Comparison",
-                          spoke_labels=labels,
-                          color_map='jet_r')
-    radar_plt.savefig(save_path + str('05-selected_paths_score.png'))
-    radar_plt.show()
+    # Display the classes
+    classes = manager.get_all_classes(trajectories=all_paths)
 
+    # Plot the class histogram
+    print("UPDATE: Displaying the scores")
+    class_plt = fig_manager.plot_class_histogram(class_array=classes)
 
-if plotting:
-    # Show the display the not selected graphs
-    print("UPDATE: Displaying Not Selected Paths")
-    path_plot = p.getPlot(highlighted_paths=not_selected_tests,
-                          path_class=not_selected_classifcation,
-                          tsuffix="Not Selected",
-                          color_map='jet_r',
-                          figure_size=(10, 10))
-    path_plot.savefig(save_path + str('06-not_selected_paths.png'))
-    path_plot.show()
+    # Display the figure
+    fig_manager.display_and_save(fig=class_plt,
+                                 save_name='class_count')
 
+# Get the final path selection
+final_paths = manager.sort_by_class_and_score(trajectories=all_paths)
 
 if plotting:
-    # Show the scores graph for the not selected scores
-    print("UPDATE: Displaying Scores Of Not Selected Tests")
-    radar_plt = get_radar(case_data=not_selected_scores,
-                          title="Not Selected - Path Comparison",
-                          spoke_labels=labels,
-                          color_map='jet_r')
-    radar_plt.savefig(save_path + str('07-not_selected_paths_score.png'))
-    radar_plt.show()
+    # Plot the trajectories by class
+    y_size = human_specified_factors["selected_per_class"] * 2
+    class_plt = fig_manager.plot_trajectories_by_class(trajectories_with_class=final_paths,
+                                                       number_per_class=human_specified_factors["selected_per_class"],
+                                                       tsuffix="",
+                                                       figure_size=(total_classes, y_size))
+
+    # Display the figure
+    fig_manager.display_and_save(fig=class_plt,
+                                 save_name='class_trajs')
+
+# Create the converter class
+x_bound = initial_conditions["map_x_bounds"][1]
+y_bound = initial_conditions["map_y_bounds"][1]
+converter = UnityConverter(test_dimensions=[x_bound, y_bound],
+                           unity_dimensions=initial_conditions["unity_bounds"])
 
 
-if plotting:
-    # Plot all the individual paths
-    print("UPDATE: Displaying Selected Paths Individually")
-    total_images = (math.ceil(math.sqrt(len(selected_tests)))) ** 2
-    selectedpathplot = p.plotTrajectories(selected_tests=selected_tests,
-                                          path_class=selected_classification,
-                                          path_scores=selected_scores,
-                                          total_plots=total_images,
-                                          figure_size=(25, 25),
-                                          tsuffix="Selected")
-    selectedpathplot.savefig(save_path + str('08-selected_paths_ind.png'))
-    selectedpathplot.show()
+print("UPDATE: Saving the tests to the correct folder")
+# For each test save the test into the correct class folder
+for class_key in final_paths:
+    # Used to keep track of the test counter
+    test_counter = 0
 
-if plotting:
-    # Plot all the randomly selected paths individualy
-    print("UPDATE: Displaying Randomly Selected Paths Individually")
-    total_images = (math.ceil(math.sqrt(len(randomly_selected_tests)))) ** 2
-    selectedpathplot = p.plotTrajectories(selected_tests=randomly_selected_tests,
-                                          path_class=randomly_selected_classification,
-                                          path_scores=randomly_selected_scores,
-                                          total_plots=total_images,
-                                          figure_size=(25, 25),
-                                          tsuffix="Randomly Selected")
-    selectedpathplot.savefig(save_path + str('09-randomly_selected_paths_ind.png'))
-    selectedpathplot.show()
+    # For each trajectory in that class
+    for i in range(0, human_specified_factors["selected_per_class"]):
 
+        # If there are enough trajectories in that class
+        if len(final_paths[class_key]) <= i:
+            continue
 
-if plotting:
-    # Randomly select 100 tests from the not selected tests and plot them individually
-    print("UPDATE: Displaying Not Selected Paths Individually")
-    total_images = (math.ceil(math.sqrt(len(not_selected_tests)))) ** 2
-    notselectedpathplot = p.plotTrajectories(selected_tests=not_selected_tests,
-                                             path_class=not_selected_classifcation,
-                                             path_scores=not_selected_scores,
-                                             total_plots=total_images,
-                                             figure_size=(25, 25),
-                                             tsuffix="Not Selected")
-    notselectedpathplot.savefig(save_path + str('10-not_selected_paths_ind.png'))
-    notselectedpathplot.show()
+        # Get the trajectory
+        traj = final_paths[class_key][i]
 
+        # Create the save location
+        save_location = "maps/" + str(class_key) + "/test" + str(test_counter) + "/"
 
-# Selecting tests based on edge coverage
-print("UPDATE: Finding Tests Based on Coverage")
-final_tests, indices = p.selectTestsBasedOnCoverage(selected_tests=selected_tests)
-final_scores = list(np.array(selected_scores[indices]))
-final_classification = list(np.array(selected_classification[indices]))
-print("DATA: Total tests selected: " + str(len(final_tests)))
-print("DATA: Total tests which are passable: " + str(final_classification.count(True)))
-print("DATA: Total tests which should fail: " + str(final_classification.count(False)))
+        # Make sure this location has been created
+        if not os.path.isdir(save_path + save_location):
+            # If not create it
+            os.makedirs(save_path + save_location)
 
-print("UPDATE: Displaying Final Paths")
-path_plot = p.getPlot(highlighted_paths=final_tests,
-                      path_class=final_classification,
-                      tsuffix="Final Paths",
-                      color_map='jet_r',
-                      figure_size=(10, 10))
-path_plot.savefig(save_path + str('11-final_tests.png'))
-path_plot.show()
+        # Convert a trajectory into unity waypoints
+        unity_waypoints = converter.scale_to_unity(trajectory=traj)
+        wall_segments = converter.corridor_generator(unity_waypoints, corridor_gap=10)
 
-# Display the final test cases found
-print("UPDATE: Displaying Finally Selected Trajectories")
-# Calculate the total number of images we want
-total_images = (math.ceil(math.sqrt(len(final_tests))))**2
-finalselectedtestsplot = p.plotTrajectories(selected_tests=final_tests,
-                                            path_class=final_classification,
-                                            path_scores=final_scores,
-                                            total_plots=total_images,
-                                            figure_size=(25, 25),
-                                            tsuffix="Final Paths")
-finalselectedtestsplot.savefig(save_path + str('12-final_tests_ind.png'))
-finalselectedtestsplot.show()
+        if plotting:
+            corridor_plt = fig_manager.plot_corridor(waypoints=unity_waypoints,
+                                                     wall_segments=wall_segments,
+                                                     unity_dimensions=initial_conditions["unity_bounds"])
+            # Display the figure
+            fig_manager.display_and_save(fig=corridor_plt,
+                                         save_name=str("corridor_plot"),
+                                         save_directory=save_location,
+                                         only_save=True)
 
-# Create the randomly selected tests
-path_i = -1
-for path in randomly_selected_tests:
-    # Increment the path counter
-    path_i += 1
+            # Save the test to a unity file
+            converter.unity_text_file(waypoints=unity_waypoints,
+                                      corridor=wall_segments,
+                                      save_location=save_path + save_location)
 
-    # Create the map directory
-    map_folder = "random/maps" + str(path_i) + "/"
-    map_full_path = maps_save_path + map_folder
-    if not os.path.isdir(map_full_path):
-        os.makedirs(map_full_path)
-
-    # Get the waypoints in the path
-    waypoints = p.getWaypointsFromPath(path)
-    # Create a window map from the trajectory
-    window_test = p.windowMapFromWaypoints(waypoints=waypoints,
-                                           window_gap=2,
-                                           min_wall_distance=2)
-    # Create a corridor map from the trajectory
-    corridor_test = p.corridorMapFromWaypoints(waypoints=waypoints,
-                                               corridor_gap=2)
-
-    # Show the window map
-    plt.imshow(window_test, cmap='binary')
-    plt.scatter(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1])
-    plt.plot(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1], color='red')
-    plt.xlim([0, window_test.shape[1] - 1])
-    plt.ylim([0, window_test.shape[0] - 1])
-    plt.savefig(map_full_path + str('window_test.png'))
-    if plot_maps:
-        plt.show()
-
-    # Show the corridor map
-    plt.imshow(corridor_test, cmap='binary')
-    plt.scatter(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1])
-    plt.plot(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1], color='red')
-    plt.xlim([0, corridor_test.shape[1] - 1])
-    plt.ylim([0, corridor_test.shape[0] - 1])
-    plt.savefig(map_full_path + str('corridor_test.png'))
-    if plot_maps:
-        plt.show()
-
-    # Convert the map to a set of walls
-    walls_window, ww_fig = pythonMaptoWalls(map=window_test,
-                                            distance_threshold=1)
-    if plot_maps:
-        ww_fig.show()
-
-    walls_corridor, wc_fig = pythonMaptoWalls(map=corridor_test,
-                                              distance_threshold=1)
-    if plot_maps:
-        wc_fig.show()
-
-    # Save this as a unity readable file
-    wallsToUnityFile(walls=walls_window,
-                     waypoints=waypoints,
-                     savename=map_full_path + str("unity_wall"),
-                     raining=False,
-                     day=True)
-    wallsToUnityFile(walls=walls_corridor,
-                     waypoints=waypoints,
-                     savename=map_full_path + str("unity_corridor"),
-                     raining=False,
-                     day=True)
-
-    plt.close("all")
-
-
-# Create the maps for the final tests
-path_i = -1
-for path in final_tests:
-    # Increment the path counter
-    path_i += 1
-
-    # Create the map directory
-    map_folder = "selected/maps" + str(path_i) + "/"
-    map_full_path = maps_save_path + map_folder
-    if not os.path.isdir(map_full_path):
-        os.makedirs(map_full_path)
-
-    # Get the waypoints in the path
-    waypoints = p.getWaypointsFromPath(path)
-    # Create a window map from the trajectory
-    window_test = p.windowMapFromWaypoints(waypoints=waypoints,
-                                           window_gap=2,
-                                           min_wall_distance=2)
-    # Create a corridor map from the trajectory
-    corridor_test = p.corridorMapFromWaypoints(waypoints=waypoints,
-                                               corridor_gap=2)
-
-    # Show the window map
-    plt.imshow(window_test, cmap='binary')
-    plt.scatter(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1])
-    plt.plot(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1], color='red')
-    plt.xlim([0, window_test.shape[1] - 1])
-    plt.ylim([0, window_test.shape[0] - 1])
-    plt.savefig(map_full_path + str('window_test.png'))
-    if plot_maps:
-        plt.show()
-
-    # Show the corridor map
-    plt.imshow(corridor_test, cmap='binary')
-    plt.scatter(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1])
-    plt.plot(np.stack(waypoints)[:, 0], np.stack(waypoints)[:, 1], color='red')
-    plt.xlim([0, corridor_test.shape[1] - 1])
-    plt.ylim([0, corridor_test.shape[0] - 1])
-    plt.savefig(map_full_path + str('corridor_test.png'))
-    if plot_maps:
-        plt.show()
-
-    # Convert the map to a set of walls
-    walls_window, ww_fig = pythonMaptoWalls(map=window_test,
-                                            distance_threshold=1)
-    if plot_maps:
-        ww_fig.show()
-
-    walls_corridor, wc_fig = pythonMaptoWalls(map=corridor_test,
-                                              distance_threshold=1)
-    if plot_maps:
-        wc_fig.show()
-
-    # Save this as a unity readable file
-    wallsToUnityFile(walls=walls_window,
-                     waypoints=waypoints,
-                     savename=map_full_path + str("unity_wall"),
-                     raining=False,
-                     day=True)
-    wallsToUnityFile(walls=walls_corridor,
-                     waypoints=waypoints,
-                     savename=map_full_path + str("unity_corridor"),
-                     raining=False,
-                     day=True)
-
-    plt.close("all")
-print("Process Completed")
+        # Increment the test counter
+        test_counter += 1

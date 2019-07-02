@@ -1,19 +1,20 @@
 import math
-import copy
 import numpy as np
 import random as r
-import statistics
 import matplotlib.pyplot as plt
 from bresenham import bresenham
-from Dijkstra import dijkstra
 from functools import lru_cache
-
+from Trajectory import Trajectory
 
 class prm:
 	def __init__(self, map_in, start_pos=[0, 0], end_pos=[1, 1]):
+		# Create the list of vertices
 		self.V = []
 		self.V.append(start_pos)
+		self.source_index = 0
 		self.V.append(end_pos)
+		self.end_index = 1
+
 		self.E = []
 		self.W = []
 		self.E_headings = []
@@ -125,56 +126,6 @@ class prm:
 			m[e[1], e[0]] = self.W[edge_itt]
 		return m
 
-	def findShortestPath(self):
-		try:
-			# Get the adjacency matrix
-			matrix = self.adjacencyMatrix()
-			d = dijkstra() 
-			pathdetails = d.shortest_path(matrix, 0)
-		except:
-			print("Graph not connected")
-			pathdetails = {}
-			pathdetails["Path"] = []
-	
-		return pathdetails
-
-	def findAllPathsUsingShortest(self):
-		edges_copy = copy.deepcopy(self.E)
-		weights_copy = copy.deepcopy(self.W)
-		all_paths = []
-		while True:
-			try:
-				pathdetails = self.findShortestPath()
-				# if no path was found
-				if len(pathdetails["Path"]) <= 0:
-					break
-				# Get the path
-				path = pathdetails["Path"]
-				all_paths.append(path)
-				pathweights = []
-
-				# For each edge in the path
-				path_indices = self.getEdgeIndicesFromPath(path)
-
-				# Get the weight of the path
-				for index in path_indices:
-					pathweights.append(self.W[index])
-				
-				# Remove the edge with the lowest cost
-				lowest_cost = np.argmin(pathweights)
-				lowest_edge_index = path_indices[lowest_cost]
-				self.E = np.delete(self.E, lowest_edge_index, axis=0)
-				self.W = np.delete(self.W, lowest_edge_index)
-			except:
-				print("All paths found")
-				break
-
-		# Reset edges and weights
-		self.E = edges_copy
-		self.W = weights_copy
-
-		return all_paths
-
 	def getEdgesConnectedToVertex(self, vertex):
 		edges_found = []
 		# For each edge
@@ -196,63 +147,24 @@ class prm:
 
 		return edges_found
 
-	def classifyPathsReachability(self, paths, source_index=0, heading=0, min_turn_deg=90, max_turn_deg=90, delta=5):
-		# List to save the reachability variables
-		classification = []
+	def findAllPaths(self, heading, min_turn_deg=-90, max_turn_deg=90, depth=100, max_traj=1000):
 
-		# For each path in the paths
-		for path in paths:
-			# Get the edges
-			edges_indices = self.getEdgeIndicesFromPath(path)
-			edges = self.E[edges_indices]
+		# Check that the min and max turn are correct
+		assert(min_turn_deg < max_turn_deg)
+		assert(max_turn_deg <= 180)
+		assert(min_turn_deg >= -180)
 
-			# Assume the path is inside the reachability set
-			path_pass = True
+		# Create a stack containing the source index, the robot heading, the current path and the path headings.
+		stack = [(self.source_index, heading, [self.source_index], [])]
 
-			# Traverse the path
-			vertex = source_index
-			robot_heading = heading
-			for edge in edges:
-				# Make sure you are traversing it correctly
-				if edge[0] != vertex:
-					next_vertex = edge[0]
-				else:
-					next_vertex = edge[1]
-				# Get the edge angle
-				# edge_angle = self.calculateLineHeading([vertex, next_vertex])
-				edge_angle = self.readLineHeadings(tuple([vertex, next_vertex]))
-				# Get how much the robot had to turn
-				delta_angle = edge_angle - robot_heading
-				if delta_angle > 180:
-					delta_angle -= 360
-				if delta_angle < -180:
-					delta_angle += 360
-
-				# Save the end of this edge as the start of the next
-				vertex = next_vertex
-				robot_heading = edge_angle
-
-				# If the robot is outside of the reachable set
-				if not (min_turn_deg < delta_angle < max_turn_deg):
-					path_pass = False
-
-			# Append whether the path failed or passed
-			classification.append(path_pass)
-
-		return classification
-
-	def findAllPaths(self, source_index, goal_index, heading, min_turn_deg=-90, max_turn_deg=90, depth=100, max_traj=1000):
-		# Create a stack containing the source index and current path
-		stack = [(source_index, heading, [source_index])]
+		# Keeps track of the edges and path headings
 		goal_paths = []
-
-		# Used to count the number of early stops
-		number_early_stop = 0
+		goal_headings = []
 
 		# Use DFS to explore all paths
 		while stack:
 			# Get the vertex and the path on top of the stack
-			(vertex, robot_heading, path) = stack.pop()
+			(vertex, robot_heading, path, path_heading) = stack.pop()
 
 			# Dont consider paths greater than certain depth
 			if len(path) > depth:
@@ -275,10 +187,6 @@ class prm:
 					# Skip everything after this
 					continue
 
-				# Count the number of paths we stopped early
-
-
-
 				# Get the line heading
 				edge_angle = self.readLineHeadings(tuple([vertex, next_vertex]))
 				# Read it from the saved array rather than recalculating
@@ -293,17 +201,26 @@ class prm:
 
 				if min_turn_deg <= delta_angle <= max_turn_deg:
 					# If the next vertex is not the goal
-					if next_vertex != goal_index:
-						stack.append((next_vertex, edge_angle, path + [next_vertex]))
+					if next_vertex != self.end_index:
+						stack.append((next_vertex, edge_angle, path + [next_vertex], path_heading + [edge_angle]))
 					else:
 						goal_paths.append(path + [next_vertex])
+						goal_headings.append(path_heading + [edge_angle])
 						if len(goal_paths) >= max_traj:
-							return goal_paths
-				else:
-					# Increment the count for how many possible trees we were able to stop searching
-					number_early_stop += 1
+							# Stop Looking
+							stack = False
+							break
 
-		return goal_paths, number_early_stop
+		# Add each of the trajectories to a trajectory class for easier processing
+		final_trajectories = []
+		for i in range(0, len(goal_paths)):
+			waypoints = self.getWaypointsFromPath(goal_paths[i])
+			traj = Trajectory()
+			traj.set_waypoints(waypoints)
+			traj.set_headings(goal_headings[i])
+			final_trajectories.append(traj)
+
+		return final_trajectories
 
 	def calculateLineHeading(self, edge):
 		# Get the x and y co-ordinates of each vertex
@@ -349,125 +266,6 @@ class prm:
 			edge_headings.append(heading)
 
 		return edge_headings
-
-	def scoreAllPaths(self, paths, source_index=0, heading=0, min_turn=-90, max_turn=90, coverage_segments=1):
-
-		# Count how many unique elements are between min and max
-		coverage_range = max_turn - min_turn
-		segmentsize = coverage_range / float(coverage_segments)
-
-		# List for the scores
-		scores = np.zeros((len(paths), 6))
-		score_counter = 0
-		# For each path in the scores
-		for path in paths:
-			edges_indices = self.getEdgeIndicesFromPath(path)
-			edges = self.E[edges_indices]
-
-			# Used to calculate reachability
-			direction_travelled = []
-
-			# Traverse the path
-			vertex = source_index
-			robot_heading = heading
-			for edge in edges:
-				# Make sure you are traversing it correctly
-				if edge[0] != vertex:
-					next_vertex = edge[0]
-				else:
-					next_vertex = edge[1]
-				# Get the edge angle
-				#edge_angle = self.calculateLineHeading([vertex, next_vertex])
-				edge_angle = self.readLineHeadings(tuple([vertex, next_vertex]))
-				# Get how much the robot had to turn
-				delta_angle = edge_angle - robot_heading
-				if delta_angle > 180:
-					delta_angle -= 360
-				if delta_angle < -180:
-					delta_angle += 360
-
-				# Save the end of this edge as the start of the next
-				vertex = next_vertex
-				robot_heading = edge_angle
-
-				# Reachability Set Coverage
-				direction_travelled.append(round(delta_angle))
-
-			# Reachability Set Coverage
-			coverage_array = np.zeros(coverage_segments)
-			direction_travelled = list(set(direction_travelled))
-			for i in range(0, len(direction_travelled)):
-				for cov in range(0, coverage_segments):
-					left_segment = (cov * segmentsize) + min_turn
-					right_segment = ((cov + 1) * segmentsize) + min_turn
-					if left_segment <= direction_travelled[i] <= right_segment:
-						coverage_array[cov] = 1
-
-			coverage = float(np.sum(coverage_array))/len(coverage_array)
-
-			# Average Segment Length
-			distances = []
-			total_segments = len(edges)
-			for edge in edges:
-				# Get the points from the edges
-				point1 = self.V[edge[0]]
-				point2 = self.V[edge[1]]
-
-				# Get the distance of those two points
-				dx = (point1[0] - point2[0]) ** 2
-				dy = (point1[1] - point2[1]) ** 2
-				distances.append(math.sqrt(dx + dy))
-
-			average_length = np.sum(distances) / total_segments
-
-			# Segment Variance
-			segment_length_variance = statistics.variance(distances)
-
-			# Variance Line Headings
-			headings = self.generateLineHeadingsFromPath(path)
-			path_heading_variance = statistics.variance(headings)
-
-			# Total path length
-			path_length = np.sum(distances)
-
-			# Number of turns
-			total_turns = total_segments
-
-			# Save the scores
-			scores[score_counter, 0] = coverage
-			scores[score_counter, 1] = average_length
-			scores[score_counter, 2] = segment_length_variance
-			scores[score_counter, 3] = path_heading_variance
-			scores[score_counter, 4] = path_length
-			scores[score_counter, 5] = total_turns
-			score_counter += 1
-
-		return scores
-
-	def normalizeScores(self, scores):
-
-		if scores.shape[0] > 1:
-			# Get the minimum and maximum score for each of the metrics
-			min_scores = np.min(scores, axis=0)
-			max_scores = np.max(scores, axis=0)
-
-			# Reachability set coverage actually has a min of 0 and max of 1
-			min_scores[0] = 0
-			max_scores[0] = 1
-
-			# Calculate the range
-			range = max_scores - min_scores
-
-			# If the range is 0 divide by 1 (this means that normalized score will be 0)
-			range[range == 0] = 1
-
-			# Normalize the scores
-			normalized_scores = (scores - min_scores) / range
-		else:
-			print("No scores to normalize")
-			return None
-
-		return normalized_scores
 
 	@lru_cache(maxsize=None)
 	def getEdgeIndex(self, edge):
@@ -573,201 +371,6 @@ class prm:
 
 		return verticies
 
-	def windowMapFromWaypoints(self, waypoints, window_gap=1, min_wall_distance=1):
-		new_map = copy.deepcopy(self.map)
-		# For each of the waypoints
-		for point in waypoints:
-			north_wall_start = [point[0], point[1] + window_gap]
-			north_wall_end = [point[0], self.map.shape[0]-1]
-			south_wall_start = [point[0], point[1] - window_gap]
-			south_wall_end = [point[0], 0]
-
-			north_wall = list(bresenham(x0=int(round(north_wall_start[0])),
-										y0=int(round(north_wall_start[1])),
-										x1=int(round(north_wall_end[0])),
-										y1=int(round(north_wall_end[1]))))
-
-			south_wall = list(bresenham(x0=int(round(south_wall_start[0])),
-										y0=int(round(south_wall_start[1])),
-										x1=int(round(south_wall_end[0])),
-										y1=int(round(south_wall_end[1]))))
-
-			# add the walls to a list
-			walls = [north_wall, south_wall]
-
-			# Check if we already have a wall in this line
-			if not (1 in new_map[:, walls[0][0][0]]):
-				insert_wall = True
-				# Check there is no walls within the minimum distance constraint
-				for dc in range(1, min_wall_distance + 1):
-					# Check there is no wall to the left
-					if walls[0][0][0] - dc >= 0:
-						if 1 in new_map[:, walls[0][0][0] - dc]:
-							insert_wall = False
-
-					# Check there is no wall to the right
-					if walls[0][0][0] + dc < new_map.shape[1]:
-						if 1 in new_map[:, walls[0][0][0] + dc]:
-							insert_wall = False
-
-				if insert_wall:
-					# For each of the walls
-					for wall in walls:
-						# For each cell in a wall
-						for cell in wall:
-							# If we can place the wall:
-							if 0 <= cell[1] < new_map.shape[0] and 0 <= cell[0] < new_map.shape[1]:
-								new_map[cell[1], cell[0]] = 1
-			# There was already a wall so add an opening
-			else:
-				# Calculate the new opening:
-				opening = list(bresenham(x0=north_wall[0][0],
-										 y0=north_wall[0][1],
-										 x1=south_wall[0][0],
-										 y1=south_wall[0][1]))
-
-				# Add the opening
-				for cell in opening:
-					if 0 <= cell[1] < new_map.shape[0] and 0 <= cell[0] < new_map.shape[1]:
-						new_map[cell[1], cell[0]] = 0
-
-		# Return the map
-		return new_map
-
-	def corridorMapFromWaypoints(self, waypoints, corridor_gap=1):
-		# Create a map of obstacles
-		new_map = np.ones(self.map.shape)
-
-		# Start and end of the segment
-		start_p = []
-		end_p = []
-
-		# For each point in the waypoints
-		for point in waypoints:
-			end_p = start_p
-			start_p = point
-			# If we have a segment
-			if len(end_p) >= 1:
-				corridor = list(bresenham(x0=int(round(start_p[0])),
-										  y0=int(round(start_p[1])),
-										  x1=int(round(end_p[0])),
-										  y1=int(round(end_p[1]))))
-
-				# Add the corridor to the map
-				for cell in corridor:
-					# Add buffing on each end for the gap
-					for gap in range(0, int(round(corridor_gap/2.0))+1):
-						space_above = cell[1] + gap < self.map.shape[0]
-						space_below = cell[1] - gap >= 0
-						space_right = cell[0] + gap < self.map.shape[1]
-						space_left = cell[0] - gap >= 0
-
-						# If we can add gaps above
-						if space_above:
-							new_map[cell[1] + gap][cell[0]] = 0
-						# If we can add gaps below
-						if space_below:
-							new_map[cell[1] - gap][cell[0]] = 0
-						# If we can add gaps to the right
-						if space_right:
-							new_map[cell[1]][cell[0] + gap] = 0
-						# If we can add gaps to the left
-						if space_left:
-							new_map[cell[1]][cell[0] - gap] = 0
-						# If we can add gaps above right
-						if space_above and space_right:
-							new_map[cell[1] + gap][cell[0] + gap] = 0
-						# If we can add gaps above left
-						if space_above and space_left:
-							new_map[cell[1] + gap][cell[0] - gap] = 0
-						# If we can add gaps below right
-						if space_below and space_right:
-							new_map[cell[1] - gap][cell[0] + gap] = 0
-						# If we can add gaps below left
-						if space_below and space_left:
-							new_map[cell[1] - gap][cell[0] - gap] = 0
-
-		# Return the map
-		return new_map
-
-	def plotTrajectories(self, selected_tests, path_class, path_scores, total_plots=100, figure_size=(70, 70), tsuffix=""):
-		# For use in plotting
-		tests = copy.deepcopy(list(selected_tests))
-
-		# Calculate the axis lengths
-		axis_length = int(round(math.sqrt(total_plots)))
-		total = axis_length**2
-
-		# Create the figure
-		fig = plt.figure(figsize=figure_size)
-		axes = fig.subplots(nrows=axis_length+1, ncols=axis_length)
-		# Print Map
-		if len(tsuffix) >= 0:
-			fig.suptitle(t='Individual Trajectories (Sorted by Score) - ' + str(tsuffix),
-						 fontsize=54)
-		else:
-			fig.suptitle(t='Individual Trajectories (Sorted by Score)',
-						 fontsize=54)
-
-		# Get the individual scores for the tests
-		path_scores = np.sum(path_scores, axis=1)
-		# Sort decending
-		sorted_indicies = (np.argsort(path_scores))[::-1]
-
-
-		# Select tests with the highest score
-		path_scores = list(np.array(path_scores)[sorted_indicies])
-		plotted_tests = list(np.array(tests)[sorted_indicies])
-		plotted_class = list(np.array(path_class)[sorted_indicies])
-
-		# Check if the total is less than the number of tests
-		if len(plotted_tests) < total:
-			print("Not enough tests given appending blank tests")
-			while len(plotted_tests) < total:
-				path_scores.append(6)
-				plotted_tests.append([0, 0])
-				plotted_class.append("False")
-
-		i = 0
-		for row in range(1, axis_length+1):
-			for col in range(0, axis_length):
-				# Make sure the first row is blank
-				if row == 1:
-					axes[row-1, col].set_xlim([0, self.map.shape[1] - 1])
-					axes[row-1, col].set_ylim([0, self.map.shape[0] - 1])
-					axes[row-1, col].axis('off')
-				# Draw the path in the
-				path = plotted_tests[i]
-				# Create the lines we are going to plot
-				linex = []
-				liney = []
-				# Build the line
-				for v1, v2 in zip(path, path[1:]):
-					if len(linex) == 0:
-						linex = [self.V[v1, 0], self.V[v2, 0]]
-						liney = [self.V[v1, 1], self.V[v2, 1]]
-					else:
-						linex.append(self.V[v2, 0])
-						liney.append(self.V[v2, 1])
-
-				# Determine what class the path is
-				if plotted_class[i] == 1:
-					c = 'green'
-				else:
-					c = 'red'
-
-				# Plot the trajectory's
-				axes[row, col].plot(linex, liney, color=c, linewidth=5)
-				axes[row, col].set_xlim([0, self.map.shape[1] - 1])
-				axes[row, col].set_ylim([0, self.map.shape[0] - 1])
-				axes[row, col].axis('off')
-
-				# Increment i to get the next path
-				i += 1
-
-
-		return fig
-
 	def getEdgeListFromPath(self, path):
 		edgeList = []
 		# Get the edge list
@@ -775,35 +378,3 @@ class prm:
 			edgeList.append([v1, v2])
 
 		return edgeList
-
-	def selectTestsBasedOnCoverage(self, selected_tests):
-		# Keep track of which edges where visited
-		indices = []
-		edgesVisited = []
-		selected_paths = []
-		new_edges_count = []
-
-		# For each path in selected_tests
-		i = 0
-		for path in selected_tests:
-			edgeList = self.getEdgeListFromPath(path)
-			# For each edge
-			firstTimeVists = 0
-			for edge in edgeList:
-				# Check if the edge has been visited
-				if edge not in edgesVisited:
-					# We have now visited it
-					edgesVisited.append(edge)
-					firstTimeVists += 1
-
-			if firstTimeVists > 0:
-				indices.append(i)
-				selected_paths.append(path)
-				new_edges_count.append(firstTimeVists)
-
-			# Increment the indices
-			i += 1
-			#print("Path: " + str(path))
-			#print("Unvisited Edges In Path: " + str(firstTimeVists))
-
-		return selected_paths, indices
