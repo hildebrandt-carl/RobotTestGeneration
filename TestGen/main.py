@@ -14,14 +14,14 @@ plotting = True
 plot_maps = True
 
 # Save locations
-save_path = "Results/TestGen/run10/"
+save_path = "Results/TestGen/run0623/"
 
 # Load a map file
 map_name = "map1.csv"
 
 # Robot start and end locations
-robot_kinematics = {"max_turn": 30,
-                    "min_turn": -30,
+robot_kinematics = {"max_turn": 90,
+                    "min_turn": -90,
                     "max_velocity": 5,
                     "min_velocity": 1}
 
@@ -34,15 +34,15 @@ initial_conditions = {"map_x_bounds": [0, 25],
                       "unity_bounds": [100, 100]}
 
 # Specified by the tester
-human_specified_factors = {"epsilon_angle": 2.5,
-                           "epsilon_velocity": 1,
+human_specified_factors = {"epsilon_angle": 0,
+                           "epsilon_velocity": 0,
                            "epsilon_class_equivalence": 1,
                            "selected_per_class": 10}
 
 # Used to limit our search
-traj_search_conditions = {"number_nodes": 200,
-                          "max_trajectories": 3000,
-                          "search_depth": 15}
+traj_search_conditions = {"number_nodes": 300,
+                          "max_trajectories": 100000,
+                          "search_depth": 7}
 
 # Give the trajectory class the correct bounds
 Trajectory.x_range = {"lower": initial_conditions["map_x_bounds"][0],
@@ -132,15 +132,15 @@ assert(scorer_success == 1)
 # Sort the trajectories based on score
 all_paths = manager.sort_by_score(trajectories=all_paths)
 
-if plotting:
-    # Display the trajectories
-    print("UPDATE: Displaying Trajectories Over Each Other")
-    path_plot = fig_manager.plot_allpaths(trajectories=all_paths,
-                                      tsuffix="Possible Trajectories",
-                                      figure_size=(10, 10))
-    # Display the figure
-    fig_manager.display_and_save(fig=path_plot,
-                                 save_name='all_paths')
+# if plotting:
+#     # Display the trajectories
+#     print("UPDATE: Displaying Trajectories Over Each Other")
+#     path_plot = fig_manager.plot_allpaths(trajectories=all_paths,
+#                                       tsuffix="Possible Trajectories",
+#                                       figure_size=(10, 10))
+#     # Display the figure
+#     fig_manager.display_and_save(fig=path_plot,
+#                                  save_name='all_paths')
 
 if plotting:
     # Get the scores
@@ -153,6 +153,24 @@ if plotting:
     # Display the figure
     fig_manager.display_and_save(fig=plt,
                                  save_name='scores_graph')
+
+# TODO
+# Update this into your Figure manager
+if plotting:
+    # Create a new figure
+    plt.figure()
+
+    # Create the plot
+    plt.hist(x=scores,
+             bins=200,
+             range=(0, 1))
+    plt.title("Histogram of scores")
+    plt.xlabel("Score")
+    plt.ylabel("Total")
+
+    # Display the figure
+    fig_manager.display_and_save(fig=plt,
+                                 save_name='score_hist')
 
 
 # Group the trajectories into different classes
@@ -221,7 +239,7 @@ for class_key in final_paths:
 
         # Convert a trajectory into unity waypoints
         unity_waypoints = converter.scale_to_unity(trajectory=traj)
-        wall_segments = converter.corridor_generator(unity_waypoints, corridor_gap=10)
+        wall_segments = converter.corridor_generator(unity_waypoints, corridor_gap=5)
 
         if plotting:
             corridor_plt = fig_manager.plot_corridor(waypoints=unity_waypoints,

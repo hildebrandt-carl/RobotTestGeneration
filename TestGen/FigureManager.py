@@ -221,7 +221,7 @@ class FigureManager:
 
 		# Scale the plot to the correct size
 		plt.xlim([0, unity_dimensions[0]])
-		plt.xlim([0, unity_dimensions[1]])
+		plt.ylim([(-1 * unity_dimensions[1] / 2.0), (unity_dimensions[1] / 2.0)])
 
 		# Return the plot
 		return plt
