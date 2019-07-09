@@ -1,0 +1,60 @@
+# Dev documents
+https://forum.developer.parrot.com/t/using-bebop-autonomy-with-sphinx-on-same-machine/6726/11
+
+# A file containing documents of another group which did something similar to this
+https://mrsdprojects.ri.cmu.edu/2017teamf/wp-content/uploads/sites/27/2017/10/TeamF_danendrs_ILR04.pdf
+
+# Notes on how to upload the parrot mavlink files
+https://forum.developer.parrot.com/t/parrot-sphinx-make-drone-follow-fixed-trajectories/9031
+https://forum.developer.parrot.com/t/flightplans-and-sphinx/7785/4
+
+# It seems that there is another version I can compile and use that to run GPS waypoints
+https://ardrone-autonomy.readthedocs.io/en/gps-waypoint/gps.html
+
+I modified the file
+
+/opt/parrot-sphinx/usr/share/sphinx/drones/bebop2.drone
+
+How to start drone:
+Open the firmware
+$ sudo systemctl start firmwared.service
+
+Check the firmware is running
+$ fdc ping
+
+If you get this error:
+[Err] [Machine.cc:1201] Preparation of firmware for machine follower failed: curl.hook/probe failed.. Check your path or URL to the firmware]
+
+You can run the command:
+$ fdc drop_all firmwares
+
+You can view the images taken by the drone using: 
+$ rosrun image_view image_view image:=/bebop/image_raw
+
+We can get the drone to perform flips using:
+$ rostopic pub --once bebop/flip std_msgs/UInt8 '{data: 0}'
+
+Scripts are for simulating things happening externally to the drone, e.g. being thrown. We need to create a waypoint file and then upload it to the drone.
+
+To manually move the drone around you can use the commands
+rostopic pub -r 10 bebop/cmd_vel geometry_msgs/Twist  '{linear:  {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.0}}'
+
+
+We can upload our files to the drone after the drone has been launched using:
+$ curl -T test.mavlink ftp://10.202.0.1:61/
+
+I believe this uploads the file to the following directory on the drone
+/data/ftp/internal_000/flightplans
+
+# Standard Approach
+1) Launch the simulator
+$ sphinx /home/autosoftlab/Desktop/ParoteSimulation/worlds/outdoor_1.world /home/autosoftlab/Desktop/ParoteSimulation/drones/bebop2_local.drone::with_front_cam=true
+
+2) Launch the driver
+$ roslaunch bebop_driver bebop_node.launch
+
+3) Upload the waypoints
+$ curl -T test.mavlink ftp://10.202.0.1:61/
+
+4) Start following waypoints
+$ rostopic pub --once bebop/autoflight/start std_msgs/String '{data: test.mavlink}'

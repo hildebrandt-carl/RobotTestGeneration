@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<drone
+  name="swing"
+  firmware="http://plf.parrot.com/sphinx/firmwares/delos/wingx_pc/latest/images/delos-wingx_pc.ext2.zip"
+  hardware="wingxboard">
+  <machine_params
+    swing_color="black"/>
+  <pose>default</pose>
+  <!-- !! to be completed with your actual Bluetooth MAC address !! -->
+  <stolen_bdaddr>00:1A:7D:DA:71:03</stolen_bdaddr>
+</drone>

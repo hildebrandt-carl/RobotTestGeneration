@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This path is defined to follow the numbered model targets in the world
+     /opt/parrot-sphinx/usr/share/sphinx/worlds/outdoor_targets.world
+-->
+<path name="follow_targets">
+  <auto_start>false</auto_start>
+  <delay_start>5.000000</delay_start>
+  <loop>false</loop>
+  <waypoint>
+    <animation>walk</animation>
+    <velocity>1</velocity>
+    <xy>0 0</xy>
+  </waypoint>
+  <waypoint>
+    <animation>walk</animation>
+    <velocity>1</velocity>
+    <model>target_number_1</model>
+    <stop_duration>2.000000</stop_duration>
+  </waypoint>
+  <waypoint>
+    <animation>run</animation>
+    <velocity>2</velocity>
+    <model>target_number_2</model>
+  </waypoint>
+  <waypoint>
+    <animation>run</animation>
+    <velocity>2</velocity>
+    <model>target_number_3</model>
+  </waypoint>
+  <waypoint>
+    <animation>walk</animation>
+    <velocity>1</velocity>
+    <model>target_number_4</model>
+  </waypoint>
+  <waypoint>
+    <animation>walk</animation>
+    <velocity>1</velocity>
+    <model>target_number_5</model>
+  </waypoint>
+</path>

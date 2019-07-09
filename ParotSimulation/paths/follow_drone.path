@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<path name="follow_drone">
+  <delay_start>0.000000</delay_start>
+  <loop>true</loop>
+  <waypoint>
+    <velocity>0.1</velocity>
+    <model>bebop2</model>
+  </waypoint>
+</path>

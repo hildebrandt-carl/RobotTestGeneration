@@ -48,6 +48,10 @@ class PerformanceTester():
 
     # Used to record the time between goals:
     self.start_time = time.time()
+    
+    # Used to record test time
+    self.total_time = 0
+    self.test_start_time = time.time()
 
     # Run the communication node
     self.ProcessLoop()
@@ -62,9 +66,23 @@ class PerformanceTester():
 
     # While running
     while not rospy.is_shutdown():
-      # Report the distance to the goal
-      distance = self.calculate_distance(self.goal_position, self.drone_pos)
-      self.filehandler.write("Distance to Goal " + str(self.goal_counter) + ": " + str(distance) + "\n")
+
+      # Drone has not started
+      if self.drone_pos.z < 3:
+        rospy.loginfo(str(rospy.get_name()) + ": Waiting for test to begin")
+        # Reset the time
+        self.start_time = time.time()
+        self.test_start_time = time.time()
+      elif self.drone_pos.z > 15:
+        pass
+      else:
+        # Report the distance to the goal
+        distance = self.calculate_distance(self.goal_position, self.drone_pos)
+        self.filehandler.write("Current Drone Position: " + str(self.drone_pos.x) + ", " + str(self.drone_pos.y) + ", " + str(self.drone_pos.z) + "\n")
+        self.filehandler.write("Current Goal Position: " + str(self.goal_position.x) + ", " + str(self.goal_position.y) + ", " + str(self.goal_position.z) + "\n")
+        self.filehandler.write("Distance to Goal " + str(self.goal_counter) + ": " + str(distance) + "\n")
+        self.filehandler.write("Elapsed Time " + str(time.time() - self.test_start_time) + "\n")
+        self.filehandler.write("-------------------------------\n")
 
       # Sleep any excress time
       rate.sleep()
@@ -88,9 +106,15 @@ class PerformanceTester():
 
     # Check if the goal has changed
     if self.goal_position != new_goal_position:
+      self.filehandler.write("Goal switch\n")
       # Update the time to get to that goal
       end_time = time.time()
       self.filehandler.write("Time between goals: " + str(end_time - self.start_time) + "\n")
+      # Update the total time
+      self.total_time += (end_time - self.start_time)
+      # Print the total time
+      self.filehandler.write("Total Time: " + str(self.total_time) + "\n")
+      self.filehandler.write("-------------------------------\n")
       # Update the number of goals gone through
       self.goal_counter += 1
       # Save the new goal position

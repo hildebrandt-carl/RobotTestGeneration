@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<drone
+  name="bluegrass"
+  firmware="http://plf.parrot.com/sphinx/firmwares/ardrone3/chimera_pc/latest/images/ardrone3-chimera_pc.ext2.zip"
+  hardware="chimeraboard">
+  <machine_params
+    low_gpu="false"
+    with_front_cam="true"/>
+  <pose>default</pose>
+  <interface>eth1</interface>
+  <!-- 'wlan0' may need to be replaced the actual wifi interface name -->
+  <stolen_interface>wlan0:eth0:192.168.42.1/24</stolen_interface>
+</drone>

@@ -69,17 +69,19 @@ class PositionController():
       if total == 0:
         total = 1
 
+      # Set the velocity to 10 m/s
       velocity_total = 10.0 # m/s
 
-      x_vel = velocity_total * (x_proportion/total) 
-      y_vel = velocity_total * (y_proportion/total) 
+      # Cacluate the velocity in the x and y direction
+      x_vel = velocity_total * (x_proportion/total)
+      y_vel = velocity_total * (y_proportion/total)
 
-
+      # The Z velocity is based on the position
       z_vel = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
 
       # Create and publish the data
       velocity = Vector3(x_vel, -1* y_vel, z_vel)
-      self.vel_set_sub.publish(velocity) 
+      self.vel_set_sub.publish(velocity)
 
       # Sleep any excress time
       rate.sleep()
@@ -98,7 +100,7 @@ class PositionController():
     self.y_setpoint = msg.y
     self.z_setpoint = msg.z
 
-    
+
   # On collsion reset the PID's
   def collision_callback(self, msg):
     self.pos_x_PID.remove_buildup()

@@ -17,6 +17,9 @@ class UnityConverter:
 		x_scale = self.unity_x_dimension / float(self.test_x_dimension)
 		y_scale = self.unity_y_dimension / float(self.test_y_dimension)
 
+		# Shift the Y-Axis due to unity having middle Y = 0
+		y_shift = self.unity_y_dimension / 2.0
+
 		# Get the waypoints
 		waypoints = trajectory.get_waypoints()
 
@@ -28,7 +31,7 @@ class UnityConverter:
 			new_point = [0, 0]
 			# scale the points
 			new_point[0] = point[0] * x_scale
-			new_point[1] = point[1] * y_scale
+			new_point[1] = (point[1] * y_scale) - y_shift
 
 			# Append the new point to the unity waypoints
 			unity_goal_waypoints.append(new_point)
@@ -36,7 +39,7 @@ class UnityConverter:
 		# Return the new trajectory
 		return unity_goal_waypoints
 
-	def corridor_generator(self, waypoints, corridor_gap=1):
+	def corridor_generator(self, waypoints, corridor_gap=0.5):
 		# We want a corridor above and below the waypoints
 		gaps = [corridor_gap, -1 * corridor_gap]
 
@@ -91,6 +94,9 @@ class UnityConverter:
 		# Go through each waypoint
 		for waypoint in waypoints:
 			file.write("G: (" + str(waypoint[0]) + ',' + str(waypoint[1]) + ",10)\n")
+
+		# Write a final waypoint above the the final waypoing
+		file.write("G: (" + str(waypoints[-1][0]) + ',' + str(waypoints[-1][1]) + ",30)\n")
 
 		file.write("\n\n# wall segments\n")
 		file.write('# x1, y1, x2, y2, z\n')
