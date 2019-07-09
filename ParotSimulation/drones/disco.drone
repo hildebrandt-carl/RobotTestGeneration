@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<drone
+  name="disco"
+  firmware="http://plf.parrot.com/sphinx/firmwares/evinrude/evinrude_pc/latest/images/evinrude-evinrude_pc.ext2.zip"
+  hardware="evinrudeboard">
+  <machine_params
+    low_gpu="false"
+    with_front_cam="true"
+    with_sequoia_payload="false"/>
+  <pose>default</pose>
+  <wifi_channel>6</wifi_channel>
+  <interface>eth1</interface>
+  <!-- 'wlan0' may need to be replaced the actual wifi interface name -->
+  <stolen_interface>wlan0:eth0:192.168.42.1/24</stolen_interface>
+</drone>

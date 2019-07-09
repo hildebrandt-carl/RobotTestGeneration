@@ -1,0 +1,59 @@
+[
+  {
+    "stop_condition_expr": "abs(motor_speed_0) > 300 or step_time > 40",
+    "start_pose": {
+      "x_expr": "0",
+      "y_expr": "0",
+      "z_expr": "1",
+      "roll_expr": "0",
+      "pitch_expr": "0",
+      "yaw_expr": "val"
+    },
+    "pose": {
+      "x_expr": "noise()*0.01",
+      "y_expr": "noise()*0.01",
+      "z_expr": "noise()*0.01",
+      "roll_expr": "start_val + noise()*0.01",
+      "pitch_expr": "start_val + noise()*0.01",
+      "yaw_expr": "start_val + noise()*0.01"
+    }
+  },
+  {
+    "stop_condition_expr": "step_time > 2",
+    "start_pose": {
+      "x_expr": "0",
+      "y_expr": "0",
+      "z_expr": "0",
+      "roll_expr": "val",
+      "pitch_expr": "val",
+      "yaw_expr": "val"
+    },
+    "pose": {
+      "x_expr": "noise()*0.01",
+      "y_expr": "noise()*0.01",
+      "z_expr": "noise()*0.01",
+      "roll_expr": "start_val + noise()*0.01",
+      "pitch_expr": "start_val + noise()*0.01",
+      "yaw_expr": "start_val + noise()*0.01"
+    }
+  },
+  {
+    "stop_condition_expr": "step_time > 0.1",
+    "start_pose": {
+      "x_expr": "0",
+      "y_expr": "0",
+      "z_expr": "0",
+      "roll_expr": "val",
+      "pitch_expr": "val",
+      "yaw_expr": "val"
+    },
+    "pose": {
+      "x_expr": "0",
+      "y_expr": "0",
+      "z_expr": "2*step_time",
+      "roll_expr": "start_val",
+      "pitch_expr": "start_val",
+      "yaw_expr": "start_val"
+    }
+  }
+]
