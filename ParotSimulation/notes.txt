@@ -11,6 +11,21 @@ https://forum.developer.parrot.com/t/flightplans-and-sphinx/7785/4
 # It seems that there is another version I can compile and use that to run GPS waypoints
 https://ardrone-autonomy.readthedocs.io/en/gps-waypoint/gps.html
 
+# Someone who couldnt figure out mission planner file formats
+https://forum.developer.parrot.com/t/what-flight-plan-format-mavlink-and-waypoint/7387
+
+# Explaining the file format
+https://diydrones.com/forum/topics/waypoint-file-format
+https://mavlink.io/en/messages/common.html#MAV_CMD_NAV_WAYPOINT
+
+# My Question
+https://forum.developer.parrot.com/t/exporting-flight-plans-from-freeflight-pro-for-use-in-sphinx/9466/2
+https://forum.developer.parrot.com/t/what-flight-plan-format-mavlink-and-waypoint/7387/6
+
+
+If you want to connect to the drone you can use the:
+http://localhost:9002
+
 I modified the file
 
 /opt/parrot-sphinx/usr/share/sphinx/drones/bebop2.drone
@@ -39,7 +54,6 @@ Scripts are for simulating things happening externally to the drone, e.g. being 
 To manually move the drone around you can use the commands
 rostopic pub -r 10 bebop/cmd_vel geometry_msgs/Twist  '{linear:  {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.0}}'
 
-
 We can upload our files to the drone after the drone has been launched using:
 $ curl -T test.mavlink ftp://10.202.0.1:61/
 
@@ -47,6 +61,9 @@ I believe this uploads the file to the following directory on the drone
 /data/ftp/internal_000/flightplans
 
 # Standard Approach
+0) Launch the drone firmware
+$ sudo systemctl start firmwared.service
+
 1) Launch the simulator
 $ sphinx /home/autosoftlab/Desktop/ParoteSimulation/worlds/outdoor_1.world /home/autosoftlab/Desktop/ParoteSimulation/drones/bebop2_local.drone::with_front_cam=true
 
@@ -58,3 +75,38 @@ $ curl -T test.mavlink ftp://10.202.0.1:61/
 
 4) Start following waypoints
 $ rostopic pub --once bebop/autoflight/start std_msgs/String '{data: test.mavlink}'
+
+
+
+# Right now if I upload a file and it finds it it will take off and then not do anything.
+Two possiblilites. Maybe it goes through the sequence of waypoints too quickly. So I will do a test where I make the number of waypoints much longer. The second possibility is that for some reason after finding the first file it defaults to the normal file name "flightplan"
+
+
+
+
+The mavros file format is as follows:
+
+A waypoint file is described as follows in the mavlink docs (https://mavlink.io/en/file_formats/#mission_plain_text_file):
+
+QGC WPL <VERSION> 
+<INDEX> <CURRENT WP> <COORD FRAME> <COMMAND> <PARAM1> <PARAM2> <PARAM3> <PARAM4> <PARAM5> <PARAM6> <PARAM7> <AUTOCONTINUE>
+
+Note: They list param5 as longitude and param6 as latitude (this is where the confusion stemmed from)
+
+We are sending waypoints ie <COMMAND>=16. You can find the defintion of this command on the mavlink github page (https://github.com/mavlink/mavlink/blob/master/message_definitions/v1.0/common.xml#L774) (see below) as well as on the Ardupilot documentation (http://ardupilot.org/copter/docs/common-mavlink-mission-command-messages-mav_cmd.html#mav-cmd-nav-waypoint). 
+
+<enum name="MAV_CMD">
+      <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
+      <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true">
+        <description>Navigate to waypoint.</description>
+        <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
+        <param index="2" label="Accept Radius" units="m" minValue="0">Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)</param>
+        <param index="3" label="Pass Radius" units="m">0 to pass through the WP, if &gt; 0 radius to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.</param>
+        <param index="4" label="Yaw" units="deg">Desired yaw angle at waypoint (rotary wing). NaN for unchanged.</param>
+        <param index="5">Latitude</param>
+        <param index="6">Longitude</param>
+        <param index="7">Altitude</param>
+       </entry>
+       ...
+
+Documentation for mavlink also confirms this (https://mavlink.io/en/messages/common.html#MAV_CMD_NAV_WAYPOINT). This states that param5 is latitude and param6 longitude.
