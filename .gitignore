@@ -34,9 +34,6 @@
 # Ignore ROS files
 *.rosinstall*
 
-# Ignore Zip Files
-*.zip
-
 # Ignore pycharm files
 *__pycache__
 **/.idea/*
