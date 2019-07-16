@@ -1,6 +1,8 @@
 import os
 import matplotlib.pyplot as plt
 from Trajectory import Trajectory
+from mpl_toolkits.mplot3d import Axes3D
+from Node import Node
 
 class FigureManager:
 
@@ -27,7 +29,7 @@ class FigureManager:
 		# Create the filename
 		file_name = save_directory + str(self.total_figures).zfill(2) + "-" + str(save_name) + ".png"
 		# Save the figure
-		fig.savefig(self.save_location + file_name)
+		fig.savefig(self.save_location + file_name, bbox_inches='tight')
 		if not only_save:
 			# Display the figure
 			fig.show()
@@ -222,6 +224,76 @@ class FigureManager:
 		# Scale the plot to the correct size
 		plt.xlim([0, unity_dimensions[0]])
 		plt.ylim([(-1 * unity_dimensions[1] / 2.0), (unity_dimensions[1] / 2.0)])
+
+		# Return the plot
+		return plt
+
+	def plot_prm_graph(self, nodes, edges, figure_size=(10, 10)):
+		# Create the figure
+		fig = plt.figure(figsize=figure_size)
+		ax = Axes3D(fig)
+
+		# Create a list of standard nodes
+		x_vals = []
+		y_vals = []
+		z_vals = []
+
+		# Create a list of source and sink nodes
+		source_x = []
+		source_y = []
+		source_z = []
+		sink_x = []
+		sink_y = []
+		sink_z = []
+
+		# For each node
+		for node in nodes:
+			# Get the x,y and z values
+			x, y, z = node.get_position()
+
+			# Check if this is a source
+			if node.get_source():
+				# Save the position of the source node
+				source_x.append(x)
+				source_y.append(y)
+				source_z.append(z)
+			# Check if this is a source
+			elif node.get_sink():
+				# Save the position of the source node
+				sink_x.append(x)
+				sink_y.append(y)
+				sink_z.append(z)
+			else:
+				# Save the positions or random nodes
+				x_vals.append(x)
+				y_vals.append(y)
+				z_vals.append(z)
+
+		# Plot the values
+		ax.scatter(source_x, source_y, source_z, c='g', label='Starting Position')
+		ax.scatter(sink_x, sink_y, sink_z, c='r', label='Ending Position')
+		ax.scatter(x_vals, y_vals, z_vals, c='b', label='Possible Waypoints')
+
+		# For each of the edges
+		for edge in edges:
+			# Get the nodes for that edge
+			nodes = edge.get_nodes()
+
+			# Turn the positions into numpy arrays
+			xline = [nodes[0].get_position()[0], nodes[1].get_position()[0]]
+			yline = [nodes[0].get_position()[1], nodes[1].get_position()[1]]
+			zline = [nodes[0].get_position()[2], nodes[1].get_position()[2]]
+
+			# Plot the positions
+			ax.plot3D(xline, yline, zline, color='gray', linestyle=":", linewidth=0.5)
+
+		# Set the labels
+		ax.set_xlabel('X-axis')
+		ax.set_ylabel('Y-axis')
+		ax.set_zlabel('Z-axis')
+
+		# Add the legend
+		ax.legend()
 
 		# Return the plot
 		return plt
