@@ -16,26 +16,32 @@ plot_maps = True
 # Save locations
 save_path = "Results/TestGen/run0623/"
 
-# Robot start and end locations
-robot_kinematics = {"max_turn": 90,
-                    "min_turn": -90,
-                    "max_velocity": 1,
-                    "min_velocity": 0.1}
-
 # Test initial conditions
-initial_conditions = {"map_x_bounds": [0, 1],
-                      "map_y_bounds": [0, 1],
-                      "map_z_bounds": [0, 1],
-                      "start_point": [0.1, 0.1, 0.1],
-                      "end_point": [0.9, 0.9, 0.9],
-                      "robot_heading": 0,
+initial_conditions = {"map_x_bounds": [-5, 5],
+                      "map_y_bounds": [-5, 5],
+                      "map_z_bounds": [0, 10],
+                      "start_point": [-4, -4, 0.1],
+                      "end_point": [4, 4, 9],
                       "unity_bounds": [100, 100]}
+
+# Robot start and end locations
+robot_kinematics = {"m": 0.5,
+                    "d": 0.175,
+                    "kf": 6.11e-8,
+                    "km": 1.5e-9,
+                    "max_rotor_speed": 6000,
+                    "inertial_properties": [2.32e-3, 2.32e-3, 4.00e-3],
+                    "position": initial_conditions["start_point"],
+                    "attitude": [0, 0, 0],
+                    "velocity": [0, 0, 0],
+                    "angular_velocity": [0, 0, 0]}
 
 # Specified by the tester
 human_specified_factors = {"epsilon_angle": 0,
                            "epsilon_velocity": 0,
                            "epsilon_class_equivalence": 1,
-                           "selected_per_class": 10}
+                           "selected_per_class": 10,
+                           "kinematic_sampling_resolution": 5}
 
 # Used to limit our search
 traj_search_conditions = {"number_nodes": 30,
@@ -68,9 +74,9 @@ p = PRM(start_pos=initial_conditions["start_point"],
 # Find valid positions for waypoints
 p.populate_with_nodes(num_vertices=traj_search_conditions["number_nodes"])
 
-# Find possible connections between waypoints based on velocity
-p.populate_with_edges(max_distance=robot_kinematics["max_velocity"],
-                      min_distance=robot_kinematics["min_velocity"])
+# # Find possible connections between waypoints based on velocity
+# p.populate_with_edges(max_distance=robot_kinematics["max_velocity"],
+#                       min_distance=robot_kinematics["min_velocity"])
 
 if plotting:
     # Show the map after the prm construction phase
@@ -82,6 +88,9 @@ if plotting:
     # Display the figure
     fig_manager.display_and_save(fig=map_plt,
                                  save_name='original_map')
+
+p.find_all_paths(drone_kinematic_values=robot_kinematics,
+                 kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"])
 
 #
 # print("UPDATE: Finding Possible Paths")

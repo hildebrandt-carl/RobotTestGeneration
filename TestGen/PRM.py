@@ -4,6 +4,12 @@ import numpy as np
 from Trajectory import Trajectory
 from Node import Node
 from Edge import Edge
+from DroneKinematic import DroneKinematic
+from DroneReachabilitySet import DroneReachabilitySet
+import matplotlib.pyplot as plt
+from Trajectory import Trajectory
+from mpl_toolkits.mplot3d import Axes3D
+import math
 
 
 class PRM:
@@ -138,9 +144,129 @@ class PRM:
 		# Return that it worked
 		return True
 
+	# Finds paths from start vertex to end vertex which satisfy the kinematic model
+	def find_all_paths(self, drone_kinematic_values, kinematic_sample_resolution=5):
+		# Create a drone kinematic model at the starting position
+		# Create an initial state
+		starting_drone = DroneKinematic(mass=drone_kinematic_values['m'],
+																		arm_length=drone_kinematic_values['d'],
+																		thrust_constant=drone_kinematic_values['kf'],
+																		moment_constant=drone_kinematic_values['km'],
+																		max_rotor_speed=drone_kinematic_values['max_rotor_speed'],
+																		inertial_properties=drone_kinematic_values['inertial_properties'],
+																		position=drone_kinematic_values['position'],
+																		attitude=drone_kinematic_values['attitude'],
+																		velocity=drone_kinematic_values['velocity'],
+																		angular_vel=drone_kinematic_values['angular_velocity'])
 
+		# Create the reachability set generator object
+		reachability_space_generator = DroneReachabilitySet(drone_kinematic=starting_drone)
 
+		# Calculate the reachable space for that drone kinematic in one time step
+		positions = reachability_space_generator.calculate_reachable_area(sample_resolution=5)
 
+		# Create the figure
+		fig = plt.figure()
+		ax = Axes3D(fig)
+
+		# Create a list of standard nodes
+		x_vals = []
+		y_vals = []
+		z_vals = []
+
+		# Create a list of source and sink nodes
+		source_x = []
+		source_y = []
+		source_z = []
+		sink_x = []
+		sink_y = []
+		sink_z = []
+
+		# For each node
+		for node in self.V:
+			# Get the x,y and z values
+			x, y, z = node.get_position()
+
+			# Check if this is a source
+			if node.get_source():
+				# Save the position of the source node
+				source_x.append(x)
+				source_y.append(y)
+				source_z.append(z)
+			# Check if this is a source
+			elif node.get_sink():
+				# Save the position of the source node
+				sink_x.append(x)
+				sink_y.append(y)
+				sink_z.append(z)
+			else:
+				# Save the positions or random nodes
+				x_vals.append(x)
+				y_vals.append(y)
+				z_vals.append(z)
+
+		# For all waypoints which waypoints find which are inside the reachable area
+		waypoints = np.column_stack((x_vals, y_vals, z_vals))
+		inside = reachability_space_generator.is_in_hull(waypoints=waypoints)
+
+		in_x = []
+		in_y = []
+		in_z = []
+		out_x = []
+		out_y = []
+		out_z = []
+		for i in range(0, len(inside)):
+			if inside[i]:
+				in_x.append(waypoints[i][0])
+				in_y.append(waypoints[i][1])
+				in_z.append(waypoints[i][2])
+			else:
+				out_x.append(waypoints[i][0])
+				out_y.append(waypoints[i][1])
+				out_z.append(waypoints[i][2])
+
+		# Plot points inside and outside
+		ax.scatter(in_x, in_y, in_z, c='b', label='Waypoints Inside')
+		ax.scatter(out_x, out_y, out_z, c='m', label='Waypoints Outside')
+
+		# Plot the values
+		ax.scatter(source_x, source_y, source_z, c='g', label='Starting Position')
+		ax.scatter(sink_x, sink_y, sink_z, c='r', label='Ending Position')
+
+		ax.scatter(positions[:, 0], positions[:, 1], positions[:, 2], c='k', label='Reachable Sample')
+
+		# Get the points that make the hull
+		x_hull, y_hull, z_hull = reachability_space_generator.get_hull_simplices()
+
+		# Plot the hull
+		for x, y, z in zip(x_hull, y_hull, z_hull):
+			ax.plot(x, y, z, color='r', linestyle='-', linewidth=0.75)
+
+		ax.legend()
+		plt.show()
+
+		for j in range(0, len(in_x)):
+			print("Starting Point: " + str(source_x[0]) + "," + str(source_y[0]) + "," + str(source_z[0]))
+			print("Considered Waypoint: " + str(in_x[j]) + "," + str(in_y[j]) + "," + str(in_z[j]))
+
+			# Find the vector between them
+			vector_x = in_x[j] - source_x[0]
+			vector_y = in_y[j] - source_y[0]
+			vector_z = in_z[j] - source_z[0]
+
+			magnitude = math.sqrt(vector_x**2 + vector_y**2 + vector_z**2)
+
+			print("Magnitude: " + str(magnitude))
+
+			print("Vector Between Points: " + str(vector_x) + "," + str(vector_y) + "," + str(vector_z))
+
+			# Calculate the angle of that vector
+			ax = math.acos(vector_x / magnitude)
+			ay = math.acos(vector_y / magnitude)
+			az = math.acos(vector_z / magnitude)
+
+			print("The angle of the vector is: " + str(math.degrees(ax)) + "," + str(math.degrees(ay)) + "," + str(math.degrees(az)))
+			print("------------")
 
 	# def getEdgesConnectedToVertex(self, vertex):
 	# 	edges_found = []

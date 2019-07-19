@@ -74,10 +74,6 @@ class DroneKinematic:
 	def get_time_step(self):
 		return self.time_steps
 
-	# Return the max rotor speed
-	def get_max_rotor_speed(self):
-		return self.max_rotor_speed
-
 	# Set the position
 	def set_position(self, position):
 		np.copyto(self.position, position)
