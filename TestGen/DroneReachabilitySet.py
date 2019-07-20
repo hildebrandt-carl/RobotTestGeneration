@@ -61,7 +61,11 @@ class DroneReachabilitySet:
 
 		# Save the points and the convex hull
 		self.points = np.column_stack((x_pos, y_pos, z_pos))
-		self.hull = ConvexHull(self.points)
+		# Convex hull could fail for things like having no points due to flying too close to the gound
+		try:
+			self.hull = ConvexHull(self.points)
+		except:
+			self.hull = None
 
 		# Return all possible positions
 		return self.points
@@ -72,6 +76,14 @@ class DroneReachabilitySet:
 		:return: list
 		List of boolean where true means that the point is inside the convex hull
 		'''
+		# If there is no convex hull
+		if self.hull is None:
+			false_array = []
+			# Return a false array
+			for i in range(0, len(waypoints)):
+				false_array.append(False)
+			return false_array
+
 		# https://stackoverflow.com/questions/16750618/whats-an-efficient-way-to-find-if-a-point-lies-in-the-convex-hull-of-a-point-cl
 		A = self.hull.equations[:, 0:-1]
 		b = np.transpose(np.array([self.hull.equations[:, -1]]))

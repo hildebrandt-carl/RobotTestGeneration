@@ -8,13 +8,14 @@ from TrajectoryManager import TrajectoryManager
 from FigureManager import FigureManager
 from EquivalenceChecker import EquivalenceChecker
 from UnityConverter import UnityConverter
+from DroneKinematic import DroneKinematic
 
 # Flags
 plotting = True
 plot_maps = True
 
 # Save locations
-save_path = "Results/TestGen/run0623/"
+save_path = "Results/TestGen/test/"
 
 # Test initial conditions
 initial_conditions = {"map_x_bounds": [-5, 5],
@@ -89,10 +90,36 @@ if plotting:
     fig_manager.display_and_save(fig=map_plt,
                                  save_name='original_map')
 
-p.find_all_paths(drone_kinematic_values=robot_kinematics,
-                 kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"])
+all_paths = p.find_all_paths(drone_kinematic_values=robot_kinematics,
+                             kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"])
 
-#
+
+# Assert that we have found some paths
+assert(len(all_paths) > 0)
+print("DATA: Total unique paths found: " + str(len(all_paths)))
+
+# Create the converter class
+converter = UnityConverter(save_directory=save_path)
+
+file_counter = 0
+for each_path in all_paths:
+  file_counter += 1
+  waypoints = []
+  velocity = []
+  for each_point in each_path:
+    waypoints.append(list(each_point.get_position()))
+    velocity.append(list(each_point.get_velocity()))
+
+  print(waypoints)
+  print(velocity)
+  print("------------")
+
+  # Save the test to a unity file
+  converter.unity_text_file(waypoints=waypoints,
+                            expected_velocity=velocity,
+                            corridor=[],
+                            save_name="test" + str(file_counter) + ".txt")
+
 # print("UPDATE: Finding Possible Paths")
 # # Find all paths between start and end position
 # all_paths = p.findAllPaths(heading=initial_conditions["robot_heading"],

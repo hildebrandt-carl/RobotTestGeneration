@@ -11,6 +11,7 @@ from Trajectory import Trajectory
 from mpl_toolkits.mplot3d import Axes3D
 import math
 from queue import *
+import copy
 
 
 class PRM:
@@ -146,9 +147,10 @@ class PRM:
 		return True
 
 	# Finds paths from start vertex to end vertex which satisfy the kinematic model
-	def find_all_paths(self, drone_kinematic_values, kinematic_sample_resolution=5):
+	def find_all_paths(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5):
 		# List which keeps track of the paths
 		un_finished_paths = Queue()
+		finished_paths = []
 
 		# Create a drone kinematic model at the starting position
 		# Create an initial state
@@ -166,131 +168,94 @@ class PRM:
 		# Add this starting position to the possible paths array
 		un_finished_paths.put([starting_drone])
 
+		# For plotting
+		rejected_lines = []
+
 		counter = 0
 		# While there are unfinished paths
 		while not un_finished_paths.empty():
-			counter += 1
-			if counter > 3:
-				exit()
 
 			# Get the current path and current kinematic
 			current_path = un_finished_paths.get()
 			# The current kinematic is the last kinematic in the path
 			current_kinematic = current_path[-1]
 
+			# Get the current kinematics position
+			source_pos = current_kinematic.get_position()
+
 			# Create the reachability set generator object
+			for p in current_path:
+				print(p.get_position())
 			reachability_space_generator = DroneReachabilitySet(drone_kinematic=current_kinematic)
 
+			print("------")
 			# Calculate the reachable space for that drone kinematic in one time step
-			positions = reachability_space_generator.calculate_reachable_area(sample_resolution=5)
-
-			# Create the figure
-			fig = plt.figure()
-			ax = Axes3D(fig)
+			positions = reachability_space_generator.calculate_reachable_area(sample_resolution=kinematic_sample_resolution)
 
 			# Create a list of standard nodes
 			x_vals = []
 			y_vals = []
 			z_vals = []
-
-			# Create a list of source and sink nodes
-			source_x = []
-			source_y = []
-			source_z = []
-			sink_x = []
-			sink_y = []
-			sink_z = []
+			sink_position = [0, 0, 0]
 
 			# For each node
 			for node in self.V:
 				# Get the x,y and z values
 				x, y, z = node.get_position()
 
-				# Check if this is a source
-				if node.get_source():
-					# Save the position of the source node
-					source_x.append(x)
-					source_y.append(y)
-					source_z.append(z)
-				# Check if this is a source
-				elif node.get_sink():
-					# Save the position of the source node
-					sink_x.append(x)
-					sink_y.append(y)
-					sink_z.append(z)
-				else:
-					# Save the positions or random nodes
-					x_vals.append(x)
-					y_vals.append(y)
-					z_vals.append(z)
+				# Create a list of the x,y and z values
+				x_vals.append(x)
+				y_vals.append(y)
+				z_vals.append(z)
 
-			# For all waypoints which waypoints find which are inside the reachable area
+				# If this is the sink node
+				if node.get_sink():
+					# Save it
+					sink_position = [x, y, z]
+
+			# For all waypoints find which are inside the reachability set
 			waypoints = np.column_stack((x_vals, y_vals, z_vals))
 			inside = reachability_space_generator.is_in_hull(waypoints=waypoints)
 
+			# Used to save the x,y and z position of the waypoints inside the hull
 			in_x = []
 			in_y = []
 			in_z = []
-			out_x = []
-			out_y = []
-			out_z = []
+
+			# Create a list of x, y and z, points inside the hull
 			for i in range(0, len(inside)):
+				# If the waypoint is inside
 				if inside[i]:
-					in_x.append(waypoints[i][0])
-					in_y.append(waypoints[i][1])
-					in_z.append(waypoints[i][2])
-				else:
-					out_x.append(waypoints[i][0])
-					out_y.append(waypoints[i][1])
-					out_z.append(waypoints[i][2])
-
-			# Plot points inside and outside
-			ax.scatter(in_x, in_y, in_z, c='b', label='Waypoints Inside')
-			ax.scatter(out_x, out_y, out_z, c='m', label='Waypoints Outside')
-
-			# Plot the values
-			ax.scatter(source_x, source_y, source_z, c='g', label='Starting Position')
-			ax.scatter(sink_x, sink_y, sink_z, c='r', label='Ending Position')
-
-			ax.scatter(positions[:, 0], positions[:, 1], positions[:, 2], c='k', label='Reachable Sample')
-
-			# Get the points that make the hull
-			x_hull, y_hull, z_hull = reachability_space_generator.get_hull_simplices()
-
-			# Plot the hull
-			for x, y, z in zip(x_hull, y_hull, z_hull):
-				ax.plot(x, y, z, color='r', linestyle='-', linewidth=0.75)
-
-			# Set the labels
-			ax.set_xlabel('X-axis')
-			ax.set_ylabel('Y-axis')
-			ax.set_zlabel('Z-axis')
-			ax.legend()
-			plt.show()
+					# And are not the same position
+					if waypoints[i][0] != source_pos[0] and waypoints[i][1] != source_pos[1] and waypoints[i][2] != source_pos[2]:
+						in_x.append(waypoints[i][0])
+						in_y.append(waypoints[i][1])
+						in_z.append(waypoints[i][2])
 
 			# For each of the waypoints inside the hull
 			for j in range(0, len(in_x)):
-				print("Starting Point: " + str(source_x[0]) + "," + str(source_y[0]) + "," + str(source_z[0]))
-				print("Considered Waypoint: " + str(in_x[j]) + "," + str(in_y[j]) + "," + str(in_z[j]))
 
-				# Find the vector between them
-				vector_x = in_x[j] - source_x[0]
-				vector_y = in_y[j] - source_y[0]
-				vector_z = in_z[j] - source_z[0]
+				#print("Starting Point: " + str(source_pos[0]) + "," + str(source_pos[1]) + "," + str(source_pos[2]))
+				#print("Considered Waypoint: " + str(in_x[j]) + "," + str(in_y[j]) + "," + str(in_z[j]))
+
+				# Find the vector between them (This is the velocity)
+				vector_x = in_x[j] - source_pos[0]
+				vector_y = in_y[j] - source_pos[1]
+				vector_z = in_z[j] - source_pos[2]
 
 				# Calculate the magnitude of the vector
 				magnitude = math.sqrt(vector_x**2 + vector_y**2 + vector_z**2)
 
-				print("Magnitude: " + str(magnitude))
-				print("Vector Between Points: " + str(vector_x) + "," + str(vector_y) + "," + str(vector_z))
+				#print("Magnitude: " + str(magnitude))
+				#print("Vector Between Points: " + str(vector_x) + "," + str(vector_y) + "," + str(vector_z))
 
 				# Calculate the angle of that vector
 				ax = math.acos(vector_x / magnitude)
 				ay = math.acos(vector_y / magnitude)
 				az = math.acos(vector_z / magnitude)
 
-				print("The angle of the vector is: " + str(math.degrees(ax)) + "," + str(math.degrees(ay)) + "," + str(math.degrees(az)))
-				print("---------------------------------")
+				#print("The angle of the vector is: " + str(math.degrees(ax)) + "," + str(math.degrees(ay)) + "," + str(math.degrees(az)))
+				#print("---------------------------------")
 
 				# Create a new drone kinematic for this waypoint
 				new_kinematic = DroneKinematic(mass=drone_kinematic_values['m'],
@@ -304,16 +269,150 @@ class PRM:
 																			 velocity=[vector_x, vector_y, vector_z],
 																			 angular_vel=drone_kinematic_values['angular_velocity'])
 
+				# create a new path
+				new_path = current_path.copy()
+
 				# Add this new path to the unfinished paths queue
-				current_path.append(new_kinematic)
-				un_finished_paths.put(current_path)
+				new_path.append(new_kinematic)
+
+				# Check if the new position is the sink nodes position
+				if in_x[j] == sink_position[0] and in_y[j] == sink_position[1] and in_z[j] == sink_position[2]:
+					print("END FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+					finished_paths.append(new_path)
+				else:
+					# Check to see if the current path is too long:
+					if len(new_path) < total_waypoints:
+						un_finished_paths.put(new_path)
+					else:
+						#print("Rejected Path!!!!!!!!!")
+						line = []
+						for model in new_path:
+							position = model.get_position()
+
+							# Turn the positions into numpy arrays
+							line.append([position[0], position[1], position[2]])
+
+						rejected_lines.append(line)
+						#print("==========================")
 
 
 
 
+		# Visualize the paths
+		fig = plt.figure()
+		ax = Axes3D(fig)
+
+		# Create a list of standard nodes
+		x_vals = []
+		y_vals = []
+		z_vals = []
+
+		# Create a list of source and sink nodes
+		source_x = []
+		source_y = []
+		source_z = []
+		sink_x = []
+		sink_y = []
+		sink_z = []
+
+		# For each node
+		for node in self.V:
+			# Get the x,y and z values
+			x, y, z = node.get_position()
+
+			# Check if this is a source
+			if node.get_source():
+				# Save the position of the source node
+				source_x.append(x)
+				source_y.append(y)
+				source_z.append(z)
+			# Check if this is a source
+			elif node.get_sink():
+				# Save the position of the source node
+				sink_x.append(x)
+				sink_y.append(y)
+				sink_z.append(z)
+			else:
+				# Save the positions or random nodes
+				x_vals.append(x)
+				y_vals.append(y)
+				z_vals.append(z)
+
+		ax.scatter(x_vals, y_vals, z_vals, c='b', label='Waypoints')
+		ax.scatter(source_x, source_y, source_z, c='g', label='Starting Position')
+		ax.scatter(sink_x, sink_y, sink_z, c='r', label='Ending Position')
+
+		xline = []
+		yline = []
+		zline = []
+		# Create a list of paths
+		for path in finished_paths:
+			xl = []
+			yl = []
+			zl = []
+			for point in path:
+				position = point.get_position()
+
+				# Turn the positions into numpy arrays
+				xl.append(position[0])
+				yl.append(position[1])
+				zl.append(position[2])
+
+			# Plot the positions
+			ax.plot3D(xl, yl, zl, color='green', linestyle=":", linewidth=0.75)
+			xline.append(xl)
+			yline.append(yl)
+			zline.append(zl)
+
+		xliner = []
+		yliner = []
+		zliner = []
+		# Create a list of paths
+		for path in rejected_lines:
+			xl = []
+			yl = []
+			zl = []
+			for point in path:
+				# Turn the positions into numpy arrays
+				xl.append(point[0])
+				yl.append(point[1])
+				zl.append(point[2])
+
+			# Plot the positions
+			ax.plot3D(xl, yl, zl, color='red', linestyle=":", linewidth=0.75)
+			xliner.append(xl)
+			yliner.append(yl)
+			zliner.append(zl)
+
+		ax.set_xlabel('X-axis')
+		ax.set_ylabel('Y-axis')
+		ax.set_zlabel('Z-axis')
+		ax.legend()
+		plt.show()
+
+		# Visualize the paths
+		fig = plt.figure()
+		ax = Axes3D(fig)
+		# Plot the positions
+		print("xline: " + str(xline))
+		print("yline: " + str(yline))
+		print("zline: " + str(zline))
+		for x, y, z in zip(xline, yline, zline):
+			ax.plot3D(x, y, z, color='green', linestyle=":", linewidth=0.75)
+		ax.scatter(x_vals, y_vals, z_vals, c='b', label='Waypoints')
+		ax.scatter(source_x, source_y, source_z, c='g', label='Starting Position')
+		ax.scatter(sink_x, sink_y, sink_z, c='r', label='Ending Position')
+
+		ax.set_xlabel('X-axis')
+		ax.set_ylabel('Y-axis')
+		ax.set_zlabel('Z-axis')
+		ax.legend()
+		plt.show()
 
 
 
+		# Return the finished paths
+		return finished_paths
 
 
 
