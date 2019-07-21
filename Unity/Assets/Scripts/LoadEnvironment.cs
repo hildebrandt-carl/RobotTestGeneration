@@ -13,6 +13,8 @@ public class LoadEnvironment : MonoBehaviour
 
 	public GameObject sun;
 
+	public GameObject[] cage_walls;
+
 	public bool Day = false;
 	public bool Raining = false;
 	public string FileName = "test1.txt";
@@ -108,6 +110,18 @@ public class LoadEnvironment : MonoBehaviour
 					case "D":
 						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
 						Day = (Value == "1");
+						sun.SetActive(Day);
+						break;
+					// Day
+					case "C":
+						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
+						if (Value == "0")
+						{
+							foreach(GameObject cage_wall in cage_walls)
+							{
+								cage_wall.GetComponent<MeshRenderer>().enabled = false;
+							}
+						}
 						sun.SetActive(Day);
 						break;
 					default:

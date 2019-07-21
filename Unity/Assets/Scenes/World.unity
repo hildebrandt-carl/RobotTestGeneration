@@ -526,7 +526,7 @@ Transform:
   m_GameObject: {fileID: 439152887}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.05, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 10, y: 1, z: 10}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -1086,6 +1086,11 @@ MonoBehaviour:
   goalObject: {fileID: 4667868370430098, guid: 1e00a4340f4ae8a4b8253da4ffaa7c82, type: 3}
   rainObject: {fileID: 4856909547656952, guid: b51ab665c1c1eea41999ec5fb55022fa, type: 3}
   sun: {fileID: 170076733}
+  cage_walls:
+  - {fileID: 161714017}
+  - {fileID: 567094650}
+  - {fileID: 1977269690}
+  - {fileID: 879844762}
   Day: 0
   Raining: 0
   FileName: test.txt
