@@ -8,7 +8,7 @@
     <remap from="/tf" to="/tf_odom"/>
   </node>
 
-  <node pkg="flightcontroller" type="angle_calculator.py" name="angle_calculator_node">
+  <node pkg="flightcontroller" type="angle_calculator.py" name="angle_calculator_node" output="screen">
   </node>
 
   <node pkg="flightcontroller" type="angle_controller.py" name="angle_controller_node" output="screen">

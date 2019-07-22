@@ -3,6 +3,8 @@ import rospy
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Vector3
 from tf.transformations import euler_from_quaternion
+from std_msgs.msg import Empty
+
 
 class AngleCalculator():
 
@@ -13,16 +15,33 @@ class AngleCalculator():
     # Create the subscribers and publishers
     self.att_pub = rospy.Publisher('/uav/sensors/attitude', Vector3, queue_size=1)
     self.imu_sub = rospy.Subscriber("/uav/sensors/filtered_imu", Imu, self.imu_callback)
+    self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
+    self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
+
+    # Set the rate
+    self.rate = 10
+
+    # Checks to see if the simulation has started
+    self.started = False
 
     # Run the node
-    self.Process()
+    self.Run()
 
 
   # This is the main loop of this class
-  def Process(self):
-    # Wait until the node is stopped
-    rospy.spin()
+  def Run(self):
+     # Set the rate
+    rate = rospy.Rate(self.rate)
 
+    # While running
+    while not rospy.is_shutdown():
+
+      # If the test has started
+      if self.started:
+        pass
+
+      # Sleep any excess time
+      rate.sleep()
 
   # Call back to get the GPS data
   def imu_callback(self, gps_msg):
@@ -34,9 +53,18 @@ class AngleCalculator():
     msg = Vector3(euler[0], euler[1], euler[2])
     self.att_pub.publish(msg)
 
+  # Called when the navigation is started
+  def start_callback(self, msg):
+    # Set the started flag to true
+    rospy.loginfo(str(rospy.get_name()) + ": Angle Calculator Starting")
+    self.started = True
+
+  # Called when the navigation is completed
+  def completed_callback(self, msg):
+    # Shutdown as there is nothing left to do
+    rospy.signal_shutdown("Navigation Complete")
 
   def shutdown_sequence(self):
-    # Close the socket
     rospy.loginfo(str(rospy.get_name()) + ": Shutting Down")
 
 

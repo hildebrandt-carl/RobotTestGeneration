@@ -6,6 +6,7 @@ from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
 from pid_class import PID
 
+
 class PositionController():
 
   def __init__(self):
@@ -17,6 +18,8 @@ class PositionController():
     self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
     self.pos_set_sub = rospy.Subscriber("uav/input/position", Vector3, self.set_pos)
     self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
+    self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
+    self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
 
     # Variable to set the rate
     self.rate = 5.0
@@ -47,6 +50,9 @@ class PositionController():
     self.y_pos = 0
     self.z_pos = 0
 
+    # Checks to see if the simulation has started
+    self.started = False
+
     # Run the communication node
     self.ControlLoop()
 
@@ -62,30 +68,32 @@ class PositionController():
     # While running
     while not rospy.is_shutdown():
 
-      # Use a PID to calculate the velocity you want
-      x_proportion = self.pos_x_PID.get_output(self.x_setpoint, self.x_pos)
-      y_proportion = self.pos_y_PID.get_output(self.y_setpoint, self.y_pos)
-      z_proportion = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
+      if self.started:
 
-      total = abs(x_proportion) + abs(y_proportion) + abs(z_proportion)
+        # Use a PID to calculate the velocity you want
+        x_proportion = self.pos_x_PID.get_output(self.x_setpoint, self.x_pos)
+        y_proportion = self.pos_y_PID.get_output(self.y_setpoint, self.y_pos)
+        z_proportion = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
 
-      # If we are not moving yet
-      if total == 0:
-        total = 1
+        total = abs(x_proportion) + abs(y_proportion) + abs(z_proportion)
 
-      # Set the velocity to 10 m/s
-      velocity_total = 10.0 # m/s
+        # If we are not moving yet
+        if total == 0:
+          total = 1
 
-      # Cacluate the velocity in the x and y direction
-      x_vel = velocity_total * (x_proportion/total)
-      y_vel = velocity_total * (y_proportion/total)
-      z_vel = velocity_total * (z_proportion/total)
+        # Set the velocity to 10 m/s
+        velocity_total = 10.0 # m/s
 
-      # Create and publish the data
-      velocity = Vector3(x_vel, -1* y_vel, z_vel)
-      self.vel_set_sub.publish(velocity)
+        # Cacluate the velocity in the x and y direction
+        x_vel = velocity_total * (x_proportion/total)
+        y_vel = velocity_total * (y_proportion/total)
+        z_vel = velocity_total * (z_proportion/total)
 
-      # Sleep any excress time
+        # Create and publish the data
+        velocity = Vector3(x_vel, -1* y_vel, z_vel)
+        self.vel_set_sub.publish(velocity)
+
+      # Sleep any excess time
       rate.sleep()
 
 
@@ -102,6 +110,11 @@ class PositionController():
     self.y_setpoint = msg.y
     self.z_setpoint = msg.z
 
+  # Called when the navigation is started
+  def start_callback(self, msg):
+    # Set the started flag to true
+    rospy.loginfo(str(rospy.get_name()) + ": Position Controller")
+    self.started = True
 
   # On collsion reset the PID's
   def collision_callback(self, msg):
@@ -109,15 +122,16 @@ class PositionController():
     self.pos_y_PID.remove_buildup()
     self.pos_z_PID.remove_buildup()
 
+  # Called when the navigation is completed
+  def completed_callback(self, msg):
+    # Shutdown as there is nothing left to do
+    rospy.signal_shutdown("Navigation Complete")
 
   def shutdown_sequence(self):
-    # Close the socket
     rospy.loginfo(str(rospy.get_name()) + ": Shutting Down")
 
 
 def main():
-  # Wait all nodes to initilize before starting
-  time.sleep(7.5) 
   rospy.init_node('position_controller_node')
   try:
     poscon = PositionController()

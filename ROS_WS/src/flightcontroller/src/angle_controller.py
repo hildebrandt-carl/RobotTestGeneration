@@ -21,6 +21,8 @@ class AngleController():
     self.att_sub = rospy.Subscriber("/uav/input/attitude", Vector3, self.attitude_set_callback)
     self.thrust_sub = rospy.Subscriber("/uav/input/thrust", Float64, self.thrust_callback)
     self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
+    self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
+    self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
 
     # Getting the PID parameters
     gains = rospy.get_param('/angle_controller_node/gains', {'p': 0.1, 'i': 0, 'd': 0})
@@ -52,6 +54,9 @@ class AngleController():
     self.pitch_reading = 0
     self.yaw_reading = 0
 
+    # Checks to see if the simulation has started
+    self.started = False
+
     # Run the communication node
     self.ControlLoop()
 
@@ -67,6 +72,7 @@ class AngleController():
     # While running
     while not rospy.is_shutdown():
 
+
       # Use a PID to calculate the rates you want to publish to maintain an angle
       roll_output = self.rollPID.get_output(self.roll_setpoint, self.roll_reading)
       pitch_output = self.pitchPID.get_output(self.pitch_setpoint, self.pitch_reading)
@@ -75,20 +81,27 @@ class AngleController():
       # Publish the rate message
       msg = RateThrust()
       msg.header.stamp = rospy.get_rostime()
-      msg.thrust = Vector3(0,0,self.thrust_setpoint)
+      if self.started:
+        msg.thrust = Vector3(0,0,self.thrust_setpoint)
+      else:
+        msg.thrust = Vector3(0,0,0)
       msg.angular_rates = Vector3(roll_output,pitch_output,0)
       self.rate_pub.publish(msg)
 
-      # Sleep any excress time
+
+      # Sleep any excess time
       rate.sleep()
 
+  # Called when the navigation is completed
+  def completed_callback(self, msg):
+    # Shutdown as there is nothing left to do
+    rospy.signal_shutdown("Navigation Complete")
 
 	# Save the new attitude readings
   def euler_angle_callback(self, msg):
     self.roll_reading = msg.x
     self.pitch_reading = msg.y
     self.yaw_reading = msg.z
-
 
 	# Save the new attitude setpoints
   def attitude_set_callback(self, msg):
@@ -97,18 +110,21 @@ class AngleController():
     self.pitch_setpoint = max(min(msg.y, 0.5),-0.5)
     self.yaw_setpoint = msg.z
 
-
 	# Save the new thrust setpoints
   def thrust_callback(self, msg):
     self.thrust_setpoint = msg.data
 
+  # Called when the navigation is started
+  def start_callback(self, msg):
+    # Set the started flag to true
+    rospy.loginfo(str(rospy.get_name()) + ": Angle Controller Starting")
+    self.started = True
   
   # On collsion reset the PID's
   def collision_callback(self, msg):
     self.rollPID.remove_buildup()
     self.pitchPID.remove_buildup()
     self.yawPID.remove_buildup()
-
 
 	# Called on ROS shutdown
   def shutdown_sequence(self):

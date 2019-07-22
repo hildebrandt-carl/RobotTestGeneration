@@ -7,6 +7,7 @@ from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
 
+
 class PerformanceTester():
 
   def __init__(self):
@@ -17,9 +18,14 @@ class PerformanceTester():
     self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
     self.pos_set_sub = rospy.Subscriber("uav/input/position", Vector3, self.set_pos)
     self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
+    self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
+    self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
 
     # Variable to set the rate
     self.rate = 2
+
+    # Checks to see if the simulation has started
+    self.started = False
 
     # Getting the save file parameters
     save_location = rospy.get_param("performance_tester_node/save_location")
@@ -67,24 +73,23 @@ class PerformanceTester():
     # While running
     while not rospy.is_shutdown():
 
-      # Drone has not started
-      if self.drone_pos.z < 3:
-        rospy.loginfo(str(rospy.get_name()) + ": Waiting for test to begin")
-        # Reset the time
-        self.start_time = time.time()
-        self.test_start_time = time.time()
-      elif self.drone_pos.z > 15:
-        pass
-      else:
+      # If the test has started
+      if self.started:
         # Report the distance to the goal
         distance = self.calculate_distance(self.goal_position, self.drone_pos)
         self.filehandler.write("Current Drone Position: " + str(self.drone_pos.x) + ", " + str(self.drone_pos.y) + ", " + str(self.drone_pos.z) + "\n")
+        print(str(self.goal_position))
         self.filehandler.write("Current Goal Position: " + str(self.goal_position.x) + ", " + str(self.goal_position.y) + ", " + str(self.goal_position.z) + "\n")
         self.filehandler.write("Distance to Goal " + str(self.goal_counter) + ": " + str(distance) + "\n")
         self.filehandler.write("Elapsed Time " + str(time.time() - self.test_start_time) + "\n")
         self.filehandler.write("-------------------------------\n")
+      else:
+        rospy.loginfo(str(rospy.get_name()) + ": Waiting for test to begin")
+        # Reset the time
+        self.start_time = time.time()
+        self.test_start_time = time.time()
 
-      # Sleep any excress time
+      # Sleep any excess time
       rate.sleep()
 
 
@@ -103,9 +108,10 @@ class PerformanceTester():
     y_pos = msg.y
     z_pos = msg.z
     new_goal_position = Vector3(x_pos, y_pos, z_pos)
+    print(str(self.goal_position))
 
     # Check if the goal has changed
-    if self.goal_position != new_goal_position:
+    if self.goal_position != new_goal_position and self.started == True:
       self.filehandler.write("Goal switch\n")
       # Update the time to get to that goal
       end_time = time.time()
@@ -135,15 +141,25 @@ class PerformanceTester():
     # Return the distance
     return distance
   
-
   # On collsion reset the goal number
   def collision_callback(self, msg):
     self.collision_number += 1
     self.filehandler.write("Collision\n") 
 
+  # Called when the navigation is completed
+  def completed_callback(self, msg):
+    # Shutdown as there is nothing left to do
+    rospy.signal_shutdown("Navigation Complete")
+
+  # Called when the navigation is started
+  def start_callback(self, msg):
+    # Set the started flag to true
+    rospy.loginfo(str(rospy.get_name()) + ": Performance Analyzers Started")
+    self.started = True
 
   def shutdown_sequence(self):
     # Close the file handler
+    self.started = False
     self.filehandler.close()
     rospy.loginfo(str(rospy.get_name()) + ": Shutting Down")
 

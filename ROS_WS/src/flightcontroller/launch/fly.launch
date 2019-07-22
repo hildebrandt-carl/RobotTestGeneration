@@ -20,7 +20,7 @@
     <param name="test_name" type="string" value="test.txt" />
   </node>
 
-  <node pkg="flightcontroller" type="performance_analyzer.py" name="performance_tester_node" output="screen">
+  <node pkg="flightcontroller" type="performance_analyzer.py" name="performance_tester_node">
     <param name="save_location" type="string" value="/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build"/>
     <param name="save_name" type="string" value="performance.txt" />
   </node>

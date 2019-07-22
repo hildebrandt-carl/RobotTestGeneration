@@ -67,7 +67,7 @@ class Connection():
       else:
         self.ResetFlag = False
 
-      # Sleep any excress time
+      # Sleep any excess time
       rate.sleep()
 
   # Call back to get the GPS data

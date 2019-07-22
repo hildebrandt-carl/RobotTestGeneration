@@ -8,6 +8,7 @@ from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
 
+
 class GoalTester():
 
   def __init__(self):
@@ -17,14 +18,16 @@ class GoalTester():
     # Create the subscribers and publishers
     self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
     self.goal_pub = rospy.Publisher("uav/input/position", Vector3, queue_size=1)
-    self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
+    self.col_sub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
+    self.complete_pub = rospy.Publisher('/test/completed', Empty, queue_size=1)
+    self.navigation_start = rospy.Publisher('/test/started', Empty, queue_size=1)
 
     # Variable to set the rate
     self.rate = 2
 
     # Getting the load file parameters
-    test_location = rospy.get_param("goal_tester_node/test_location")
-    test_name = rospy.get_param("goal_tester_node/test_name")
+    test_location = rospy.get_param("goal_tester_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build")
+    test_name = rospy.get_param("goal_tester_node/test_name", "test.txt")
 
     # Display incoming parameters
     rospy.loginfo(str(rospy.get_name()) + ": Lauching with the following parameters:")
@@ -92,6 +95,11 @@ class GoalTester():
     # Calculate the time between intervals
     dt = 1.0/self.rate
 
+    print("STARTED!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+    # Start the test
+    self.navigation_start.publish(Empty())
+
     # While running
     while not rospy.is_shutdown():
       # Check if we have listed enough goals
@@ -103,17 +111,24 @@ class GoalTester():
 
         # Calculated the distance to the goal
         distance_to_goal = self.distance(current_goal, self.drone_pos)
-        print("Current Goal: x-" + str(current_goal.x) + "  y-" + str(current_goal.y) + "  z-" + str(current_goal.z))
-        print("Current Pos : x-" + str(self.drone_pos.x) + "  y-" + str(self.drone_pos.y) + "  z-" + str(self.drone_pos.z))
-        print("Distance: " + str(distance_to_goal))
-        print("----------------------------")
+        rospy.loginfo(str(rospy.get_name()) + ": Current Goal: x-" + str(current_goal.x) + "  y-" + str(current_goal.y) + "  z-" + str(current_goal.z))
+        rospy.loginfo(str(rospy.get_name()) + ": Current Pos : x-" + str(self.drone_pos.x) + "  y-" + str(self.drone_pos.y) + "  z-" + str(self.drone_pos.z))
+        rospy.loginfo(str(rospy.get_name()) + ": Distance: " + str(distance_to_goal))
+        rospy.loginfo(str(rospy.get_name()) + "----------------------------")
       
         if distance_to_goal < self.acceptance_distance:
           self.goal_number += 1
-      else:      
-        print("COMPLETED")
+      else:
+        # We have completed the test      
+        rospy.loginfo(str(rospy.get_name()) + ": Navigation Complete")
+        
+        # Publish that we have completed the test
+        self.complete_pub.publish(Empty())
 
-      # Sleep any excress time
+        # Shutdown as there is nothing left to do
+        rospy.signal_shutdown("Navigation Complete")
+        
+      # Sleep any excess time
       rate.sleep()
 
 
@@ -145,14 +160,11 @@ class GoalTester():
     # Return the distance
     return distance
   
-
   # On collsion reset the goal number
   def collision_callback(self, msg):
     self.goal_number = 0
 
-
   def shutdown_sequence(self):
-    # Close the socket
     rospy.loginfo(str(rospy.get_name()) + ": Shutting Down")
 
 

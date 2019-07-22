@@ -5,6 +5,7 @@ from std_msgs.msg import Float64
 from std_msgs.msg import Empty
 from pid_class import PID
 
+
 class VelocityController():
 
   def __init__(self):
@@ -17,6 +18,8 @@ class VelocityController():
     self.att_pub = rospy.Publisher("/uav/input/attitude", Vector3, queue_size=1)
     self.thrust_pub = rospy.Publisher('/uav/input/thrust', Float64, queue_size=1)
     self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
+    self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
+    self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
 
     # Variable to set the rate
     self.rate = 10.0
@@ -51,6 +54,9 @@ class VelocityController():
     self.y_vel = 0
     self.z_vel = 0
 
+    # Checks to see if the simulation has started
+    self.started = False
+
     # Run the communication node
     self.ControlLoop()
 
@@ -70,17 +76,19 @@ class VelocityController():
     # While running
     while not rospy.is_shutdown():
 
-      # Use a PID to calculate the angle you want to hold and thrust you want
-      x_output = self.vel_x_PID.get_output(self.x_setpoint, self.x_vel)
-      y_output = self.vel_y_PID.get_output(self.y_setpoint, self.y_vel)
-      z_output.data = self.vel_z_PID.get_output(self.z_setpoint, self.z_vel) + 9.8
+      if self.started:
 
-      # Create and publish the data
-      attitude = Vector3(y_output, x_output, 1.57)
-      self.att_pub.publish(attitude) 
-      self.thrust_pub.publish(z_output) 
+        # Use a PID to calculate the angle you want to hold and thrust you want
+        x_output = self.vel_x_PID.get_output(self.x_setpoint, self.x_vel)
+        y_output = self.vel_y_PID.get_output(self.y_setpoint, self.y_vel)
+        z_output.data = self.vel_z_PID.get_output(self.z_setpoint, self.z_vel) + 9.8
 
-      # Sleep any excress time
+        # Create and publish the data
+        attitude = Vector3(y_output, x_output, 1.57)
+        self.att_pub.publish(attitude) 
+        self.thrust_pub.publish(z_output) 
+
+      # Sleep any excess time
       rate.sleep()
 
 
@@ -97,6 +105,12 @@ class VelocityController():
     self.y_setpoint = vel_msg.y
     self.z_setpoint = vel_msg.z
 
+
+  # Called when the navigation is started
+  def start_callback(self, msg):
+    # Set the started flag to true
+    rospy.loginfo(str(rospy.get_name()) + ": Velocity Controller Starting")
+    self.started = True
     
   # On collsion reset the PID's
   def collision_callback(self, msgs):
@@ -104,9 +118,12 @@ class VelocityController():
     self.vel_y_PID.remove_buildup()
     self.vel_z_PID.remove_buildup()
 
+  # Called when the navigation is completed
+  def completed_callback(self, msg):
+    # Shutdown as there is nothing left to do
+    rospy.signal_shutdown("Navigation Complete")
 
   def shutdown_sequence(self):
-    # Close the socket
     rospy.loginfo(str(rospy.get_name()) + ": Shutting Down")
 
 
