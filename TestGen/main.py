@@ -18,12 +18,11 @@ plot_maps = True
 save_path = "Results/TestGen/test/"
 
 # Test initial conditions
-initial_conditions = {"map_x_bounds": [-5, 5],
-                      "map_y_bounds": [-5, 5],
+initial_conditions = {"map_x_bounds": [-2, 15],
+                      "map_y_bounds": [-10, 10],
                       "map_z_bounds": [0, 10],
-                      "start_point": [-4, -4, 0.1],
-                      "end_point": [4, 4, 9],
-                      "unity_bounds": [100, 100]}
+                      "start_point": [0, 0, 1],
+                      "end_point": [14, 0, 9]}
 
 # Robot start and end locations
 robot_kinematics = {"m": 0.5,
@@ -45,9 +44,9 @@ human_specified_factors = {"epsilon_angle": 0,
                            "kinematic_sampling_resolution": 5}
 
 # Used to limit our search
-traj_search_conditions = {"number_nodes": 30,
+traj_search_conditions = {"number_nodes": 70,
                           "max_trajectories": 100000,
-                          "search_depth": 7}
+                          "search_depth": 5}
 
 # Give the trajectory and node class the correct bounds
 Trajectory.x_range = {"lower": initial_conditions["map_x_bounds"][0],
@@ -91,8 +90,8 @@ if plotting:
                                  save_name='original_map')
 
 all_paths = p.find_all_paths(drone_kinematic_values=robot_kinematics,
-                             kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"])
-
+                             kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
+                             total_waypoints=traj_search_conditions["search_depth"])
 
 # Assert that we have found some paths
 assert(len(all_paths) > 0)

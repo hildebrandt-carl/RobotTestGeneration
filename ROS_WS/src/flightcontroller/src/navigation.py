@@ -44,7 +44,7 @@ class GoalTester():
     self.goal_positions = []
 
     # The distance which a goal is accepted
-    self.acceptance_distance = 5
+    self.acceptance_distance = 2
 
     # Load the goal positions
     self.LoadGoalPositions(file_location)

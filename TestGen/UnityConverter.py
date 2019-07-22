@@ -51,7 +51,7 @@ class UnityConverter:
 		# Return the final segments
 		return final_segments
 
-	def unity_text_file(self, waypoints, expected_velocity, corridor, save_name, raining=False, day=True):
+	def unity_text_file(self, waypoints, expected_velocity, corridor, save_name, raining=False, day=True, cage=False):
 		file = open(self.save_directory + save_name, "w")
 
 		file.write('# Note +ve X is north\n')
@@ -86,5 +86,6 @@ class UnityConverter:
 		file.write("\n\n# environment settings\n")
 		file.write("R: (" + str(int(raining)) + ")\n")
 		file.write("D: (" + str(int(day)) + ")\n")
+		file.write("C: (" + str(int(cage)) + ")\n")
 
 		file.close()

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+import time
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
@@ -18,7 +19,7 @@ class PositionController():
     self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
 
     # Variable to set the rate
-    self.rate = 10.0
+    self.rate = 5.0
 
     # Getting the PID parameters
     gains = rospy.get_param('/position_controller_node/gains', {'p': 1, 'i': 0.0, 'd': 0.0})
@@ -64,8 +65,11 @@ class PositionController():
       # Use a PID to calculate the velocity you want
       x_proportion = self.pos_x_PID.get_output(self.x_setpoint, self.x_pos)
       y_proportion = self.pos_y_PID.get_output(self.y_setpoint, self.y_pos)
+      z_proportion = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
 
-      total = abs(x_proportion) + abs(y_proportion)
+      total = abs(x_proportion) + abs(y_proportion) + abs(z_proportion)
+
+      # If we are not moving yet
       if total == 0:
         total = 1
 
@@ -75,9 +79,7 @@ class PositionController():
       # Cacluate the velocity in the x and y direction
       x_vel = velocity_total * (x_proportion/total)
       y_vel = velocity_total * (y_proportion/total)
-
-      # The Z velocity is based on the position
-      z_vel = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
+      z_vel = velocity_total * (z_proportion/total)
 
       # Create and publish the data
       velocity = Vector3(x_vel, -1* y_vel, z_vel)
@@ -114,6 +116,8 @@ class PositionController():
 
 
 def main():
+  # Wait all nodes to initilize before starting
+  time.sleep(7.5) 
   rospy.init_node('position_controller_node')
   try:
     poscon = PositionController()
