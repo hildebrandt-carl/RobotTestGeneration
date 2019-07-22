@@ -120,6 +120,7 @@ public class LoadEnvironment : MonoBehaviour
 							foreach(GameObject cage_wall in cage_walls)
 							{
 								cage_wall.GetComponent<MeshRenderer>().enabled = false;
+								cage_wall.GetComponent<BoxCollider>().enabled = false;
 							}
 						}
 						sun.SetActive(Day);
