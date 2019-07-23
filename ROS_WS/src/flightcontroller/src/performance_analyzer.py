@@ -158,6 +158,15 @@ class PerformanceTester():
     self.started = True
 
   def shutdown_sequence(self):
+    # Save the final data
+    end_time = time.time()
+    self.filehandler.write("Time between goals: " + str(end_time - self.start_time) + "\n")
+    # Update the total time
+    self.total_time += (end_time - self.start_time)
+    # Print the total time
+    self.filehandler.write("Total Time: " + str(self.total_time) + "\n")
+    self.filehandler.write("-------------------------------\n")
+
     # Close the file handler
     self.started = False
     self.filehandler.close()

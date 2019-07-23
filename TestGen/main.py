@@ -7,22 +7,22 @@ from Trajectory import Trajectory
 from TrajectoryManager import TrajectoryManager
 from FigureManager import FigureManager
 from EquivalenceChecker import EquivalenceChecker
-from UnityConverter import UnityConverter
 from DroneKinematic import DroneKinematic
+from RankingSystem import RankingSystem
 
 # Flags
 plotting = True
 plot_maps = True
 
 # Save locations
-save_path = "Results/TestGen/test/"
+save_path = "Results/TestGen/delete_test/"
 
 # Test initial conditions
-initial_conditions = {"map_x_bounds": [-2, 15],
-                      "map_y_bounds": [-10, 10],
-                      "map_z_bounds": [0, 10],
-                      "start_point": [0, 0, 1],
-                      "end_point": [14, 0, 9]}
+initial_conditions = {"map_x_bounds": [-1, 5],
+                      "map_y_bounds": [-2, 2],
+                      "map_z_bounds": [0, 5],
+                      "start_point": [0, 0, 1.5],
+                      "end_point": [4, 0, 4]}
 
 # Robot start and end locations
 robot_kinematics = {"m": 0.5,
@@ -37,30 +37,25 @@ robot_kinematics = {"m": 0.5,
                     "angular_velocity": [0, 0, 0]}
 
 # Specified by the tester
-human_specified_factors = {"epsilon_angle": 0,
-                           "epsilon_velocity": 0,
-                           "epsilon_class_equivalence": 1,
-                           "selected_per_class": 10,
-                           "kinematic_sampling_resolution": 5}
+human_specified_factors = {"kinematic_sampling_resolution": 5}
 
 # Used to limit our search
-traj_search_conditions = {"number_nodes": 70,
-                          "max_trajectories": 100000,
-                          "search_depth": 5}
-
-# Give the trajectory and node class the correct bounds
-Trajectory.x_range = {"lower": initial_conditions["map_x_bounds"][0],
-                      "upper": initial_conditions["map_x_bounds"][1]}
-Trajectory.y_range = {"lower": initial_conditions["map_y_bounds"][0],
-                      "upper": initial_conditions["map_y_bounds"][1]}
-Trajectory.z_range = {"lower": initial_conditions["map_z_bounds"][0],
-                      "upper": initial_conditions["map_z_bounds"][1]}
+traj_search_conditions = {"number_nodes": 5,
+                          "search_depth": 3}
 
 # Create the Figure manager
 fig_manager = FigureManager(save_path)
 
 # Make sure the directory we want to save our files in is created
 fig_manager.create_directory()
+
+# Set the figure managers figure bounds
+FigureManager.x_range = {"lower": initial_conditions["map_x_bounds"][0],
+                         "upper": initial_conditions["map_x_bounds"][1]}
+FigureManager.y_range = {"lower": initial_conditions["map_y_bounds"][0],
+                         "upper": initial_conditions["map_y_bounds"][1]}
+FigureManager.z_range = {"lower": initial_conditions["map_z_bounds"][0],
+                         "upper": initial_conditions["map_z_bounds"][1]}
 
 # Generate the prm map
 print("UPDATE: Populating Trajectory Graph")
@@ -89,35 +84,83 @@ if plotting:
     fig_manager.display_and_save(fig=map_plt,
                                  save_name='original_map')
 
-all_paths = p.find_all_paths(drone_kinematic_values=robot_kinematics,
-                             kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
-                             total_waypoints=traj_search_conditions["search_depth"])
+all_paths, rejected_lines = p.find_all_paths(drone_kinematic_values=robot_kinematics,
+                                             kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
+                                             total_waypoints=traj_search_conditions["search_depth"])
+
+# Display the selected paths
+if plotting:
+    # Show the map after the prm construction phase
+    print("UPDATE: Displaying Selected Trajectories")
+    map_plt = fig_manager.plot_selected_trajectories(nodes=p.get_vertices(),
+                                                     selected_paths=all_paths,
+                                                     figure_size=(10, 10))
+
+    # Display the figure
+    fig_manager.display_and_save(fig=map_plt,
+                                 save_name='selected_trajectories')
+
+
+# Display the rejected paths
+if plotting:
+    # Show the map after the prm construction phase
+    print("UPDATE: Displaying Rejected Trajectories")
+    map_plt = fig_manager.plot_rejected_trajectories(nodes=p.get_vertices(),
+                                                     not_selected_paths=rejected_lines,
+                                                     figure_size=(10, 10))
+
+    # Display the figure
+    fig_manager.display_and_save(fig=map_plt,
+                                 save_name='rejected_trajectories')
+
 
 # Assert that we have found some paths
 assert(len(all_paths) > 0)
 print("DATA: Total unique paths found: " + str(len(all_paths)))
 
-# Create the converter class
-converter = UnityConverter(save_directory=save_path)
+# Create a ranking system object
+ranking_obj = RankingSystem(paths=all_paths)
 
-file_counter = 0
-for each_path in all_paths:
-  file_counter += 1
-  waypoints = []
-  velocity = []
-  for each_point in each_path:
-    waypoints.append(list(each_point.get_position()))
-    velocity.append(list(each_point.get_velocity()))
+# Score each of the paths
+ranking_obj.calculate_scores()
 
-  print(waypoints)
-  print(velocity)
-  print("------------")
+print("\nINFO: Displaying the score")
+print(ranking_obj.get_scores())
 
-  # Save the test to a unity file
-  converter.unity_text_file(waypoints=waypoints,
-                            expected_velocity=velocity,
-                            corridor=[],
-                            save_name="test" + str(file_counter) + ".txt")
+# Save the scores
+ranking_obj.save_trajectories_according_to_score(folder=save_path)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # print("UPDATE: Finding Possible Paths")
 # # Find all paths between start and end position

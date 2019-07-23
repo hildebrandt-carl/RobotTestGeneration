@@ -1,5 +1,5 @@
 import numpy as np
-from math import sin, cos, tan, pow
+from math import sin, cos, tan, pow, inf, sqrt
 from mpmath import sec
 
 class DroneKinematic:
@@ -33,6 +33,9 @@ class DroneKinematic:
 
 		# Keep track of how many time steps
 		self.time_steps = 0
+
+		# Keeps track of the largest possible velocity
+		self.maximum_velocity = -1 * inf
 
 	# Update the copy operator to make a copy of all the parameters
 	def __copy__(self):
@@ -73,6 +76,10 @@ class DroneKinematic:
 	# Return the time
 	def get_time_step(self):
 		return self.time_steps
+
+	# Return the maximum velocity
+	def get_maximum_velocity(self):
+		return self.maximum_velocity
 
 	# Return the max rotor speed
 	def get_max_rotor_speed(self):
@@ -190,3 +197,19 @@ class DroneKinematic:
 
 		# Return the position
 		return np.copy(self.position)
+
+	# Calculate the maximum velocity based on a set of samples from the reachability set
+	def calculate_maximum_velocity(self, sample_points):
+		# For each of the sample points
+		for point in sample_points:
+			# Calculate the distance
+			dx = self.position[0] - point[0]
+			dy = self.position[1] - point[1]
+			dz = self.position[2] - point[2]
+			distance = sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2))
+
+			# Save the largest velocity (the distance is the velocity because v=d/t and in our case t=1)
+			if self.maximum_velocity < distance:
+				self.maximum_velocity = distance
+
+		return self.maximum_velocity

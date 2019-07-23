@@ -4,6 +4,12 @@
   <arg name="ignore_collisions" default="false" />
   <arg name="render_stereo" default="0" />
 
+  <arg name="test_name" default="test.txt"/>
+  <arg name="test_location" default="/home/autosoftlab/Desktop/RobotTestGeneration"/>
+  
+  <arg name="save_name" default="performance.txt"/>
+  <arg name="save_location" default="/home/autosoftlab/Desktop/RobotTestGeneration"/>
+
   <include file="$(find flightcontroller)/launch/angle.launch"/>
   <include file="$(find flightcontroller)/launch/velocity.launch"/>
   <include file="$(find flightcontroller)/launch/position.launch"/>
@@ -16,13 +22,13 @@
 
 
   <node pkg="flightcontroller" type="navigation.py" name="goal_tester_node" output="screen">
-    <param name="test_location" type="string" value="/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build"/>
-    <param name="test_name" type="string" value="test.txt" />
+    <param name="test_location" type="string" value="$(arg test_location)"/>
+    <param name="test_name" type="string" value="$(arg test_name)"/>
   </node>
 
   <node pkg="flightcontroller" type="performance_analyzer.py" name="performance_tester_node">
-    <param name="save_location" type="string" value="/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build"/>
-    <param name="save_name" type="string" value="performance.txt" />
+    <param name="save_location" type="string" value="$(arg save_location)"/>
+    <param name="save_name" type="string" value="$(arg save_name)"/>
   </node>
 
 </launch>

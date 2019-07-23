@@ -4,7 +4,14 @@ from Trajectory import Trajectory
 from mpl_toolkits.mplot3d import Axes3D
 from Node import Node
 
+
 class FigureManager:
+
+	# Class variable shared among all instances
+	# Keeps track of the bounds the x,y and z bounds should be set
+	x_range = {"lower": 0, "upper": 1}
+	y_range = {"lower": 0, "upper": 1}
+	z_range = {"lower": 0, "upper": 1}
 
 	def __init__(self, save_path):
 		# Used to save where the file is saved
@@ -25,14 +32,20 @@ class FigureManager:
 		if not os.path.isdir(maps_save_path):
 			os.makedirs(maps_save_path)
 
-	def display_and_save(self, fig, save_name, save_directory="", only_save=False):
+	def display_and_save(self, fig, save_name, save_directory="", only_save=False, figure_number=True):
 		# Create the filename
-		file_name = save_directory + str(self.total_figures).zfill(2) + "-" + str(save_name) + ".png"
+		if figure_number:
+			file_name = save_directory + str(self.total_figures).zfill(2) + "-" + str(save_name) + ".png"
+			# Increment the figure number
+			self.total_figures += 1
+		else:
+			file_name = save_directory + str(save_name) + ".png"
 		# Save the figure
 		fig.savefig(self.save_location + file_name, bbox_inches='tight')
 		if not only_save:
 			# Display the figure
 			fig.show()
+
 
 		# Close the figures
 		plt.close()
@@ -115,50 +128,6 @@ class FigureManager:
 
 		# Return the figure
 		return fig
-
-	def plot_allpaths(self, trajectories=[], tsuffix="", figure_size=(15, 13)):
-		# Create a plot
-		plt.figure(figsize=figure_size)
-
-		# Set the maps dimensions to the correct size
-		plt.xlim([Trajectory.x_range["lower"], Trajectory.x_range["upper"]])
-		plt.ylim([Trajectory.y_range["lower"], Trajectory.y_range["upper"]])
-
-		# Check if we want a title for the figure
-		if len(tsuffix) >= 0:
-			plt.title('Occupancy Map - ' + str(tsuffix))
-		else:
-			plt.title('Occupancy Map')
-
-		# For each trajectory
-		for traj in trajectories:
-			# Get the trajectory waypoints
-			waypoints = traj.get_waypoints()
-
-			# Create a list for the x and y co-ordinates
-			linex = []
-			liney = []
-			color = ''
-
-			# For each waypoint
-			for waypoint in waypoints:
-				# Add it to the line
-				linex.append(waypoint[0])
-				liney.append(waypoint[1])
-
-			# Get the color for the line
-			if traj.get_passing():
-				# If this is a passing test show it in green
-				color = 'green'
-			else:
-				# Otherwise show it in red
-				color = 'red'
-
-			# Create the plot
-			plt.plot(linex, liney, color=color)
-
-		# return the plot
-		return plt
 
 	def plot_class_histogram(self, class_array):
 		# Create a new figure
@@ -292,8 +261,234 @@ class FigureManager:
 		ax.set_ylabel('Y-axis')
 		ax.set_zlabel('Z-axis')
 
+		ax.set_xlim(FigureManager.x_range["lower"], FigureManager.x_range["upper"])
+		ax.set_ylim(FigureManager.y_range["lower"], FigureManager.y_range["upper"])
+		ax.set_zlim(FigureManager.z_range["lower"], FigureManager.z_range["upper"])
+
 		# Add the legend
 		ax.legend()
 
 		# Return the plot
+		return plt
+
+	def plot_selected_trajectories(self, nodes, selected_paths, figure_size=(10, 10)):
+		# Create a plot
+		fig = plt.figure(figsize=figure_size)
+		ax = Axes3D(fig)
+
+		# Create a list of standard nodes
+		x_vals = []
+		y_vals = []
+		z_vals = []
+
+		# Create a list of source and sink nodes
+		source_x = []
+		source_y = []
+		source_z = []
+		sink_x = []
+		sink_y = []
+		sink_z = []
+
+		# For each node
+		for node in nodes:
+			# Get the x,y and z values
+			x, y, z = node.get_position()
+
+			# Check if this is a source
+			if node.get_source():
+				# Save the position of the source node
+				source_x.append(x)
+				source_y.append(y)
+				source_z.append(z)
+			# Check if this is a source
+			elif node.get_sink():
+				# Save the position of the source node
+				sink_x.append(x)
+				sink_y.append(y)
+				sink_z.append(z)
+			else:
+				# Save the positions or random nodes
+				x_vals.append(x)
+				y_vals.append(y)
+				z_vals.append(z)
+
+		ax.scatter(x_vals, y_vals, z_vals, c='b', label='Waypoints')
+		ax.scatter(source_x, source_y, source_z, c='g', label='Starting Position')
+		ax.scatter(sink_x, sink_y, sink_z, c='r', label='Ending Position')
+
+		xline = []
+		yline = []
+		zline = []
+		# Create a list of paths
+		for path in selected_paths:
+			xl = []
+			yl = []
+			zl = []
+			for point in path:
+				position = point.get_position()
+
+				# Turn the positions into numpy arrays
+				xl.append(position[0])
+				yl.append(position[1])
+				zl.append(position[2])
+
+			# Plot the positions
+			ax.plot3D(xl, yl, zl, color='green', linestyle=":", linewidth=0.75)
+			xline.append(xl)
+			yline.append(yl)
+			zline.append(zl)
+
+		ax.set_xlabel('X-axis')
+		ax.set_ylabel('Y-axis')
+		ax.set_zlabel('Z-axis')
+
+		ax.set_xlim(FigureManager.x_range["lower"], FigureManager.x_range["upper"])
+		ax.set_ylim(FigureManager.y_range["lower"], FigureManager.y_range["upper"])
+		ax.set_zlim(FigureManager.z_range["lower"], FigureManager.z_range["upper"])
+
+		ax.legend()
+
+		return plt
+
+	def plot_rejected_trajectories(self, nodes, not_selected_paths, figure_size=(10, 10)):
+		# Create a plot
+		fig = plt.figure(figsize=figure_size)
+		ax = Axes3D(fig)
+
+		# Create a list of standard nodes
+		x_vals = []
+		y_vals = []
+		z_vals = []
+
+		# Create a list of source and sink nodes
+		source_x = []
+		source_y = []
+		source_z = []
+		sink_x = []
+		sink_y = []
+		sink_z = []
+
+		# For each node
+		for node in nodes:
+			# Get the x,y and z values
+			x, y, z = node.get_position()
+
+			# Check if this is a source
+			if node.get_source():
+				# Save the position of the source node
+				source_x.append(x)
+				source_y.append(y)
+				source_z.append(z)
+			# Check if this is a source
+			elif node.get_sink():
+				# Save the position of the source node
+				sink_x.append(x)
+				sink_y.append(y)
+				sink_z.append(z)
+			else:
+				# Save the positions or random nodes
+				x_vals.append(x)
+				y_vals.append(y)
+				z_vals.append(z)
+
+		ax.scatter(x_vals, y_vals, z_vals, c='b', label='Waypoints')
+		ax.scatter(source_x, source_y, source_z, c='g', label='Starting Position')
+		ax.scatter(sink_x, sink_y, sink_z, c='r', label='Ending Position')
+
+		xliner = []
+		yliner = []
+		zliner = []
+		# Create a list of paths
+		for path in not_selected_paths:
+			xl = []
+			yl = []
+			zl = []
+			for point in path:
+				# Turn the positions into numpy arrays
+				xl.append(point[0])
+				yl.append(point[1])
+				zl.append(point[2])
+
+			# Plot the positions
+			ax.plot3D(xl, yl, zl, color='red', linestyle=":", linewidth=0.75)
+			xliner.append(xl)
+			yliner.append(yl)
+			zliner.append(zl)
+
+		ax.set_xlabel('X-axis')
+		ax.set_ylabel('Y-axis')
+		ax.set_zlabel('Z-axis')
+
+		ax.set_xlim(FigureManager.x_range["lower"], FigureManager.x_range["upper"])
+		ax.set_ylim(FigureManager.y_range["lower"], FigureManager.y_range["upper"])
+		ax.set_zlim(FigureManager.z_range["lower"], FigureManager.z_range["upper"])
+
+		ax.legend()
+
+		# Return the plt
+		return plt
+
+	def plot_single_trajectory(self, path, figure_size=(10, 10)):
+		# Create a plot
+		fig = plt.figure(figsize=figure_size)
+		ax = Axes3D(fig)
+
+		# Create a list of standard nodes
+		x_vals = []
+		y_vals = []
+		z_vals = []
+
+		# Create a list of source and sink nodes
+		source_x = []
+		source_y = []
+		source_z = []
+		sink_x = []
+		sink_y = []
+		sink_z = []
+
+		# Create the lines
+		xline = []
+		yline = []
+		zline = []
+
+		# For each node
+		for i in range(0, len(path)):
+
+			# Check if this is a source
+			if i == 0:
+				# Save the position of the source node
+				source_x.append(path[i][0])
+				source_y.append(path[i][1])
+				source_z.append(path[i][2])
+			# Check if this is a source
+			elif i == len(path) - 1:
+				# Save the position of the source node
+				sink_x.append(path[i][0])
+				sink_y.append(path[i][1])
+				sink_z.append(path[i][2])
+			else:
+				# Save the positions or random nodes
+				x_vals.append(path[i][0])
+				y_vals.append(path[i][1])
+				z_vals.append(path[i][2])
+
+			xline.append(path[i][0])
+			yline.append(path[i][1])
+			zline.append(path[i][2])
+
+		ax.scatter(x_vals, y_vals, z_vals, c='b', label='Waypoints')
+		ax.scatter(source_x, source_y, source_z, c='g', label='Starting Position')
+		ax.scatter(sink_x, sink_y, sink_z, c='r', label='Ending Position')
+		ax.plot3D(xline, yline, zline, color='green', linestyle=":", linewidth=0.75)
+
+		ax.set_xlabel('X-axis')
+		ax.set_ylabel('Y-axis')
+		ax.set_zlabel('Z-axis')
+
+		ax.set_xlim(FigureManager.x_range["lower"], FigureManager.x_range["upper"])
+		ax.set_ylim(FigureManager.y_range["lower"], FigureManager.y_range["upper"])
+		ax.set_zlim(FigureManager.z_range["lower"], FigureManager.z_range["upper"])
+
+		ax.legend()
+
 		return plt

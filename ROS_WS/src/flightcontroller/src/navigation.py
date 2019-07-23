@@ -95,8 +95,6 @@ class GoalTester():
     # Calculate the time between intervals
     dt = 1.0/self.rate
 
-    print("STARTED!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
     # Start the test
     self.navigation_start.publish(Empty())
 
