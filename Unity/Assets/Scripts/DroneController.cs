@@ -7,7 +7,8 @@ using Newtonsoft.Json;
 using MessageSpec;
 using System.Collections.Generic;
 using System.Collections;
-using System;
+using System.IO;
+using System.Text.RegularExpressions;
 
 public class DroneController : MonoBehaviour
 {
@@ -55,18 +56,54 @@ public class DroneController : MonoBehaviour
     {
         Debug.Log("Starting Program");
 
-        string[] arguments = Environment.GetCommandLineArgs();
-        foreach(string arg in arguments)
-        {
-            connectionPort = Int32.Parse(arg.ToString());
-            Debug.Log(connectionPort);
-        }
+        // Loads a config file to get the correct IP and port
+        loadConfigFile();
 
         // Start a new thread for connecting to TCP connection
         ThreadStart ts = new ThreadStart(GetInfo);
         mThread = new Thread(ts);
         mThread.Start();
     }
+
+    // Loads the config file finding the port number and IP address used to connect to ROS
+	void loadConfigFile()
+	{
+		StreamReader inp_stm = new StreamReader("config.txt");
+		while (!inp_stm.EndOfStream)
+		{
+			string inp_ln = inp_stm.ReadLine();
+			if (inp_ln.Length > 0)
+			{ 
+				string Instruction = inp_ln.Substring(0, 2);
+				string Value = "";
+
+				switch (Instruction)
+				{
+					// Port
+					case "PT":
+						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value ;
+						string[] pt_loc = Regex.Split(Value, @",");
+
+                        connectionPort = int.Parse(pt_loc[0]);
+                        Debug.Log(connectionPort);
+						break;
+					// IP
+					case "IP":
+						// Parse the string to get the information from it
+						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value ;
+						string[] ip_loc = Regex.Split(Value, @",");
+                        
+                        connectionIP = ip_loc[0];
+                        Debug.Log(connectionIP);
+						break;
+					default:
+						//Debug.Log("Not Found");
+						break;
+				}
+			}
+		}
+		inp_stm.Close();
+	}
 
     // This is started in a new thread
     void GetInfo()
