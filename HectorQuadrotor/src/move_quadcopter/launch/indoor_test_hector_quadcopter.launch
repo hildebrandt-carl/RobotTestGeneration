@@ -32,7 +32,7 @@
   <!-- Launch navigation client -->
   <node pkg="move_quadcopter" type="navigation_client" name="navigation_client" output="screen" />
 
-  <include file="$(find move_quadcopter)/launch/joy_teleop_sim.launch"/>
+  <include file="$(find hector_quadrotor_teleop)/launch/xbox_controller.launch"/>
 
   <!-- Launch rqt_plot to monitor /cmd_vel -->
 

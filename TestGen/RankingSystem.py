@@ -87,10 +87,12 @@ class RankingSystem:
 			path_counter += 1
 			waypoints = []
 			velocity = []
+			angles = []
 			# Get the waypoints and velocities for that path
 			for each_point in self.paths[index]:
 				waypoints.append(list(each_point.get_position()))
 				velocity.append(list(each_point.get_velocity()))
+				angles.append(list(each_point.get_attitude()))
 
 			# Create the file names
 			save_directory = "maps/map" + str(path_counter) + "/"
@@ -106,6 +108,7 @@ class RankingSystem:
 			print("Path Score: " + str(self.scores[index]))
 			print("Waypoints: " + str(waypoints))
 			print("Velocity: " + str(velocity))
+			print("Attitude: " + str(angles))
 			print("Save Location: " + unity_file_name)
 			print("------------")
 
@@ -115,6 +118,7 @@ class RankingSystem:
 			file.write("Path Score: " + str(self.scores[index]) + '\n')
 			file.write("Waypoints: " + str(waypoints) + '\n')
 			file.write("Velocity: " + str(velocity) + '\n')
+			file.write("Attitude: " + str(angles) + '\n')
 			file.write("Save Location: " + unity_file_name + '\n')
 			file.close()
 

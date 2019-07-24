@@ -9,39 +9,100 @@ from FigureManager import FigureManager
 from EquivalenceChecker import EquivalenceChecker
 from DroneKinematic import DroneKinematic
 from RankingSystem import RankingSystem
+from enum import Enum
+import sys
+import argparse
+
+
+class DroneType(Enum):
+    BEBOP = 1
+    HECTOR = 2
+    MIT = 3
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--drone',
+                    default="bebop",
+                    type=str,
+                    help='Select drone type (bebop), (hector), (mit)')
+parser.add_argument('-x', '--depth',
+                    default=5,
+                    type=int,
+                    help='Total number of state changes allowed per trajectory')
+args = parser.parse_args()
+
+depth = args.depth
+
+drone = None
+save_path = None
+
+if args.drone == "bebop":
+    drone = DroneType.BEBOP
+    # Save locations
+    save_path = "Results/BEBOP_Waypoint" + str(depth) + "/"
+elif args.drone == "hector":
+    drone = DroneType.HECTOR
+    # Save locations
+    save_path = "Results/HECTOR_Waypoint" + str(depth) + "/"
+elif args.drone == "mit":
+    drone = DroneType.MIT
+    # Save locations
+    save_path = "Results/MIT_Waypoint" + str(depth) + "/"
 
 # Flags
 plotting = True
-plot_maps = True
-
-# Save locations
-save_path = "Results/TestGen/delete_test/"
 
 # Test initial conditions
-initial_conditions = {"map_x_bounds": [-1, 5],
-                      "map_y_bounds": [-2, 2],
-                      "map_z_bounds": [0, 5],
-                      "start_point": [0, 0, 1.5],
-                      "end_point": [4, 0, 4]}
-
-# Robot start and end locations
-robot_kinematics = {"m": 0.5,
-                    "d": 0.175,
-                    "kf": 6.11e-8,
-                    "km": 1.5e-9,
-                    "max_rotor_speed": 6000,
-                    "inertial_properties": [2.32e-3, 2.32e-3, 4.00e-3],
-                    "position": initial_conditions["start_point"],
-                    "attitude": [0, 0, 0],
-                    "velocity": [0, 0, 0],
-                    "angular_velocity": [0, 0, 0]}
+initial_conditions = {"map_x_bounds": [0, 30],
+                      "map_y_bounds": [0, 30],
+                      "map_z_bounds": [0, 15],
+                      "start_point": [1, 1, 1],
+                      "end_point": [29, 29, 14]}
 
 # Specified by the tester
 human_specified_factors = {"kinematic_sampling_resolution": 5}
 
 # Used to limit our search
-traj_search_conditions = {"number_nodes": 5,
-                          "search_depth": 3}
+traj_search_conditions = {"number_nodes": 300,
+                          "search_depth": int(depth)}
+
+# Robot kinematics
+robot_kinematics = {}
+if drone == DroneType.BEBOP:
+    robot_kinematics["m"] = 0.5
+    robot_kinematics["d"] = 0.16
+    robot_kinematics["kf"] = 6.11e-8
+    robot_kinematics["km"] = 1.5e-9
+    robot_kinematics["max_rotor_speed"] = 8000
+    robot_kinematics["inertial_properties"] = [2.32e-3, 2.32e-3, 4.00e-3]
+    robot_kinematics["position"] = initial_conditions["start_point"]
+    robot_kinematics["attitude"] = [0, 0, 0]
+    robot_kinematics["velocity"] = [0, 0, 0]
+    robot_kinematics["angular_velocity"] = [0, 0, 0]
+
+elif drone == DroneType.HECTOR:
+    robot_kinematics["m"] = 1.477
+    robot_kinematics["d"] = 0.275
+    robot_kinematics["kf"] = 4.142069415e-05
+    robot_kinematics["km"] = -7.011631909766668e-5
+    robot_kinematics["max_rotor_speed"] = 600
+    robot_kinematics["inertial_properties"] = [0.01464, 0.01464, 0.02664]
+    robot_kinematics["position"] = initial_conditions["start_point"]
+    robot_kinematics["attitude"] = [0, 0, 0]
+    robot_kinematics["velocity"] = [0, 0, 0]
+    robot_kinematics["angular_velocity"] = [0, 0, 0]
+
+elif drone == DroneType.MIT:
+    robot_kinematics["m"] = 1.0
+    robot_kinematics["d"] = 0.175
+    robot_kinematics["kf"] = 1.91e-6
+    robot_kinematics["km"] = 2.6e-7
+    robot_kinematics["max_rotor_speed"] = 2200.0
+    robot_kinematics["inertial_properties"] = [0.0049, 0.0049, 0.0049]
+    robot_kinematics["position"] = initial_conditions["start_point"]
+    robot_kinematics["attitude"] = [0, 0, 0]
+    robot_kinematics["velocity"] = [0, 0, 0]
+    robot_kinematics["angular_velocity"] = [0, 0, 0]
 
 # Create the Figure manager
 fig_manager = FigureManager(save_path)
@@ -82,11 +143,12 @@ if plotting:
 
     # Display the figure
     fig_manager.display_and_save(fig=map_plt,
-                                 save_name='original_map')
+                                 save_name='original_map',
+                                 only_save=True)
 
-all_paths, rejected_lines = p.find_all_paths(drone_kinematic_values=robot_kinematics,
-                                             kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
-                                             total_waypoints=traj_search_conditions["search_depth"])
+all_paths, rejected_lines = p.find_all_paths_dfs(drone_kinematic_values=robot_kinematics,
+                                                 kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
+                                                 total_waypoints=traj_search_conditions["search_depth"])
 
 # Display the selected paths
 if plotting:
@@ -98,20 +160,22 @@ if plotting:
 
     # Display the figure
     fig_manager.display_and_save(fig=map_plt,
-                                 save_name='selected_trajectories')
+                                 save_name='selected_trajectories',
+                                 only_save=True)
 
 
-# Display the rejected paths
-if plotting:
-    # Show the map after the prm construction phase
-    print("UPDATE: Displaying Rejected Trajectories")
-    map_plt = fig_manager.plot_rejected_trajectories(nodes=p.get_vertices(),
-                                                     not_selected_paths=rejected_lines,
-                                                     figure_size=(10, 10))
+# # Display the rejected paths
+# if plotting:
+#     # Show the map after the prm construction phase
+#     print("UPDATE: Displaying Rejected Trajectories")
+#     map_plt = fig_manager.plot_rejected_trajectories(nodes=p.get_vertices(),
+#                                                      not_selected_paths=rejected_lines,
+#                                                      figure_size=(10, 10))
 
-    # Display the figure
-    fig_manager.display_and_save(fig=map_plt,
-                                 save_name='rejected_trajectories')
+#     # Display the figure
+#     fig_manager.display_and_save(fig=map_plt,
+#                                  save_name='rejected_trajectories',
+#                                  only_save=True)
 
 
 # Assert that we have found some paths
