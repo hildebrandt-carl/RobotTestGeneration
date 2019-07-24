@@ -1,3 +1,9 @@
 <launch>
-	<node name="connection_node" pkg="simulator_com" type="connection.py" output="screen" />
+	<arg name="ip" default="127.0.01" />
+	<arg name="port" default="25001" />
+
+	<node name="connection_node" pkg="simulator_com" type="connection.py" output="screen">
+		<param name="ip" type="string" value="$(arg ip)"/>
+		<param name="port" type="string" value="$(arg port)"/>
+	</node>
 </launch>

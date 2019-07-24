@@ -10,6 +10,9 @@
   <arg name="save_name" default="performance.txt"/>
   <arg name="save_location" default="/home/autosoftlab/Desktop/RobotTestGeneration"/>
 
+  <arg name="ip" default="127.0.01" />
+  <arg name="port" default="25001" />
+
   <include file="$(find flightcontroller)/launch/angle.launch"/>
   <include file="$(find flightcontroller)/launch/velocity.launch"/>
   <include file="$(find flightcontroller)/launch/position.launch"/>
@@ -18,6 +21,8 @@
   <include file="$(find flightgoggles)/launch/core.launch">
     <arg name="render_stereo" value="$(arg render_stereo)"/>
     <arg name="ignore_collisions" value="$(arg ignore_collisions)"/>
+    <arg name="ip" value="$(arg ip)"/>
+    <arg name="port" value="$(arg port)"/>
   </include>
 
 

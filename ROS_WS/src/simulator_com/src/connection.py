@@ -25,10 +25,17 @@ class Connection():
     self.yaw = 0
     self.ResetFlag = False
 
+    # Get the parameters
+    host_ip = rospy.get_param("connection_node/ip", "127.0.0.1")
+    host_port = rospy.get_param("connection_node/port", "25001")
+
     # Create the connection
-    self.host = "127.0.0.1"
-    self.port = 25001
+    self.host = host_ip
+    self.port = int(host_port)
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Print where you are connecting
+    rospy.loginfo("Connecting on: " + str(self.host) + ":" + str(self.port))
 
     # Connect to the socket
     self.sock.connect((self.host, self.port))
