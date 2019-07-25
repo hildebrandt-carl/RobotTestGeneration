@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using MessageSpec;
 using System.Collections.Generic;
 using System.Collections;
+using System;
 
 public class DroneController : MonoBehaviour
 {
@@ -53,6 +54,13 @@ public class DroneController : MonoBehaviour
     private void Start()
     {
         Debug.Log("Starting Program");
+
+        string[] arguments = Environment.GetCommandLineArgs();
+        foreach(string arg in arguments)
+        {
+            connectionPort = Int32.Parse(arg.ToString());
+            Debug.Log(connectionPort);
+        }
 
         // Start a new thread for connecting to TCP connection
         ThreadStart ts = new ThreadStart(GetInfo);
