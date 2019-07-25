@@ -80,8 +80,8 @@ class PerformanceTester():
         self.filehandler.write("Current Drone Position: " + str(self.drone_pos.x) + ", " + str(self.drone_pos.y) + ", " + str(self.drone_pos.z) + "\n")
         print(str(self.goal_position))
         self.filehandler.write("Current Goal Position: " + str(self.goal_position.x) + ", " + str(self.goal_position.y) + ", " + str(self.goal_position.z) + "\n")
-        self.filehandler.write("Distance to Goal " + str(self.goal_counter) + ": " + str(distance) + "\n")
-        self.filehandler.write("Elapsed Time " + str(time.time() - self.test_start_time) + "\n")
+        self.filehandler.write("Distance to Goal: " + str(self.goal_counter) + ": " + str(distance) + "\n")
+        self.filehandler.write("Elapsed Time: " + str(time.time() - self.test_start_time) + "\n")
         self.filehandler.write("-------------------------------\n")
       else:
         rospy.loginfo(str(rospy.get_name()) + ": Waiting for test to begin")

@@ -20,14 +20,13 @@
       <param name="ignore_collisions" type="bool" value="$(arg ignore_collisions)" />
     </node>
 
-    <!--Run RVIZ for visualization-->
+    <!-- Run RVIZ for visualization
     <node type="rviz" name="rviz" pkg="rviz" args="-d $(find flightgoggles)/rviz/third_person_drone_follower.rviz" unless="$(arg render_stereo)"/>
-    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find flightgoggles)/rviz/third_person_drone_follower_stereo.rviz" if="$(arg render_stereo)"/>
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find flightgoggles)/rviz/third_person_drone_follower_stereo.rviz" if="$(arg render_stereo)"/> -->
 
     <!--Static transform for ENU to NED world-->
     <node pkg="tf2_ros" type="static_transform_publisher"
           name="world_ned_link" args="0 0 0 1.57079632679 3.14159265359 0 'world' 'world/ned'"/>
-
   </group>
 
   <include file="$(find simulator_com)/launch/connect.launch">
