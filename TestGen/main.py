@@ -26,12 +26,18 @@ parser.add_argument('-d', '--drone',
                     type=str,
                     help='Select drone type (bebop), (hector), (mit)')
 parser.add_argument('-x', '--depth',
-                    default=5,
+                    default=3,
                     type=int,
                     help='Total number of state changes allowed per trajectory')
+parser.add_argument('-p', '--drop',
+                    default=0.5,
+                    type=float,
+                    help='Percentage of nodes removed when considering next state')
+parser.add_argument('-n', '--nodes',
+                    default=1000,
+                    type=int,
+                    help='Number of nodes considered')
 args = parser.parse_args()
-
-depth = args.depth
 
 drone = None
 save_path = None
@@ -39,15 +45,15 @@ save_path = None
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "Results/BEBOP_Waypoint" + str(depth) + "/"
+    save_path = "Results/BEBOP_Waypoint" + str(args.depth) + "_n" + str(args.nodes) + "_p" + str(args.drop) + "/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
-    save_path = "Results/HECTOR_Waypoint" + str(depth) + "/"
+    save_path = "Results/HECTOR_Waypoint" + str(args.depth) + "_n" + str(args.nodes) + "_p" + str(args.drop) + "/"
 elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
-    save_path = "Results/MIT_Waypoint" + str(depth) + "/"
+    save_path = "Results/MIT_Waypoint" + str(args.depth) + "_n" + str(args.nodes) + "_p" + str(args.drop) + "/"
 
 # Flags
 plotting = True
@@ -63,8 +69,9 @@ initial_conditions = {"map_x_bounds": [0, 30],
 human_specified_factors = {"kinematic_sampling_resolution": 5}
 
 # Used to limit our search
-traj_search_conditions = {"number_nodes": 300,
-                          "search_depth": int(depth)}
+traj_search_conditions = {"number_nodes": int(args.nodes),
+                          "search_depth": int(args.depth),
+                          "drop_rate": float(args.drop)}
 
 # Robot kinematics
 robot_kinematics = {}
@@ -148,7 +155,8 @@ if plotting:
 
 all_paths, rejected_lines = p.find_all_paths_dfs(drone_kinematic_values=robot_kinematics,
                                                  kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
-                                                 total_waypoints=traj_search_conditions["search_depth"])
+                                                 total_waypoints=traj_search_conditions["search_depth"],
+                                                 drop_rate=traj_search_conditions["drop_rate"])
 
 # Display the selected paths
 if plotting:
@@ -175,7 +183,7 @@ if plotting:
 #     # Display the figure
 #     fig_manager.display_and_save(fig=map_plt,
 #                                  save_name='rejected_trajectories',
-#                                  only_save=True)
+#                                  only_save=False)
 
 
 # Assert that we have found some paths
@@ -380,7 +388,7 @@ ranking_obj.save_trajectories_according_to_score(folder=save_path)
 #             fig_manager.display_and_save(fig=corridor_plt,
 #                                          save_name=str("corridor_plot"),
 #                                          save_directory=save_location,
-#                                          only_save=True)
+#                                          only_save=False)
 #
 #             # Save the test to a unity file
 #             converter.unity_text_file(waypoints=unity_waypoints,
