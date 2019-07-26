@@ -3,7 +3,7 @@
 node=500
 for drop in 0.1 0.3
 do
-    for way in 10
+    for way in 9 10
     do
         echo Starting Depth $way Drop $drop Nodes $node
         converted=$((100 * $drop))
