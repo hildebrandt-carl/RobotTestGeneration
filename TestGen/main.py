@@ -45,15 +45,15 @@ save_path = None
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "Results/BEBOP_Waypoint" + str(args.depth) + "_n" + str(args.nodes) + "_p" + str(int(args.drop * 10)) + "/"
+    save_path = "Results/BEBOP_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_drop" + str(int(args.drop * 100)) + "/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
-    save_path = "Results/HECTOR_Waypoint" + str(args.depth) + "_n" + str(args.nodes) + "_p" + str(int(args.drop * 10)) + "/"
+    save_path = "Results/HECTOR_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_drop" + str(int(args.drop * 100)) + "/"
 elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
-    save_path = "Results/MIT_Waypoint" + str(args.depth) + "_n" + str(args.nodes) + "_p" + str(int(args.drop * 10)) + "/"
+    save_path = "Results/MIT_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_drop" + str(int(args.drop * 100)) + "/"
 
 # Flags
 plotting = True
