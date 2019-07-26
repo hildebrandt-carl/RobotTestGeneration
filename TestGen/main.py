@@ -196,8 +196,8 @@ ranking_obj = RankingSystem(paths=all_paths)
 # Score each of the paths
 ranking_obj.calculate_scores()
 
-print("\nINFO: Displaying the score")
-print(ranking_obj.get_scores())
+# print("\nINFO: Displaying the score")
+# print(ranking_obj.get_scores())
 
 # Save the scores
 ranking_obj.save_trajectories_according_to_score(folder=save_path)

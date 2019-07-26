@@ -97,7 +97,7 @@ class RankingSystem:
 			test_score = [x + y for x, y in zip(linear_vel_scores, angular_vel_scores)]
 			self.scores.append(sum(test_score))
 
-		print(self.scores)
+		return self.scores
 
 	# Save the paths to a directory
 	def save_trajectories_according_to_score(self, folder):
@@ -110,7 +110,7 @@ class RankingSystem:
 		# Reverse the scores so that its from largest to smallest
 		score_indicies.reverse()
 
-		print("\nINFO: Printing out the path information")
+		# print("\nINFO: Printing out the path information")
 
 		# Create the Figure manager
 		fig_manager = FigureManager(folder)
@@ -137,13 +137,13 @@ class RankingSystem:
 				# If not create it
 				os.makedirs(folder + save_directory)
 
-			print("Path: " + str(index))
-			print("Path Score: " + str(self.scores[index]))
-			print("Waypoints: " + str(waypoints))
-			print("Velocity: " + str(velocity))
-			print("Attitude: " + str(angles))
-			print("Save Location: " + unity_file_name)
-			print("------------")
+			# print("Path: " + str(index))
+			# print("Path Score: " + str(self.scores[index]))
+			# print("Waypoints: " + str(waypoints))
+			# print("Velocity: " + str(velocity))
+			# print("Attitude: " + str(angles))
+			# print("Save Location: " + unity_file_name)
+			# print("------------")
 
 			# Write this information to file
 			file = open(folder + details_file_name, "w")
