@@ -77,6 +77,7 @@ def dispatch(prog, max_memory=-1, timeout=-1):
                 break
         else:
             logger.info("Process finished successfully.")
+            print("Process finished successfully with time: " + str(duration_t))
             proc.terminate()
     except KeyboardInterrupt:
         logger.error("Received keyboard interupt (killing process)")
