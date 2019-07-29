@@ -451,7 +451,7 @@ GameObject:
   - component: {fileID: 439152889}
   - component: {fileID: 439152888}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1086,6 +1086,7 @@ MonoBehaviour:
   goalObject: {fileID: 4667868370430098, guid: 1e00a4340f4ae8a4b8253da4ffaa7c82, type: 3}
   rainObject: {fileID: 4856909547656952, guid: b51ab665c1c1eea41999ec5fb55022fa, type: 3}
   sun: {fileID: 170076733}
+  floor: {fileID: 439152887}
   cage_walls:
   - {fileID: 161714017}
   - {fileID: 567094650}

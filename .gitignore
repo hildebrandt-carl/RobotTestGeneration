@@ -37,3 +37,6 @@
 # Ignore pycharm files
 *__pycache__
 **/.idea/*
+
+# Ignore the test generation files
+**/TestGen/Results/*

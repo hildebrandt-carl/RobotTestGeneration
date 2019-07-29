@@ -12,7 +12,7 @@ public class LoadEnvironment : MonoBehaviour
 	public Transform rainObject;
 
 	public GameObject sun;
-
+	public GameObject floor;
 	public GameObject[] cage_walls;
 
 	public bool Day = false;
@@ -119,8 +119,15 @@ public class LoadEnvironment : MonoBehaviour
 						{
 							foreach(GameObject cage_wall in cage_walls)
 							{
+								// Remove the cage walls
 								cage_wall.GetComponent<MeshRenderer>().enabled = false;
 								cage_wall.GetComponent<BoxCollider>().enabled = false;
+
+								// Stop collisions with the floor
+								floor.GetComponent<MeshCollider>().enabled = false;
+							
+								// Move it down
+								floor.transform.position = new Vector3(0, -100, 0);
 							}
 						}
 						sun.SetActive(Day);
