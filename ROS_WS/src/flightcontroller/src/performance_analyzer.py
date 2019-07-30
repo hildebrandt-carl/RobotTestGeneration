@@ -22,7 +22,7 @@ class PerformanceTester():
     self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
 
     # Variable to set the rate
-    self.rate = 2
+    self.rate = 5
 
     # Checks to see if the simulation has started
     self.started = False

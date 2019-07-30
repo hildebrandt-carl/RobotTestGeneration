@@ -7,7 +7,7 @@ ROS_MASTER_URI=http://localhost:11313
 source ROS_WS/devel/setup.zsh
 
 # Creat a counter to count how many tests we have done
-counter=601
+counter=551
 
 # Create a temporary unity folder
 cp -r ./Unity/Build ./Build25003
@@ -22,11 +22,11 @@ current_dir="$PWD"
 sed -i -e 's/(25001)/(25003)/g' ./config.txt
 
 # Run 3 tests
-while [ $counter -le 900 ]
+while [ $counter -le 807 ]
 do
 
 	# Get the current test
-	cp ../TestGen/Results/BEBOP_Waypoint4/maps/map$counter/test.txt test.txt
+	cp ../TestGen/Results/Run-07-29-19/BEBOP_depth6_nodes500_drop90/maps/map$counter/test.txt test.txt
 
 	# Run the simulator
 	./WorldEngine.x86_64 &
@@ -35,7 +35,7 @@ do
 	unity_PID=$!
 
 	# Wait 30 seconds for unity to start
-	sleep 60
+	sleep 75
 
 	# Launch the ros file
 	roslaunch flightcontroller fly.launch port:="25003" test_location:="$current_dir" save_location:="$current_dir" &
@@ -52,7 +52,7 @@ do
 
 	# Remove the temporary test
 	rm test.txt
-	mv performance.txt ../TestGen/Results/BEBOP_Waypoint4/maps/map$counter/performance.txt
+	mv performance.txt ../TestGen/Results/Run-07-29-19/BEBOP_depth6_nodes500_drop90/maps/map$counter/performance.txt
 
 	# Allow 30 seconds for linux to clean up
 	sleep 30
