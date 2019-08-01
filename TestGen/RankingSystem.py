@@ -6,21 +6,21 @@ import os
 
 class RankingSystem:
 
-	# Class variable shared among all instances
-	# Keeps track of the bounds the x,y and z bounds should be set
-	x_range = {"lower": 0, "upper": 1}
-	y_range = {"lower": 0, "upper": 1}
-	z_range = {"lower": 0, "upper": 1}
-
-	def __init__(self, paths):
+	def __init__(self, paths=[]):
 		# Used to save the paths
 		self.paths = paths
 		# Used to save the scores of each path
 		self.scores = []
+		self.linear_scores = []
+		self.angular_scores = []
+
+	# Used to update the paths
+	def update_paths(self, new_paths):
+		self.paths = new_paths
 
 	# Return the scores
 	def get_scores(self):
-		return self.scores
+		return self.scores, self.linear_scores, self.angular_scores
 
 	# Calculate the scores
 	def calculate_scores(self):
@@ -96,8 +96,10 @@ class RankingSystem:
 			# The final score is the summation of both linear and angular scores
 			test_score = [x + y for x, y in zip(linear_vel_scores, angular_vel_scores)]
 			self.scores.append(sum(test_score))
+			self.linear_scores.append(sum(linear_vel_scores))
+			self.angular_scores.append(sum(angular_vel_scores))
 
-		return self.scores
+		return self.scores, self.linear_scores, self.angular_scores
 
 	# Save the paths to a directory
 	def save_trajectories_according_to_score(self, folder):

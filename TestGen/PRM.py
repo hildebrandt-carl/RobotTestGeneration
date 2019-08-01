@@ -6,6 +6,7 @@ from Node import Node
 from Edge import Edge
 from DroneKinematic import DroneKinematic
 from DroneReachabilitySet import DroneReachabilitySet
+from RankingSystem import RankingSystem
 import matplotlib.pyplot as plt
 from Trajectory import Trajectory
 from mpl_toolkits.mplot3d import Axes3D
@@ -148,15 +149,14 @@ class PRM:
         return True
 
     # Finds paths from start vertex to end vertex which satisfy the kinematic model
-    def find_all_paths_dfs(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5, drop_rate=0.5):
-
-        # Used to keep track of the number of lines considered
-        total_line_considered = 0
-        last_time = time.time()
+    def find_all_paths_dfs(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5):
 
         # List which keeps track of the paths
         un_finished_paths = []
         finished_paths = []
+
+        # Create a path scorer to score each path
+        ranking_obj = RankingSystem(paths=[])
 
         # Create a drone kinematic model at the starting position
         # Create an initial state
@@ -250,6 +250,8 @@ class PRM:
             in_y = (np.asarray(in_y)[random_indices]).tolist()
             in_z = (np.asarray(in_z)[random_indices]).tolist()
 
+            # Create a list of edges which would be traversed if each of the nodes was visited
+
             # For each of the waypoints inside the hull
             for j in range(0, len(in_x)):
 
@@ -288,19 +290,13 @@ class PRM:
                 if in_x[j] == sink_position[0] and in_y[j] == sink_position[1] and in_z[j] == sink_position[2]:
                     # Accepted Path
                     finished_paths.append(new_path)
-                    total_line_considered += 1
-                    if total_line_considered % 50000 == 0:
-                        print("Total Lines Already Considered: " + str(total_line_considered))
-                        print("Total Lines Currently Being Tracked: " + str(len(un_finished_paths)))
-                        print("Last Time Since Called: " + str(time.time() - last_time))
-                        print("")
-                        last_time = time.time()
                 else:
                     # Check to see if the current path is too long:
                     if len(new_path) < total_waypoints:
                         un_finished_paths.append(new_path)
                     else:
                         # Rejected path
+                        pass
                         # We do not want to keep track of rejected lines due to memory constraint
                         # line = []
                         # for model in new_path:
@@ -310,16 +306,6 @@ class PRM:
                         #     line.append([position[0], position[1], position[2]])
 
                         #rejected_lines.append(line)
-                        
-                        total_line_considered += 1
-                        if total_line_considered % 50000 == 0:
-                            print("Total Lines Already Considered: " + str(total_line_considered))
-                            print("Total Lines Currently Being Tracked: " + str(len(un_finished_paths)))
-                            print("Last Time Since Called: " + str(time.time() - last_time))
-                            print("")
-                            last_time = time.time()
-
-
 
         # Return the finished paths
         return finished_paths, rejected_lines

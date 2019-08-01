@@ -28,19 +28,19 @@ parser.add_argument('-d', '--drone',
                     type=str,
                     help='Select drone type (bebop), (hector), (mit)')
 parser.add_argument('-x', '--depth',
-                    default=3,
+                    default=5,
                     type=int,
                     help='Total number of state changes allowed per trajectory')
 parser.add_argument('-p', '--drop',
-                    default=0.5,
+                    default=0,
                     type=float,
                     help='Percentage of nodes removed when considering next state')
 parser.add_argument('-n', '--nodes',
-                    default=1000,
+                    default=50,
                     type=int,
                     help='Number of nodes considered')
 parser.add_argument('-r', '--resolution',
-                    default=5,
+                    default=2,
                     type=int,
                     help='Resolution of the sample space')
 args = parser.parse_args()
@@ -51,7 +51,7 @@ save_path = None
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "Results/BEBOP_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_drop" + str(int(args.drop * 100)) + "/"
+    save_path = "BEBOP_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_drop" + str(int(args.drop * 100)) + "/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
@@ -207,7 +207,6 @@ ranking_obj.calculate_scores()
 
 # Save the scores
 ranking_obj.save_trajectories_according_to_score(folder=save_path)
-
 
 # Print Completion
 print("UPDATE: Completed")
