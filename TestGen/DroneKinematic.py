@@ -1,8 +1,12 @@
 import numpy as np
 from math import sin, cos, tan, pow, inf, sqrt
 from mpmath import sec
+import time
 
 class DroneKinematic:
+
+    total_times_called = 0
+    last_time = time.time()
 
     def __init__(self, mass, arm_length, thrust_constant, moment_constant, max_rotor_speed, inertial_properties, position=[0, 0, 0], attitude=[0, 0, 0], velocity=[0, 0, 0], angular_vel=[0, 0, 0]):
         # Keep track of the drones current position
@@ -107,6 +111,10 @@ class DroneKinematic:
 
     # Calculate where the drone will be in the next time step
     def next_state(self, w1, w2, w3, w4):
+
+        # Keep track of how many times next state was called
+        DroneKinematic.total_times_called += 1
+
         # Calculate u values
         constant_matrix = np.array([[self.kf, self.kf, self.kf, self.kf],
                                     [0, self.d * self.kf, 0, -self.d * self.kf],
@@ -194,6 +202,12 @@ class DroneKinematic:
 
         # Update what time step this drone is at
         self.time_steps += 1
+
+        if DroneKinematic.total_times_called % 50000 == 0:
+            print("Total Times Next State Called: " + str(DroneKinematic.total_times_called))
+            print("Last Time Since Called: " + str(time.time() - DroneKinematic.last_time))
+            print("")
+            DroneKinematic.last_time = time.time()
 
         # Return the position
         return np.copy(self.position)

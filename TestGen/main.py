@@ -12,13 +12,15 @@ from RankingSystem import RankingSystem
 from enum import Enum
 import sys
 import argparse
-
+import time
 
 class DroneType(Enum):
     BEBOP = 1
     HECTOR = 2
     MIT = 3
 
+# Get the time of the program start
+start_time = time.time()
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--drone',
@@ -37,6 +39,10 @@ parser.add_argument('-n', '--nodes',
                     default=1000,
                     type=int,
                     help='Number of nodes considered')
+parser.add_argument('-r', '--resolution',
+                    default=5,
+                    type=int,
+                    help='Resolution of the sample space')
 args = parser.parse_args()
 
 drone = None
@@ -45,15 +51,15 @@ save_path = None
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "Results/BEBOP_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_drop" + str(int(args.drop * 100)) + "/"
+    save_path = "Results/BEBOP_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_drop" + str(int(args.drop * 100)) + "/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
-    save_path = "Results/HECTOR_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_drop" + str(int(args.drop * 100)) + "/"
+    save_path = "Results/HECTOR_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_drop" + str(int(args.drop * 100)) + "/"
 elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
-    save_path = "Results/MIT_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_drop" + str(int(args.drop * 100)) + "/"
+    save_path = "Results/MIT_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_drop" + str(int(args.drop * 100)) + "/"
 
 # Flags
 plotting = True
@@ -66,7 +72,7 @@ initial_conditions = {"map_x_bounds": [0, 30],
                       "end_point": [29, 29, 14]}
 
 # Specified by the tester
-human_specified_factors = {"kinematic_sampling_resolution": 5}
+human_specified_factors = {"kinematic_sampling_resolution": args.resolution}
 
 # Used to limit our search
 traj_search_conditions = {"number_nodes": int(args.nodes),
@@ -203,7 +209,9 @@ ranking_obj.calculate_scores()
 ranking_obj.save_trajectories_according_to_score(folder=save_path)
 
 
-
+# Print Completion
+print("UPDATE: Completed")
+print("DATA: Total time - " + str(time.time() - start_time))
 
 
 

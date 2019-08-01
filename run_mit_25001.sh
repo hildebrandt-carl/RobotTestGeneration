@@ -7,7 +7,7 @@ ROS_MASTER_URI=http://localhost:11311
 source ROS_WS/devel/setup.zsh
 
 # Creat a counter to count how many tests we have done
-counter=1
+counter=167
 
 # Create a temporary unity folder
 cp -r ./Unity/Build ./Build25001
@@ -22,7 +22,7 @@ current_dir="$PWD"
 sed -i -e 's/(25001)/(25001)/g' ./config.txt
 
 # Run 3 tests
-while [ $counter -le 275 ]
+while [ $counter -le 167 ]
 do
 
 	# Get the current test

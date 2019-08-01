@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import glob
 
 
-file_location = "BEBOP_Waypoint4/"
+file_location = "Run-07-29-19/BEBOP_depth6_nodes500_drop90/"
 file_names = glob.glob(file_location + "maps/map*/performance.txt")
 
 
@@ -164,6 +164,7 @@ for file_name in file_names:
 
     # Get details from the original test specifications
     new_file_name = folder_name + "details.txt"
+    path_score = -1
     file = open(new_file_name, "r")
     for line in file:
         # Find the path score
@@ -214,6 +215,7 @@ for file_name in file_names:
 
     # Save the details of that test into the correct folder
     file = open(folder_name + "analysis.txt", "w")
+    file.write("Path Score: " + str(path_score) + "\n")
     file.write("Time between waypoints: " + str(current_waypoint_time) + "\n")
     file.write("Average time between waypoints: " + str(average_time_between_waypoints) + "\n")
     file.write("Total time between waypoints: " + str(sum(current_waypoint_time)) + "\n")
@@ -222,6 +224,7 @@ for file_name in file_names:
     file.write("Average deviation from optimal trajectory: " + str(average_current_deviation) + "\n")
     file.close()
 
+    print("Path Score: " + str(path_score))
     print("Time between waypoints: " + str(current_waypoint_time))
     print("Average time between waypoints: " + str(average_time_between_waypoints))
     print("Total time between waypoints: " + str(sum(current_waypoint_time)))
@@ -284,11 +287,14 @@ print("")
 print("Failed Tests")
 print("Total collision occurred: " + str(len(collision_filenames)))
 
-average_fail_score = sum(failed_scores) / len(failed_scores)
-print("Average score of test which failed: " + str(average_fail_score))
+if len(failed_scores) > 0:
+    average_fail_score = sum(failed_scores) / len(failed_scores)
+    print("Average score of test which failed: " + str(average_fail_score))
 
-average_fail_distance_to_goal = sum(failed_distance_to_goal) / len(failed_distance_to_goal)
-print("Average distance to goal of test which failed: " + str(average_fail_distance_to_goal))
+    average_fail_distance_to_goal = sum(failed_distance_to_goal) / len(failed_distance_to_goal)
+    print("Average distance to goal of test which failed: " + str(average_fail_distance_to_goal))
+else:
+    print("No tests failed")
 
 print("")
 print("Passed Tests")

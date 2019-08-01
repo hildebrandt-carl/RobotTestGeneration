@@ -150,6 +150,10 @@ class PRM:
     # Finds paths from start vertex to end vertex which satisfy the kinematic model
     def find_all_paths_dfs(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5, drop_rate=0.5):
 
+        # Used to keep track of the number of lines considered
+        total_line_considered = 0
+        last_time = time.time()
+
         # List which keeps track of the paths
         un_finished_paths = []
         finished_paths = []
@@ -284,21 +288,38 @@ class PRM:
                 if in_x[j] == sink_position[0] and in_y[j] == sink_position[1] and in_z[j] == sink_position[2]:
                     # Accepted Path
                     finished_paths.append(new_path)
+                    total_line_considered += 1
+                    if total_line_considered % 50000 == 0:
+                        print("Total Lines Already Considered: " + str(total_line_considered))
+                        print("Total Lines Currently Being Tracked: " + str(len(un_finished_paths)))
+                        print("Last Time Since Called: " + str(time.time() - last_time))
+                        print("")
+                        last_time = time.time()
                 else:
                     # Check to see if the current path is too long:
                     if len(new_path) < total_waypoints:
                         un_finished_paths.append(new_path)
                     else:
                         # Rejected path
-                        line = []
-                        for model in new_path:
-                            position = model.get_position()
-
-                            # Turn the positions into numpy arrays
-                            line.append([position[0], position[1], position[2]])
-
                         # We do not want to keep track of rejected lines due to memory constraint
+                        # line = []
+                        # for model in new_path:
+                        #     position = model.get_position()
+
+                        #     # Turn the positions into numpy arrays
+                        #     line.append([position[0], position[1], position[2]])
+
                         #rejected_lines.append(line)
+                        
+                        total_line_considered += 1
+                        if total_line_considered % 50000 == 0:
+                            print("Total Lines Already Considered: " + str(total_line_considered))
+                            print("Total Lines Currently Being Tracked: " + str(len(un_finished_paths)))
+                            print("Last Time Since Called: " + str(time.time() - last_time))
+                            print("")
+                            last_time = time.time()
+
+
 
         # Return the finished paths
         return finished_paths, rejected_lines
