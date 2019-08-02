@@ -31,16 +31,16 @@ parser.add_argument('-x', '--depth',
                     default=5,
                     type=int,
                     help='Total number of state changes allowed per trajectory')
-parser.add_argument('-p', '--drop',
-                    default=0,
-                    type=float,
-                    help='Percentage of nodes removed when considering next state')
+parser.add_argument('-b', '--beamwidth',
+                    default=2,
+                    type=int,
+                    help='The beam width used in the frontier exploration')
 parser.add_argument('-n', '--nodes',
-                    default=50,
+                    default=10,
                     type=int,
                     help='Number of nodes considered')
 parser.add_argument('-r', '--resolution',
-                    default=2,
+                    default=4,
                     type=int,
                     help='Resolution of the sample space')
 args = parser.parse_args()
@@ -51,15 +51,15 @@ save_path = None
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "BEBOP_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_drop" + str(int(args.drop * 100)) + "/"
+    save_path = "BEBOP_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
-    save_path = "Results/HECTOR_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_drop" + str(int(args.drop * 100)) + "/"
+    save_path = "Results/HECTOR_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "/"
 elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
-    save_path = "Results/MIT_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_drop" + str(int(args.drop * 100)) + "/"
+    save_path = "Results/MIT_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "/"
 
 # Flags
 plotting = True
@@ -77,7 +77,7 @@ human_specified_factors = {"kinematic_sampling_resolution": args.resolution}
 # Used to limit our search
 traj_search_conditions = {"number_nodes": int(args.nodes),
                           "search_depth": int(args.depth),
-                          "drop_rate": float(args.drop)}
+                          "beam_width": float(args.beamwidth)}
 
 # Robot kinematics
 robot_kinematics = {}
@@ -159,10 +159,10 @@ if plotting:
                                  save_name='original_map',
                                  only_save=True)
 
-all_paths, rejected_lines = p.find_all_paths_dfs(drone_kinematic_values=robot_kinematics,
-                                                 kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
-                                                 total_waypoints=traj_search_conditions["search_depth"],
-                                                 drop_rate=traj_search_conditions["drop_rate"])
+all_paths = p.find_all_paths_dfs(drone_kinematic_values=robot_kinematics,
+                                 kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
+                                 total_waypoints=traj_search_conditions["search_depth"],
+                                 beam_width=traj_search_conditions["beam_width"])
 
 # Display the selected paths
 if plotting:
@@ -176,21 +176,6 @@ if plotting:
     fig_manager.display_and_save(fig=map_plt,
                                  save_name='selected_trajectories',
                                  only_save=True)
-
-
-# # Display the rejected paths
-# if plotting:
-#     # Show the map after the prm construction phase
-#     print("UPDATE: Displaying Rejected Trajectories")
-#     map_plt = fig_manager.plot_rejected_trajectories(nodes=p.get_vertices(),
-#                                                      not_selected_paths=rejected_lines,
-#                                                      figure_size=(10, 10))
-
-#     # Display the figure
-#     fig_manager.display_and_save(fig=map_plt,
-#                                  save_name='rejected_trajectories',
-#                                  only_save=False)
-
 
 # Assert that we have found some paths
 assert(len(all_paths) > 0)

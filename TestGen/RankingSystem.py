@@ -17,6 +17,10 @@ class RankingSystem:
 	# Used to update the paths
 	def update_paths(self, new_paths):
 		self.paths = new_paths
+		# Used to save the scores of each path
+		self.scores = []
+		self.linear_scores = []
+		self.angular_scores = []
 
 	# Return the scores
 	def get_scores(self):
@@ -24,6 +28,11 @@ class RankingSystem:
 
 	# Calculate the scores
 	def calculate_scores(self):
+		# Used to save the scores of each path
+		self.scores = []
+		self.linear_scores = []
+		self.angular_scores = []
+
 		# For each path
 		for path in self.paths:
 			selected_velocities = []

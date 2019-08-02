@@ -46,9 +46,10 @@ class DroneReachabilitySet:
                         new_position = new_drone_state.next_state(w1=w1, w2=w2, w3=w3, w4=w4)
 
                         # Check to make sure the drone has not hit the floor
-                        if new_position[2] > 0:
-                            # Append the new drone state to the possible positions
-                            possible_drone_positions.append(new_position)
+                        # if new_position[2] > 0:
+
+                        # Append the new drone state to the possible positions
+                        possible_drone_positions.append(new_position)
 
         # Convert the positions into three lists
         x_pos = []

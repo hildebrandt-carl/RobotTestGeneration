@@ -13,6 +13,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import math
 from queue import *
 import copy
+from scipy.spatial import ConvexHull
 
 
 class PRM:
@@ -67,11 +68,46 @@ class PRM:
     def get_edges(self):
         return self.E
 
+    # Get the sink vertex
+    def get_sink_vertex(self):
+        # For each node
+        for node in self.V:
+            # If this is the sink node
+            if node.get_sink():
+                return node
+
+    # Get the sink vertex
+    def remove_node(self, x, y, z):
+        # Keep a list of nodes which need to be removed
+        remove_nodes = []
+
+        # For each node
+        for i in range(0, len(self.V)):
+            # Get the node
+            node = self.V[i]
+
+            # If this is the sink node or source node you cant remove it
+            if node.get_sink() or node.get_source():
+                continue
+
+            # Get the nodes position
+            node_x, node_y, node_z = node.get_position()
+
+            # If this node is the one to be removed, remove it
+            if node_x == x and node_y == y and node_z == z:
+                remove_nodes.append(i)
+
+        # Remove the nodes
+        assert len(remove_nodes) <= 1
+
+        for r in remove_nodes:
+            self.V.pop(r)
+
     # Used to populate the graph with a set of nodes in random positions
     def populate_with_nodes(self, num_vertices):
         # Set the seed based on the time
         #random.seed(time.time())
-        random.seed(10)
+        random.seed(9)
 
         # Iterate through the vertices
         for i in range(0, num_vertices-2):
@@ -149,10 +185,12 @@ class PRM:
         return True
 
     # Finds paths from start vertex to end vertex which satisfy the kinematic model
-    def find_all_paths_dfs(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5):
+    def find_all_paths_dfs(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1):
 
-        # List which keeps track of the paths
-        un_finished_paths = []
+        # Make copies of verticies so they can be re-assigned after this functioin
+        temp_v = copy.deepcopy(self.V)
+
+        # Keeps tracks of the finished paths
         finished_paths = []
 
         # Create a path scorer to score each path
@@ -160,7 +198,7 @@ class PRM:
 
         # Create a drone kinematic model at the starting position
         # Create an initial state
-        starting_drone = DroneKinematic(mass=drone_kinematic_values['m'],
+        starting_state = DroneKinematic(mass=drone_kinematic_values['m'],
                                         arm_length=drone_kinematic_values['d'],
                                         thrust_constant=drone_kinematic_values['kf'],
                                         moment_constant=drone_kinematic_values['km'],
@@ -172,143 +210,460 @@ class PRM:
                                         angular_vel=drone_kinematic_values['angular_velocity'])
 
         # Add this starting position to the possible paths array
-        un_finished_paths.append([starting_drone])
+        frontier = []
+        frontier.append([starting_state])
 
-        # For plotting
-        rejected_lines = []
+        # Get the sink node
+        sink_node = self.get_sink_vertex()
+        sink_x, sink_y, sink_z = sink_node.get_position()
 
         counter = 0
         # While there are unfinished paths
-        while len(un_finished_paths) > 0:
+        while len(frontier) > 0:
 
-            # Get the current path and current kinematic
-            current_path = un_finished_paths.pop()
-            # The current kinematic is the last kinematic in the path
-            current_kinematic = current_path[-1]
+            # TODO: FOR PLOTTING
+            considered = []
+            kinematic_draw = []
 
-            # Get the current kinematics position
-            source_pos = current_kinematic.get_position()
+            # Sort the current paths to be ordered based on score
+            # You should have a temporary paths which is added after all nodes have been processed
 
-            # Create the reachability set generator object
-            #for p in current_path:
-            #    print(p.get_position())
-            reachability_space_generator = DroneReachabilitySet(drone_kinematic=current_kinematic)
+            # Used to keep track of the new frontier and list of finished nodes
+            temp_finished_paths = []
+            temp_frontier = []
 
-            #print("------")
-            # Calculate the reachable space for that drone kinematic in one time step
-            positions = reachability_space_generator.calculate_reachable_area(sample_resolution=kinematic_sample_resolution)
+            # Used to track how many nodes on the frontier have been processed
+            beam_counter = 0
 
-            # Calculate the largest distance between the source node and all the sample points in the reachable area.
-            current_kinematic.calculate_maximum_velocity(positions)
+            # Process beam width
+            while (beam_counter < beam_width) and (len(frontier) > 0):
+
+                # Increment the beam counter
+                beam_counter += 1
+
+                # Get the current path and current kinematic
+                current_path = frontier.pop()
+                # The current kinematic is the last kinematic in the path
+                current_kinematic = current_path[-1]
+                previous_kinematic = None
+                if len(current_path) <= 1:
+                    previous_kinematic = current_kinematic
+                else:
+                    previous_kinematic = current_path[-2]
+
+                # Get the current kinematics position
+                source_pos = current_kinematic.get_position()
+                previous_pos = previous_kinematic.get_position()
+
+                # If the current node is the sink node.
+                if source_pos[0] == sink_x and source_pos[1] == sink_y and source_pos[2] == sink_z:
+                    # Add this path to the finished paths array
+                    temp_finished_paths.append(current_path)
+                    # Restart the beam search
+                    continue
+
+                # Create the reachability set generator object
+                reachability_space_generator = DroneReachabilitySet(drone_kinematic=current_kinematic)
+
+                # Calculate the reachable space for that drone kinematic in one time step
+                positions = reachability_space_generator.calculate_reachable_area(sample_resolution=kinematic_sample_resolution)
+
+                #TODO: For plotting
+                considered.append(source_pos)
+                kinematic_draw.append(positions)
+
+                # Calculate the largest distance between the source node and all sample points in the reachable area.
+                current_kinematic.calculate_maximum_velocity(positions)
+
+                # Create a list of standard nodes
+                x_vals = []
+                y_vals = []
+                z_vals = []
+                sink_position = [0, 0, 0]
+
+                # For each node
+                for node in self.V:
+                    # Get the x,y and z values
+                    x, y, z = node.get_position()
+
+                    # Create a list of the x,y and z values
+                    x_vals.append(x)
+                    y_vals.append(y)
+                    z_vals.append(z)
+
+                    # If this is the sink node
+                    if node.get_sink():
+                        # Save it
+                        sink_position = [x, y, z]
+
+                # For all waypoints find which are inside the reachability set
+                waypoints = np.column_stack((x_vals, y_vals, z_vals))
+                inside = reachability_space_generator.is_in_hull(waypoints=waypoints)
+
+                # Used to save the x,y and z position of the waypoints inside the hull
+                in_x = []
+                in_y = []
+                in_z = []
+
+                # Create a list of x, y and z, points inside the hull
+                for i in range(0, len(inside)):
+                    # If the waypoint is inside
+                    if inside[i]:
+                        # And are not the same position or previous (stop oscillation)
+                        not_same_pos = (waypoints[i][0] != source_pos[0] and waypoints[i][1] != source_pos[1] and waypoints[i][2] != source_pos[2])
+                        not_prev_pos = (waypoints[i][0] != previous_pos[0] and waypoints[i][1] != previous_pos[1] and waypoints[i][2] != previous_pos[2])
+                        if not_same_pos and not_prev_pos:
+                            in_x.append(waypoints[i][0])
+                            in_y.append(waypoints[i][1])
+                            in_z.append(waypoints[i][2])
+
+                # Create a list of edges which would be traversed if each of the nodes was visited
+                # For each of the waypoints inside the hull
+                for j in range(0, len(in_x)):
+
+                    # Find the vector between them (This is the velocity)
+                    vector_x = in_x[j] - source_pos[0]
+                    vector_y = in_y[j] - source_pos[1]
+                    vector_z = in_z[j] - source_pos[2]
+
+                    # Calculate the magnitude of the vector
+                    magnitude = math.sqrt(vector_x**2 + vector_y**2 + vector_z**2)
+
+                    # Calculate the angle of that vector
+                    # r = math.acos(vector_x / magnitude)
+                    # p = math.acos(vector_y / magnitude)
+                    # y = math.acos(vector_z / magnitude)
+
+                    # We are going to assume the drone enters the waypoint level
+                    r = 0
+                    p = 0
+                    y = 0
+
+                    # Create a new drone kinematic for this waypoint
+                    new_kinematic = DroneKinematic(mass=drone_kinematic_values['m'],
+                                                   arm_length=drone_kinematic_values['d'],
+                                                   thrust_constant=drone_kinematic_values['kf'],
+                                                   moment_constant=drone_kinematic_values['km'],
+                                                   max_rotor_speed=drone_kinematic_values['max_rotor_speed'],
+                                                   inertial_properties=drone_kinematic_values['inertial_properties'],
+                                                   position=[in_x[j], in_y[j], in_z[j]],
+                                                   attitude=[r, p, y],
+                                                   velocity=[vector_x, vector_y, vector_z],
+                                                   angular_vel=drone_kinematic_values['angular_velocity'])
+
+                    # create a new path
+                    new_path = current_path.copy()
+
+                    # Add this new path to the unfinished paths queue
+                    new_path.append(new_kinematic)
+
+                    # If the path is shorter than the requested length
+                    if len(new_path) <= total_waypoints:
+                        temp_frontier.append(new_path)
+
+
+
+
+
+
+
+
+                # TO BE DELETED
+                # Create the figure
+                fig = plt.figure()
+                ax = Axes3D(fig)
+
+                # Create a list of standard nodes
+                x_vals = []
+                y_vals = []
+                z_vals = []
+
+                # Create a list of source and sink nodes
+                source_x = []
+                source_y = []
+                source_z = []
+                sink_x = []
+                sink_y = []
+                sink_z = []
+
+                # For each node
+                for node in self.V:
+                    # Get the x,y and z values
+                    x, y, z = node.get_position()
+
+                    # Check if this is a source
+                    if node.get_source():
+                        # Save the position of the source node
+                        source_x.append(x)
+                        source_y.append(y)
+                        source_z.append(z)
+                    # Check if this is a source
+                    elif node.get_sink():
+                        # Save the position of the source node
+                        sink_x.append(x)
+                        sink_y.append(y)
+                        sink_z.append(z)
+                    else:
+                        # Save the positions or random nodes
+                        x_vals.append(x)
+                        y_vals.append(y)
+                        z_vals.append(z)
+
+                cons_x = []
+                cons_y = []
+                cons_z = []
+                for c in considered:
+                    cons_x.append(c[0])
+                    cons_y.append(c[1])
+                    cons_z.append(c[2])
+
+                    item_to_remove = []
+                    for j in range(0, len(x_vals)):
+                        if x_vals[j] == c[0] and y_vals[j] == c[1] and z_vals[j] == c[2]:
+                            item_to_remove.append(j)
+
+                    for r in item_to_remove:
+                        x_vals.pop(r)
+                        y_vals.pop(r)
+                        z_vals.pop(r)
+
+                kx = []
+                ky = []
+                kz = []
+                hull = None
+                for points in kinematic_draw:
+                    try:
+                        hull = ConvexHull(points)
+                    except:
+                        hull = None
+                    for point in points:
+                        kx.append(point[0])
+                        ky.append(point[1])
+                        kz.append(point[2])
+
+                for s in hull.simplices:
+                    s = np.append(s, s[0])  # Here we cycle back to the first coordinate
+                    ax.plot(points[s, 0], points[s, 1], points[s, 2], "r-")
+
+                # Plot the values
+                ax.scatter(source_x, source_y, source_z, c='g', label='Starting Position')
+                ax.scatter(sink_x, sink_y, sink_z, c='r', label='Ending Position')
+                ax.scatter(x_vals, y_vals, z_vals, c='b', label='Possible Waypoints')
+                ax.scatter(cons_x, cons_y, cons_z, c='m', label='Processed Waypoints')
+
+                for kinematic_path in temp_frontier:
+                    x_arr = []
+                    y_arr = []
+                    z_arr = []
+                    for p in kinematic_path:
+                        x, y, z = p.get_position()
+                        x_arr.append(x)
+                        y_arr.append(y)
+                        z_arr.append(z)
+
+                    ax.plot3D(x_arr, y_arr, z_arr, color='green', linewidth=1.2)
+
+                x_arr = []
+                y_arr = []
+                z_arr = []
+                for kin in current_path:
+                    x, y, z = kin.get_position()
+                    x_arr.append(x)
+                    y_arr.append(y)
+                    z_arr.append(z)
+
+                ax.plot3D(x_arr, y_arr, z_arr, color='blue', linewidth=1.2)
+
+                for kinematic_path in frontier:
+                    x_arr = []
+                    y_arr = []
+                    z_arr = []
+                    for p in kinematic_path:
+                        x, y, z = p.get_position()
+                        x_arr.append(x)
+                        y_arr.append(y)
+                        z_arr.append(z)
+
+                    ax.plot3D(x_arr, y_arr, z_arr, color='green', linewidth=1.2)
+
+                ax.set_xlabel('X-axis')
+                ax.set_ylabel('Y-axis')
+                ax.set_zlabel('Z-axis')
+                ax.set_xlim([-20, 40])
+                ax.set_ylim([-20, 40])
+                ax.set_zlim([-20, 30])
+                plt.legend()
+                plt.show()
+                print("here")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            # When we are done processing the frontier
+            # Check if we a have found any finished paths
+            if len(temp_finished_paths) > 0:
+                # Add the finished paths to the finilized paths
+                finished_paths += temp_finished_paths
+
+                # Remove all nodes along the paths from the graph
+                for path in finished_paths:
+                    for point in path:
+                        x, y, z = point.get_position()
+                        self.remove_node(x=x, y=y, z=z)
+
+                # Reset the search
+                i = np.inf
+                frontier = []
+                frontier.append([starting_state])
+                continue
+
+            # Only add the frontier if there is one
+            if len(temp_frontier) > 0:
+
+                # Add the new frontier to the frontier
+                frontier += temp_frontier
+
+                # Get the scores for each of the paths
+                ranking_obj.update_paths(frontier)
+                scores, linear_scores, angular_scores = ranking_obj.calculate_scores()
+
+                # Sort the frontier based on path score
+                # TODO: THIS IS THE WRONG WAY I WANT THE HIGHEST SCORE FIRST
+                sorted_zipped_list = sorted(zip(scores, frontier))
+
+                # Unzip the sorted list
+                [scores, frontier] = list(zip(*sorted_zipped_list))
+                scores = list(scores)
+                frontier = list(frontier)
+
+            # TO BE DELETED
+            # Create the figure
+            fig = plt.figure()
+            ax = Axes3D(fig)
 
             # Create a list of standard nodes
             x_vals = []
             y_vals = []
             z_vals = []
-            sink_position = [0, 0, 0]
+
+            # Create a list of source and sink nodes
+            source_x = []
+            source_y = []
+            source_z = []
+            sink_x = []
+            sink_y = []
+            sink_z = []
 
             # For each node
             for node in self.V:
                 # Get the x,y and z values
                 x, y, z = node.get_position()
 
-                # Create a list of the x,y and z values
-                x_vals.append(x)
-                y_vals.append(y)
-                z_vals.append(z)
-
-                # If this is the sink node
-                if node.get_sink():
-                    # Save it
-                    sink_position = [x, y, z]
-
-            # For all waypoints find which are inside the reachability set
-            waypoints = np.column_stack((x_vals, y_vals, z_vals))
-            inside = reachability_space_generator.is_in_hull(waypoints=waypoints)
-
-            # Used to save the x,y and z position of the waypoints inside the hull
-            in_x = []
-            in_y = []
-            in_z = []
-
-            # Create a list of x, y and z, points inside the hull
-            for i in range(0, len(inside)):
-                # If the waypoint is inside
-                if inside[i]:
-                    # And are not the same position
-                    if waypoints[i][0] != source_pos[0] and waypoints[i][1] != source_pos[1] and waypoints[i][2] != source_pos[2]:
-                        in_x.append(waypoints[i][0])
-                        in_y.append(waypoints[i][1])
-                        in_z.append(waypoints[i][2])
-
-            # Randomly drop X% of the waypoints
-            number_of_samples = int(round(len(in_x) * (1 - drop_rate), 0))
-
-            # Select the waypoints using sampling without replacement
-            random_indices = random.sample(population=range(len(in_x)), k=number_of_samples)
-            in_x = (np.asarray(in_x)[random_indices]).tolist()
-            in_y = (np.asarray(in_y)[random_indices]).tolist()
-            in_z = (np.asarray(in_z)[random_indices]).tolist()
-
-            # Create a list of edges which would be traversed if each of the nodes was visited
-
-            # For each of the waypoints inside the hull
-            for j in range(0, len(in_x)):
-
-                # Find the vector between them (This is the velocity)
-                vector_x = in_x[j] - source_pos[0]
-                vector_y = in_y[j] - source_pos[1]
-                vector_z = in_z[j] - source_pos[2]
-
-                # Calculate the magnitude of the vector
-                magnitude = math.sqrt(vector_x**2 + vector_y**2 + vector_z**2)
-
-                # Calculate the angle of that vector
-                ax = math.acos(vector_x / magnitude)
-                ay = math.acos(vector_y / magnitude)
-                az = math.acos(vector_z / magnitude)
-
-                # Create a new drone kinematic for this waypoint
-                new_kinematic = DroneKinematic(mass=drone_kinematic_values['m'],
-                                               arm_length=drone_kinematic_values['d'],
-                                               thrust_constant=drone_kinematic_values['kf'],
-                                               moment_constant=drone_kinematic_values['km'],
-                                               max_rotor_speed=drone_kinematic_values['max_rotor_speed'],
-                                               inertial_properties=drone_kinematic_values['inertial_properties'],
-                                               position=[in_x[j], in_y[j], in_z[j]],
-                                               attitude=[ax, ay, az],
-                                               velocity=[vector_x, vector_y, vector_z],
-                                               angular_vel=drone_kinematic_values['angular_velocity'])
-
-                # create a new path
-                new_path = current_path.copy()
-
-                # Add this new path to the unfinished paths queue
-                new_path.append(new_kinematic)
-
-                # Check if the new position is the sink nodes position
-                if in_x[j] == sink_position[0] and in_y[j] == sink_position[1] and in_z[j] == sink_position[2]:
-                    # Accepted Path
-                    finished_paths.append(new_path)
+                # Check if this is a source
+                if node.get_source():
+                    # Save the position of the source node
+                    source_x.append(x)
+                    source_y.append(y)
+                    source_z.append(z)
+                # Check if this is a source
+                elif node.get_sink():
+                    # Save the position of the source node
+                    sink_x.append(x)
+                    sink_y.append(y)
+                    sink_z.append(z)
                 else:
-                    # Check to see if the current path is too long:
-                    if len(new_path) < total_waypoints:
-                        un_finished_paths.append(new_path)
-                    else:
-                        # Rejected path
-                        pass
-                        # We do not want to keep track of rejected lines due to memory constraint
-                        # line = []
-                        # for model in new_path:
-                        #     position = model.get_position()
+                    # Save the positions or random nodes
+                    x_vals.append(x)
+                    y_vals.append(y)
+                    z_vals.append(z)
 
-                        #     # Turn the positions into numpy arrays
-                        #     line.append([position[0], position[1], position[2]])
+            cons_x = []
+            cons_y = []
+            cons_z = []
+            for c in considered:
+                cons_x.append(c[0])
+                cons_y.append(c[1])
+                cons_z.append(c[2])
 
-                        #rejected_lines.append(line)
+                item_to_remove = []
+                for j in range(0, len(x_vals)):
+                    if x_vals[j] == c[0] and y_vals[j] == c[1] and z_vals[j] == c[2]:
+                        item_to_remove.append(j)
+
+                for r in item_to_remove:
+                    x_vals.pop(r)
+                    y_vals.pop(r)
+                    z_vals.pop(r)
+
+            kx = []
+            ky = []
+            kz = []
+            hull = None
+            for points in kinematic_draw:
+                try:
+                    hull = ConvexHull(points)
+                except:
+                    hull = None
+                for point in points:
+                    kx.append(point[0])
+                    ky.append(point[1])
+                    kz.append(point[2])
+
+            # Plot the values
+            ax.scatter(source_x, source_y, source_z, c='g', label='Starting Position')
+            ax.scatter(sink_x, sink_y, sink_z, c='r', label='Ending Position')
+            ax.scatter(x_vals, y_vals, z_vals, c='b', label='Possible Waypoints')
+            ax.scatter(cons_x, cons_y, cons_z, c='m', label='Processed Waypoints')
+
+            for kinematic_path in frontier:
+                x_arr = []
+                y_arr = []
+                z_arr = []
+                for p in kinematic_path:
+                    x, y, z = p.get_position()
+                    x_arr.append(x)
+                    y_arr.append(y)
+                    z_arr.append(z)
+
+                ax.plot3D(x_arr, y_arr, z_arr, color='green', linewidth=1.2)
+
+
+
+            ax.set_xlabel('X-axis')
+            ax.set_ylabel('Y-axis')
+            ax.set_zlabel('Z-axis')
+            ax.set_xlim([-20, 40])
+            ax.set_ylim([-20, 40])
+            ax.set_zlim([-20, 30])
+            plt.legend()
+            plt.show()
+
+        # put back all deleted verticies
+        self.V = temp_v
 
         # Return the finished paths
-        return finished_paths, rejected_lines
+        return finished_paths
 
 
 
