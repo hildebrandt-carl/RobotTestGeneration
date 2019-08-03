@@ -107,7 +107,7 @@ class PRM:
     def populate_with_nodes(self, num_vertices):
         # Set the seed based on the time
         #random.seed(time.time())
-        random.seed(9)
+        random.seed(10)
 
         # Iterate through the vertices
         for i in range(0, num_vertices-2):
