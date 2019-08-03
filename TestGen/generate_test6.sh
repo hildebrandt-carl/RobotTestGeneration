@@ -1,13 +1,13 @@
 #!/bin/zsh
 
-node=500
-for drop in 0.9
+res=4
+nodes=500
+for beamwidth in 1 2 3 4 5
 do
-    for way in 7 9
+    for depth in 3 4 5 6 7 8 9 10
     do
-        echo Starting Depth $way Drop $drop Nodes $node
-        converted=$((100 * $drop))
-        python3 -u resmonitor.py -M 10g -T 43200 python3 -u main.py --depth $way --drop $drop --nodes $node 2>&1 | tee Results/details\_depth$way\_nodes$node\_drop$converted.txt
+        echo Starting Depth $depth Beamwidth $beamwidth Nodes $nodes Resolution $res
+        python3 -u resmonitor.py -M 10g -T 43200 python3 main.py --drone bebop --depth $depth --beamwidth $beamwidth --nodes $nodes --resolution $res 2>&1 | tee Results/details\_nodes$nodes\_res$res\_beamwidth$beamwidth.txt
         echo Complete
         echo -----------------------------------------------------------------------------------
     done

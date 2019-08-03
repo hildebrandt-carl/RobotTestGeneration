@@ -5,10 +5,10 @@ from mpl_toolkits.mplot3d import Axes3D
 import glob
 
 
-file_location = "Run-07-29-19/BEBOP_depth6_nodes500_drop90/"
+file_location = "./BEBOP_depth5_nodes300_res4_beamwidth1/"
 file_names = glob.glob(file_location + "maps/map*/performance.txt")
 
-
+print(file_location + "maps/map*/performance.txt")
 # https://stackoverflow.com/questions/56463412/distance-from-a-point-to-a-line-segment-in-3d-python
 def get_numbers_from_string(string_var):
     # Split by space

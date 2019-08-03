@@ -1,6 +1,6 @@
 import csv
 import os
-from PRM import PRM
+
 import numpy as np
 import matplotlib.pyplot as plt
 from Trajectory import Trajectory
@@ -43,7 +43,15 @@ parser.add_argument('-r', '--resolution',
                     default=4,
                     type=int,
                     help='Resolution of the sample space')
+parser.add_argument('-v', '--visualize',
+                    action='store_true',
+                    help='Visualize the beam search process')
 args = parser.parse_args()
+
+if args.visualize == True:
+    from PRM_Vis import PRM
+else:
+    from PRM import PRM
 
 drone = None
 save_path = None
@@ -51,7 +59,7 @@ save_path = None
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "BEBOP_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "/"
+    save_path = "Results/BEBOP_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
@@ -159,10 +167,10 @@ if plotting:
                                  save_name='original_map',
                                  only_save=True)
 
-all_paths = p.find_all_paths_dfs(drone_kinematic_values=robot_kinematics,
-                                 kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
-                                 total_waypoints=traj_search_conditions["search_depth"],
-                                 beam_width=traj_search_conditions["beam_width"])
+all_paths = p.find_all_paths(drone_kinematic_values=robot_kinematics,
+                             kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
+                             total_waypoints=traj_search_conditions["search_depth"],
+                             beam_width=traj_search_conditions["beam_width"])
 
 # Display the selected paths
 if plotting:
