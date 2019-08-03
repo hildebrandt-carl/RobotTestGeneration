@@ -186,8 +186,8 @@ if plotting:
                                  only_save=True)
 
 # Assert that we have found some paths
-assert(len(all_paths) > 0)
 print("DATA: Total unique paths found: " + str(len(all_paths)))
+assert(len(all_paths) > 0)
 
 # Create a ranking system object
 ranking_obj = RankingSystem(paths=all_paths)
