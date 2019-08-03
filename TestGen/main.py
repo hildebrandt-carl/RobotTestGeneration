@@ -36,7 +36,7 @@ parser.add_argument('-b', '--beamwidth',
                     type=int,
                     help='The beam width used in the frontier exploration')
 parser.add_argument('-n', '--nodes',
-                    default=10,
+                    default=15,
                     type=int,
                     help='Number of nodes considered')
 parser.add_argument('-r', '--resolution',

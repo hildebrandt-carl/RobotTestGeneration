@@ -187,7 +187,10 @@ class PRM:
     # Finds paths from start vertex to end vertex which satisfy the kinematic model
     def find_all_paths_dfs(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1):
 
-        # Make copies of verticies so they can be re-assigned after this functioin
+        # Debug Counter
+        debug_counter = 0
+
+        # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
 
         # Keeps tracks of the finished paths
@@ -237,6 +240,10 @@ class PRM:
 
             # Process beam width
             while (beam_counter < beam_width) and (len(frontier) > 0):
+                print("Processing " + str(beam_counter) + " frontier")
+
+                if debug_counter == 12:
+                    print("")
 
                 # Increment the beam counter
                 beam_counter += 1
@@ -259,6 +266,7 @@ class PRM:
                 if source_pos[0] == sink_x and source_pos[1] == sink_y and source_pos[2] == sink_z:
                     # Add this path to the finished paths array
                     temp_finished_paths.append(current_path)
+                    print("Found a complete path")
                     # Restart the beam search
                     continue
 
@@ -299,6 +307,8 @@ class PRM:
                 # For all waypoints find which are inside the reachability set
                 waypoints = np.column_stack((x_vals, y_vals, z_vals))
                 inside = reachability_space_generator.is_in_hull(waypoints=waypoints)
+
+                print(str(sum(inside)) + " nodes found inside the reachable set")
 
                 # Used to save the x,y and z position of the waypoints inside the hull
                 in_x = []
@@ -360,6 +370,8 @@ class PRM:
                     # If the path is shorter than the requested length
                     if len(new_path) <= total_waypoints:
                         temp_frontier.append(new_path)
+                    else:
+                        print("Path not added as it is too long")
 
 
 
@@ -494,31 +506,10 @@ class PRM:
                 ax.set_zlim([-20, 30])
                 plt.legend()
                 plt.show()
-                print("here")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            print(str(len(temp_finished_paths)) + " complete paths found")
+            print("-----------------------" + str(debug_counter) + "--------------------------")
+            debug_counter += 1
 
             # When we are done processing the frontier
             # Check if we a have found any finished paths
@@ -533,7 +524,7 @@ class PRM:
                         self.remove_node(x=x, y=y, z=z)
 
                 # Reset the search
-                i = np.inf
+                beam_counter = np.inf
                 frontier = []
                 frontier.append([starting_state])
                 continue
