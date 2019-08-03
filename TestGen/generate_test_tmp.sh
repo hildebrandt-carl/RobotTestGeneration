@@ -1,8 +1,8 @@
 #!/bin/zsh
 
 res=2
-nodes=500
-for beamwidth in 3
+nodes=100
+for beamwidth in 3 4 5 10
 do
     for depth in 3 4 5 6 7 8 9 10
     do
