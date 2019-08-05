@@ -40,7 +40,7 @@ parser.add_argument('-n', '--nodes',
                     type=int,
                     help='Number of nodes considered')
 parser.add_argument('-r', '--resolution',
-                    default=4,
+                    default=2,
                     type=int,
                     help='Resolution of the sample space')
 parser.add_argument('-v', '--visualize',

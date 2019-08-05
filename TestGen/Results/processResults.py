@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import glob
 
 
-file_location = "./BEBOP_depth5_nodes300_res4_beamwidth1/"
+file_location = "./Run-08-05-19/BEBOP_depth10_nodes500_res2_beamwidth10/"
 file_names = glob.glob(file_location + "maps/map*/performance.txt")
 
 print(file_location + "maps/map*/performance.txt")
@@ -53,7 +53,9 @@ test_average_deviation = []
 test_average_waypoint_time = []
 test_worst_waypoint_time = []
 test_worst_deviation = []
-test_scores = []
+total_test_scores = []
+linear_test_scores = []
+angular_test_scores = []
 collision_filenames = []
 failed_scores = []
 failed_times_before_collision = []
@@ -165,13 +167,23 @@ for file_name in file_names:
     # Get details from the original test specifications
     new_file_name = folder_name + "details.txt"
     path_score = -1
+    linear_score = -1
+    angular_score = -1
     file = open(new_file_name, "r")
     for line in file:
         # Find the path score
-        if "Path Score: " in line:
+        if "Path Total Score: " in line:
             path_score = get_numbers_from_string(line)
             # Save the test score
-            test_scores.append(path_score[0])
+            total_test_scores.append(path_score[0])
+        if "Path Linear Score: " in line:
+            linear_score = get_numbers_from_string(line)
+            # Save the test score
+            linear_test_scores.append(linear_score[0])
+        if "Path Angular Score: " in line:
+            angular_score = get_numbers_from_string(line)
+            # Save the test score
+            angular_test_scores.append(angular_score[0])
     file.close()
 
     # Remove the first time_between_waypoints as this is the time to hit the first waypoint
@@ -270,8 +282,6 @@ print("-----------Completed Processing------------")
 print("-------------------------------------------")
 print("")
 
-
-
 print("Collisions in files:")
 print("")
 
@@ -298,8 +308,14 @@ else:
 
 print("")
 print("Passed Tests")
-average_score = sum(test_scores)/len(test_scores)
-print("Average score: " + str(average_score))
+average_total_score = sum(total_test_scores)/len(total_test_scores)
+print("Average total score: " + str(average_total_score))
+
+average_linear_score = sum(linear_test_scores)/len(linear_test_scores)
+print("Average linear score: " + str(average_linear_score))
+
+average_angular_score = sum(angular_test_scores)/len(angular_test_scores)
+print("Average angular score: " + str(average_angular_score))
 
 average_total_time = sum(test_total_times)/len(test_total_times)
 print("Average total time: " + str(average_total_time))
@@ -326,48 +342,209 @@ print("Worst Deviation from Optimal: " + str(test_average_deviation[worst_deviat
 print("Least Deviation from Optimal: " + str(test_average_deviation[best_deviation_index]) + " test " + str(file_names[best_deviation_index]))
 
 # Sort the scores and reorder the test arrays for plotting:
-sorted_indicies = np.argsort(test_scores)
-sorted_indicies = sorted_indicies[::-1]
+sorted_indices = np.argsort(total_test_scores)
+sorted_indices = sorted_indices[::-1]
 
-sorted_scores = np.array(test_scores)[sorted_indicies]
-sorted_average_deviation = np.array(test_average_deviation)[sorted_indicies]
-sorted_average_time = np.array(test_total_times)[sorted_indicies]
-sorted_worst_deviation = np.array(test_worst_deviation)[sorted_indicies]
-sorted_worst_time = np.array(test_worst_waypoint_time)[sorted_indicies]
+total_test_scores = np.array(total_test_scores)[sorted_indices]
+linear_test_scores = np.array(linear_test_scores)[sorted_indices]
+angular_test_scores = np.array(angular_test_scores)[sorted_indices]
+test_average_deviation = np.array(test_average_deviation)[sorted_indices]
+test_total_times = np.array(test_total_times)[sorted_indices]
+test_worst_deviation = np.array(test_worst_deviation)[sorted_indices]
+test_worst_waypoint_time = np.array(test_worst_waypoint_time)[sorted_indices]
 
 # X axis
-x_axis = np.arange(len(sorted_scores))
+x_axis = np.arange(len(total_test_scores))
 
 fig = plt.figure()
-plt.scatter(x_axis, sorted_scores, label="Test Scores")
+plt.scatter(x_axis, total_test_scores, label="Test Total Scores (Total Score)")
 plt.xlabel("Test")
 plt.ylabel("Score")
 plt.legend()
 plt.show()
 
 fig = plt.figure()
-plt.scatter(x_axis, sorted_average_deviation, label="Average Deviation")
+plt.scatter(x_axis, linear_test_scores, label="Test Linear Scores (Total Score)")
+plt.xlabel("Test")
+plt.ylabel("Score")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, angular_test_scores, label="Test Angular Scores (Total Score)")
+plt.xlabel("Test")
+plt.ylabel("Score")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, test_average_deviation, label="Average Deviation (Total Score)")
 plt.xlabel("Test")
 plt.ylabel("Meters(m)")
 plt.legend()
 plt.show()
 
 fig = plt.figure()
-plt.scatter(x_axis, sorted_average_time, label="Test Total Times")
+plt.scatter(x_axis, test_total_times, label="Test Total Times (Total Score)")
 plt.xlabel("Test")
 plt.ylabel("Time(s)")
 plt.legend()
 plt.show()
 
 fig = plt.figure()
-plt.scatter(x_axis, sorted_worst_deviation, label="Worst Deviation")
+plt.scatter(x_axis, test_worst_deviation, label="Worst Deviation (Total Score)")
 plt.xlabel("Test")
 plt.ylabel("Meters(m)")
 plt.legend()
 plt.show()
 
 fig = plt.figure()
-plt.scatter(x_axis, sorted_worst_time, label="Worst Time Between Waypoints")
+plt.scatter(x_axis, test_worst_waypoint_time, label="Worst Time Between Waypoints (Total Score)")
+plt.xlabel("Test")
+plt.ylabel("Time(s)")
+plt.legend()
+plt.show()
+
+
+
+
+
+
+
+
+
+# Sort the scores and reorder the test arrays for plotting:
+sorted_indices = np.argsort(linear_test_scores)
+sorted_indices = sorted_indices[::-1]
+
+total_test_scores = np.array(total_test_scores)[sorted_indices]
+linear_test_scores = np.array(linear_test_scores)[sorted_indices]
+angular_test_scores = np.array(angular_test_scores)[sorted_indices]
+test_average_deviation = np.array(test_average_deviation)[sorted_indices]
+test_total_times = np.array(test_total_times)[sorted_indices]
+test_worst_deviation = np.array(test_worst_deviation)[sorted_indices]
+test_worst_waypoint_time = np.array(test_worst_waypoint_time)[sorted_indices]
+
+# X axis
+x_axis = np.arange(len(linear_test_scores))
+
+fig = plt.figure()
+plt.scatter(x_axis, total_test_scores, label="Test Total Scores (Linear Score)")
+plt.xlabel("Test")
+plt.ylabel("Score")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, linear_test_scores, label="Test Linear Scores (Linear Score)")
+plt.xlabel("Test")
+plt.ylabel("Score")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, angular_test_scores, label="Test Angular Scores (Linear Score)")
+plt.xlabel("Test")
+plt.ylabel("Score")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, test_average_deviation, label="Average Deviation (Linear Score)")
+plt.xlabel("Test")
+plt.ylabel("Meters(m)")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, test_total_times, label="Test Total Times (Linear Score)")
+plt.xlabel("Test")
+plt.ylabel("Time(s)")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, test_worst_deviation, label="Worst Deviation (Linear Score)")
+plt.xlabel("Test")
+plt.ylabel("Meters(m)")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, test_worst_waypoint_time, label="Worst Time Between Waypoints (Linear Score)")
+plt.xlabel("Test")
+plt.ylabel("Time(s)")
+plt.legend()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+# Sort the scores and reorder the test arrays for plotting:
+sorted_indices = np.argsort(angular_test_scores)
+sorted_indices = sorted_indices[::-1]
+
+total_test_scores = np.array(total_test_scores)[sorted_indices]
+linear_test_scores = np.array(linear_test_scores)[sorted_indices]
+angular_test_scores = np.array(angular_test_scores)[sorted_indices]
+test_average_deviation = np.array(test_average_deviation)[sorted_indices]
+test_total_times = np.array(test_total_times)[sorted_indices]
+test_worst_deviation = np.array(test_worst_deviation)[sorted_indices]
+test_worst_waypoint_time = np.array(test_worst_waypoint_time)[sorted_indices]
+
+# X axis
+x_axis = np.arange(len(total_test_scores))
+
+fig = plt.figure()
+plt.scatter(x_axis, total_test_scores, label="Test Total Scores (Angular Score)")
+plt.xlabel("Test")
+plt.ylabel("Score")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, linear_test_scores, label="Test Linear Scores (Angular Score)")
+plt.xlabel("Test")
+plt.ylabel("Score")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, angular_test_scores, label="Test Angular Scores (Angular Score)")
+plt.xlabel("Test")
+plt.ylabel("Score")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, test_average_deviation, label="Average Deviation (Angular Score)")
+plt.xlabel("Test")
+plt.ylabel("Meters(m)")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, test_total_times, label="Test Total Times (Angular Score)")
+plt.xlabel("Test")
+plt.ylabel("Time(s)")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, test_worst_deviation, label="Worst Deviation (Angular Score)")
+plt.xlabel("Test")
+plt.ylabel("Meters(m)")
+plt.legend()
+plt.show()
+
+fig = plt.figure()
+plt.scatter(x_axis, test_worst_waypoint_time, label="Worst Time Between Waypoints (Angular Score)")
 plt.xlabel("Test")
 plt.ylabel("Time(s)")
 plt.legend()

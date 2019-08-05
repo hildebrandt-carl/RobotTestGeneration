@@ -159,7 +159,9 @@ class RankingSystem:
 			# Write this information to file
 			file = open(folder + details_file_name, "w")
 			file.write("Path: " + str(index) + '\n')
-			file.write("Path Score: " + str(self.scores[index]) + '\n')
+			file.write("Path Total Score: " + str(self.scores[index]) + '\n')
+			file.write("Path Linear Score: " + str(self.linear_scores[index]) + '\n')
+			file.write("Path Angular Score: " + str(self.angular_scores[index]) + '\n')
 			file.write("Waypoints: " + str(waypoints) + '\n')
 			file.write("Velocity: " + str(velocity) + '\n')
 			file.write("Attitude: " + str(angles) + '\n')

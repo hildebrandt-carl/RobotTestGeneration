@@ -7,7 +7,7 @@ ROS_MASTER_URI=http://localhost:11311
 source ROS_WS/devel/setup.zsh
 
 # Creat a counter to count how many tests we have done
-counter=167
+counter=4
 
 # Create a temporary unity folder
 cp -r ./Unity/Build ./Build25001
@@ -22,11 +22,11 @@ current_dir="$PWD"
 sed -i -e 's/(25001)/(25001)/g' ./config.txt
 
 # Run 3 tests
-while [ $counter -le 167 ]
+while [ $counter -le 63 ]
 do
 
 	# Get the current test
-	cp ../TestGen/Results/Run-07-29-19/BEBOP_depth6_nodes500_drop90/maps/map$counter/test.txt test.txt
+	cp ../TestGen/Results/Run-08-05-19/BEBOP_depth10_nodes1000_res4_beamwidth10/maps/map$counter/test.txt test.txt
 
 	# Run the simulator
 	./WorldEngine.x86_64 &
@@ -52,7 +52,7 @@ do
 
 	# Remove the temporary test
 	rm test.txt
-	mv performance.txt ../TestGen/Results/Run-07-29-19/BEBOP_depth6_nodes500_drop90/maps/map$counter/performance.txt
+	mv performance.txt ../TestGen/Results/Run-08-05-19/BEBOP_depth10_nodes1000_res4_beamwidth10/maps/map$counter/performance.txt
 
 	# Allow 30 seconds for linux to clean up
 	sleep 30
