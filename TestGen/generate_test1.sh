@@ -1,28 +1,20 @@
 #!/bin/zsh
 
-res=2
-nodes=500
-for beamwidth in 1
-do
-    for depth in 3 4 5 6
-    do
-        echo Starting Depth $depth Beamwidth $beamwidth Nodes $nodes Resolution $res
-        python3 -u resmonitor.py -M 10g -T 43200 python3 -u main.py --drone bebop --depth $depth --beamwidth $beamwidth --nodes $nodes --resolution $res 2>&1 | tee Results/details\_depth$depth\_nodes$nodes\_res$res\_beamwidth$beamwidth.txt
-        echo Complete
-        echo -----------------------------------------------------------------------------------
-    done
-done
+seed=10
 
-
-res=2
-nodes=500
-for beamwidth in 5
+for res in 2 4
 do
-    for depth in 7 8 9 10
+  for nodes in 1000 2000
+  do
+    for beamwidth in 1 2
     do
-        echo Starting Depth $depth Beamwidth $beamwidth Nodes $nodes Resolution $res
-        python3 -u resmonitor.py -M 10g -T 43200 python3 -u main.py --drone bebop --depth $depth --beamwidth $beamwidth --nodes $nodes --resolution $res 2>&1 | tee Results/details\_depth$depth\_nodes$nodes\_res$res\_beamwidth$beamwidth.txt
-        echo Complete
-        echo -----------------------------------------------------------------------------------
+        for depth in 10
+        do
+            echo Starting Depth $depth Beamwidth $beamwidth Nodes $nodes Resolution $res
+            python3 -u resmonitor.py -M 10g -T 43200 python3 -u main.py --drone mit --depth $depth --beamwidth $beamwidth --nodes $nodes --resolution $res --seed $seed 2>&1 | tee Results/details\_seed$seed\_depth$depth\_nodes$nodes\_res$res\_beamwidth$beamwidth.txt
+            echo Complete
+            echo -----------------------------------------------------------------------------------
+        done
     done
+  done
 done

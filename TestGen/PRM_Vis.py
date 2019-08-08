@@ -104,10 +104,13 @@ class PRM:
             self.V.pop(r)
 
     # Used to populate the graph with a set of nodes in random positions
-    def populate_with_nodes(self, num_vertices):
-        # Set the seed based on the time
-        #random.seed(time.time())
-        random.seed(9)
+    def populate_with_nodes(self, num_vertices, input_seed=0):
+        
+        if input_seed == 0:
+            # Set the seed based on the time
+            random.seed(time.time())
+        else:
+            random.seed(input_seed)
 
         # Iterate through the vertices
         for i in range(0, num_vertices-2):

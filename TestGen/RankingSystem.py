@@ -3,16 +3,19 @@ from UnityConverter import UnityConverter
 from math import sqrt, radians
 import numpy as np
 import os
+import random
 
 class RankingSystem:
 
-	def __init__(self, paths=[]):
+	def __init__(self, paths=[], baseline=False):
 		# Used to save the paths
 		self.paths = paths
 		# Used to save the scores of each path
 		self.scores = []
 		self.linear_scores = []
 		self.angular_scores = []
+		# Determines whether the ranking system is generating a baseline or not
+		self.baseline = baseline
 
 	# Used to update the paths
 	def update_paths(self, new_paths):
@@ -73,9 +76,21 @@ class RankingSystem:
 			angular_vel_scores = []
 
 			# Calculate the linear velocity score
-			for s, m in zip(selected_velocities, maximum_velocities):
-				vel_score = float(s) / float(m)
-				linear_vel_scores.append(vel_score)
+			for i in range(0, len(selected_velocities)):
+				# Get the current and selected magnitude
+				current_vel = velocities[i]
+				current_magnitude = sqrt(current_vel[0] ** 2 + current_vel[1] ** 2 + current_vel[2] ** 2)
+				selected_magnitude = selected_velocities[i]
+				maximum_magnitude = maximum_velocities[i]
+
+				# Score is selected_velocity / current velocity
+				vel_score = (abs(float(selected_magnitude) - float(current_magnitude))) / float(maximum_magnitude)
+
+				# If we are in baseline mode, generate a random score
+				if self.baseline:
+					linear_vel_scores.append(random.uniform(0, 1))
+				else:
+					linear_vel_scores.append(vel_score)
 
 			# Calculate the angular velocity score
 			for i in range(0, len(positions) - 1):
@@ -100,10 +115,16 @@ class RankingSystem:
 
 				# Calculate the score
 				angular_vel_score = angle / radians(180)
-				angular_vel_scores.append(angular_vel_score)
+
+				# If we are in baseline mode, generate a random score
+				if self.baseline:
+					angular_vel_scores.append(random.uniform(0, 1))
+				else:
+					angular_vel_scores.append(angular_vel_score)
+
 
 			# The final score is the summation of both linear and angular scores
-			test_score = [x + y for x, y in zip(linear_vel_scores, angular_vel_scores)]
+			test_score = [x * y for x, y in zip(linear_vel_scores, angular_vel_scores)]
 			self.scores.append(sum(test_score))
 			self.linear_scores.append(sum(linear_vel_scores))
 			self.angular_scores.append(sum(angular_vel_scores))

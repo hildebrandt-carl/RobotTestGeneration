@@ -104,10 +104,13 @@ class PRM:
             self.V.pop(r)
 
     # Used to populate the graph with a set of nodes in random positions
-    def populate_with_nodes(self, num_vertices):
-        # Set the seed based on the time
-        #random.seed(time.time())
-        random.seed(10)
+    def populate_with_nodes(self, num_vertices, input_seed=0):
+        
+        if input_seed == 0:
+            # Set the seed based on the time
+            random.seed(time.time())
+        else:
+            random.seed(input_seed)
 
         # Iterate through the vertices
         for i in range(0, num_vertices-2):
@@ -183,7 +186,7 @@ class PRM:
         return True
 
     # Finds paths from start vertex to end vertex which satisfy the kinematic model
-    def find_all_paths(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1):
+    def find_all_paths(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1, score_baseline=False):
         # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
 
@@ -191,7 +194,7 @@ class PRM:
         finished_paths = []
 
         # Create a path scorer to score each path
-        ranking_obj = RankingSystem(paths=[])
+        ranking_obj = RankingSystem(paths=[], baseline=score_baseline)
 
         # Create a drone kinematic model at the starting position
         # Create an initial state

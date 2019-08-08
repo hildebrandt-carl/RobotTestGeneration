@@ -6,9 +6,6 @@ ROS_MASTER_URI=http://localhost:11311
 # Source the ros workspace
 source ROS_WS/devel/setup.zsh
 
-# Creat a counter to count how many tests we have done
-counter=4
-
 # Create a temporary unity folder
 cp -r ./Unity/Build ./Build25001
 
@@ -21,46 +18,69 @@ current_dir="$PWD"
 # Change the port number inside the new build
 sed -i -e 's/(25001)/(25001)/g' ./config.txt
 
-# Run 3 tests
-while [ $counter -le 63 ]
+for seedcounter in 10
 do
+	for depthcounter in 10
+	do
+		for beamcounter in 1 25 2
+		do
+			# Get the total number of tests to run 
+			mapcounter=1
+			totaltests=$(ls ../TestGen/Results/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res2_beamwidth$beamcounter\_baseline0/maps | wc -l)
 
-	# Get the current test
-	cp ../TestGen/Results/Run-08-05-19/BEBOP_depth10_nodes1000_res4_beamwidth10/maps/map$counter/test.txt test.txt
+			echo "--------------------------------------------------------"
+			echo "Processing: TestGen/Results/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res2_beamwidth$beamcounter\_baseline0"
+			echo "Total tests found: $totaltests"
+			echo "--------------------------------------------------------"
 
-	# Run the simulator
-	./WorldEngine.x86_64 &
+			while [ $mapcounter -le $totaltests ]
+			do
 
-	# Get the PID so that I can kill it later
-	unity_PID=$!
+				echo "Processing: MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res2_beamwidth$beamcounter\_baseline0/maps/map$mapcounter"
+				echo " "
 
-	# Wait 30 seconds for unity to start
-	sleep 30
+				# Get the current test
+				cp ../TestGen/Results/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res2_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/test.txt test.txt
 
-	# Launch the ros file
-	roslaunch flightcontroller fly.launch port:="25001" test_location:="$current_dir" save_location:="$current_dir" &
+				# Run the simulator
+				./WorldEngine.x86_64 &
 
-	# Get the PID so that I can kill it later
-	roslaunch_PID=$!
+				# Get the PID so that I can kill it later
+				unity_PID=$!
 
-	# Each test is given 30 seconds
-	sleep 75
+				# Wait 30 seconds for unity to start
+				sleep 30
 
-	# Kill the code
-	kill -INT $unity_PID
-	kill -INT $roslaunch_PID
+				# Launch the ros file
+				roslaunch flightcontroller fly.launch port:="25001" test_location:="$current_dir" save_location:="$current_dir" &
 
-	# Remove the temporary test
-	rm test.txt
-	mv performance.txt ../TestGen/Results/Run-08-05-19/BEBOP_depth10_nodes1000_res4_beamwidth10/maps/map$counter/performance.txt
+				# Get the PID so that I can kill it later
+				roslaunch_PID=$!
 
-	# Allow 30 seconds for linux to clean up
-	sleep 30
+				# Each test is given 30 seconds
+				sleep 75
 
-	# Increment the counter
-	((counter++))
+				# Kill the code
+				kill -INT $unity_PID
+				kill -INT $roslaunch_PID
 
-# End while loop
+				# Remove the temporary test
+				rm test.txt
+				mv performance.txt ../TestGen/Results/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res2_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/performance.txt
+
+				# Allow 30 seconds for gezbo to clean up
+				sleep 30
+
+				# Increment the mapcounter
+				((mapcounter++))
+
+			# End mapcounter
+			done
+		# End beamcounter
+		done
+	# End depthcounter
+	done
+# End seedcounter
 done
 
 # Go back to the original dir

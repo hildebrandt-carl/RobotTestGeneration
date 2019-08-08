@@ -36,7 +36,7 @@ parser.add_argument('-b', '--beamwidth',
                     type=int,
                     help='The beam width used in the frontier exploration')
 parser.add_argument('-n', '--nodes',
-                    default=15,
+                    default=50,
                     type=int,
                     help='Number of nodes considered')
 parser.add_argument('-r', '--resolution',
@@ -46,6 +46,16 @@ parser.add_argument('-r', '--resolution',
 parser.add_argument('-v', '--visualize',
                     action='store_true',
                     help='Visualize the beam search process')
+parser.add_argument('-p', '--plotting',
+                    action='store_true',
+                    help='Save the tests as 3D figures')
+parser.add_argument('-s', '--seed',
+                    default=10,
+                    type=int,
+                    help='Use to set a seed for the PRM construction phase. Set to 0 for to use time as seed')
+parser.add_argument('-l', '--scorebaseline',
+                    action='store_true',
+                    help='This changes the score metric to random values. This is used to create a baseline with a kinematic model.')
 args = parser.parse_args()
 
 if args.visualize == True:
@@ -59,25 +69,27 @@ save_path = None
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "Results/BEBOP_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "/"
+    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_baseline" + str(int(args.scorebaseline)) + "/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
-    save_path = "Results/HECTOR_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "/"
+    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_baseline" + str(int(args.scorebaseline)) + "/"
 elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
-    save_path = "Results/MIT_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "/"
+    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_baseline" + str(int(args.scorebaseline)) + "/"
 
-# Flags
-plotting = True
+# Do you want to plot the figures or not
+plotting = False
+if args.plotting == True:
+    plotting = True
 
 # Test initial conditions
 initial_conditions = {"map_x_bounds": [0, 30],
                       "map_y_bounds": [0, 30],
                       "map_z_bounds": [0, 15],
                       "start_point": [1, 1, 1],
-                      "end_point": [29, 29, 14]}
+                      "end_point": [15, 15, 8]}
 
 # Specified by the tester
 human_specified_factors = {"kinematic_sampling_resolution": args.resolution}
@@ -149,7 +161,8 @@ p = PRM(start_pos=initial_conditions["start_point"],
         map_z_bounds=initial_conditions["map_z_bounds"])
 
 # Find valid positions for waypoints
-p.populate_with_nodes(num_vertices=traj_search_conditions["number_nodes"])
+p.populate_with_nodes(num_vertices=traj_search_conditions["number_nodes"],
+                      input_seed=args.seed)
 
 # # Find possible connections between waypoints based on velocity
 # p.populate_with_edges(max_distance=robot_kinematics["max_velocity"],
@@ -167,10 +180,12 @@ if plotting:
                                  save_name='original_map',
                                  only_save=True)
 
+print("UPDATE: Finding all paths")
 all_paths = p.find_all_paths(drone_kinematic_values=robot_kinematics,
                              kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
                              total_waypoints=traj_search_conditions["search_depth"],
-                             beam_width=traj_search_conditions["beam_width"])
+                             beam_width=traj_search_conditions["beam_width"],
+                             score_baseline=args.scorebaseline)
 
 # Display the selected paths
 if plotting:
@@ -187,19 +202,19 @@ if plotting:
 
 # Assert that we have found some paths
 print("DATA: Total unique paths found: " + str(len(all_paths)))
-assert(len(all_paths) > 0)
+if len(all_paths) > 0:
 
-# Create a ranking system object
-ranking_obj = RankingSystem(paths=all_paths)
+    # Create a ranking system object
+    ranking_obj = RankingSystem(paths=all_paths)
 
-# Score each of the paths
-ranking_obj.calculate_scores()
+    # Score each of the paths
+    ranking_obj.calculate_scores()
 
-# print("\nINFO: Displaying the score")
-# print(ranking_obj.get_scores())
+    # print("\nINFO: Displaying the score")
+    # print(ranking_obj.get_scores())
 
-# Save the scores
-ranking_obj.save_trajectories_according_to_score(folder=save_path)
+    # Save the scores
+    ranking_obj.save_trajectories_according_to_score(folder=save_path)
 
 # Print Completion
 print("UPDATE: Completed")
