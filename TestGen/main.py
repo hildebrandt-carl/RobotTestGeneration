@@ -32,7 +32,7 @@ parser.add_argument('-x', '--depth',
                     type=int,
                     help='Total number of state changes allowed per trajectory')
 parser.add_argument('-b', '--beamwidth',
-                    default=2,
+                    default=1,
                     type=int,
                     help='The beam width used in the frontier exploration')
 parser.add_argument('-n', '--nodes',
@@ -61,7 +61,7 @@ args = parser.parse_args()
 if args.visualize == True:
     from PRM_Vis import PRM
 else:
-    from PRM import PRM
+    from PRM_Vis import PRM
 
 drone = None
 save_path = None

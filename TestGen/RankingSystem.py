@@ -38,11 +38,9 @@ class RankingSystem:
 
 		# For each path
 		for path in self.paths:
-			selected_velocities = []
-			maximum_velocities = []
+			maximum_vel_magnitude = []
 			velocities = []
 			positions = []
-			angles = []
 			# For each kinematic
 			for point in path:
 				# Get the current position
@@ -52,84 +50,34 @@ class RankingSystem:
 				current_velocity = point.get_velocity()
 				velocities.append(current_velocity)
 
-				# Calculate the magnitude of those velocities
-				magnitude = sqrt(current_velocity[0] ** 2 + current_velocity[1] ** 2 + current_velocity[2] ** 2)
-				selected_velocities.append(magnitude)
-
 				# Get the maximum velocity you could reach leaving that point
-				maximum_velocities.append(point.get_maximum_velocity())
+				maximum_vel_magnitude.append(point.get_maximum_velocity())
 
-				# Get the angle to the entering that waypoint
-				angles.append(list(point.get_attitude()))
+			point_score = []
 
-			# Remove the first velocity from selected velocities as this is simply the initial condition of the robot
-			selected_velocities = selected_velocities[1:]
+			# Calculate the score at each waypoint
+			for score_counter in range(0, len(velocities) - 1):
+				# Get the vectors going into and out of a waypoint
+				in_vec = velocities[score_counter]
+				out_vec = velocities[score_counter + 1]
 
-			# Remove the first angle as that is the initial condition of the drone
-			angles = angles[1:]
+				# Get the largest magnitude at that waypoint
+				largest_mag = maximum_vel_magnitude[score_counter]
 
-			# Remove the last velocity from maximum velocities as no reachability set was calculated from the last point
-			maximum_velocities = maximum_velocities[:-1]
+				# Calculate the difference of the vectors
+				diff_vec = [out_vec[0] - in_vec[0], out_vec[1] - in_vec[1], out_vec[2] - in_vec[2]]
 
-			# Scores
-			linear_vel_scores = []
-			angular_vel_scores = []
+				# Calculate the magnitude of the vector
+				diff_vec_mag = sqrt(pow(diff_vec[0], 2) + pow(diff_vec[1], 2) + pow(diff_vec[2], 2))
 
-			# Calculate the linear velocity score
-			for i in range(0, len(selected_velocities)):
-				# Get the current and selected magnitude
-				current_vel = velocities[i]
-				current_magnitude = sqrt(current_vel[0] ** 2 + current_vel[1] ** 2 + current_vel[2] ** 2)
-				selected_magnitude = selected_velocities[i]
-				maximum_magnitude = maximum_velocities[i]
+				# Normalize the vector
+				normalized_magnitude = diff_vec_mag / (largest_mag * 2)
+				point_score.append(normalized_magnitude)
 
-				# Score is selected_velocity / current velocity
-				vel_score = (abs(float(selected_magnitude) - float(current_magnitude))) / float(maximum_magnitude)
+			# The final score is the summation of point_scores
+			self.scores.append(sum(point_score))
 
-				# If we are in baseline mode, generate a random score
-				if self.baseline:
-					linear_vel_scores.append(random.uniform(0, 1))
-				else:
-					linear_vel_scores.append(vel_score)
-
-			# Calculate the angular velocity score
-			for i in range(0, len(positions) - 1):
-
-				# Get the current position and velocity
-				current_pos = positions[i]
-				current_vel = velocities[i]
-
-				# For the initial state
-				if i == 0:
-					# assume the velocity is moving directly upwards
-					current_vel = [0, 0, 1]
-
-				# Calculate the next position if it continued in the current direction
-				no_angular_vel_pos = current_pos + current_vel
-
-				# Get the true next position
-				real_next_pos = positions[i + 1]
-
-				# Calculate the angle between them
-				angle = self.angle_between_vectors(no_angular_vel_pos, real_next_pos)
-
-				# Calculate the score
-				angular_vel_score = angle / radians(180)
-
-				# If we are in baseline mode, generate a random score
-				if self.baseline:
-					angular_vel_scores.append(random.uniform(0, 1))
-				else:
-					angular_vel_scores.append(angular_vel_score)
-
-
-			# The final score is the summation of both linear and angular scores
-			test_score = [x * y for x, y in zip(linear_vel_scores, angular_vel_scores)]
-			self.scores.append(sum(test_score))
-			self.linear_scores.append(sum(linear_vel_scores))
-			self.angular_scores.append(sum(angular_vel_scores))
-
-		return self.scores, self.linear_scores, self.angular_scores
+		return self.scores
 
 	# Save the paths to a directory
 	def save_trajectories_according_to_score(self, folder):

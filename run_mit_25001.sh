@@ -22,25 +22,25 @@ for seedcounter in 10
 do
 	for depthcounter in 10
 	do
-		for beamcounter in 1 25 2
+		for beamcounter in 1 2
 		do
 			# Get the total number of tests to run 
 			mapcounter=1
-			totaltests=$(ls ../TestGen/Results/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res2_beamwidth$beamcounter\_baseline0/maps | wc -l)
+			totaltests=$(ls ../TestGen/Results/FullRun/Nodes1000_Res4/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res4_beamwidth$beamcounter\_baseline0/maps | wc -l)
 
 			echo "--------------------------------------------------------"
-			echo "Processing: TestGen/Results/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res2_beamwidth$beamcounter\_baseline0"
+			echo "Processing: /TestGen/Results/FullRun/Nodes1000_Res4/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res4_beamwidth$beamcounter\_baseline0"
 			echo "Total tests found: $totaltests"
 			echo "--------------------------------------------------------"
 
 			while [ $mapcounter -le $totaltests ]
 			do
 
-				echo "Processing: MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res2_beamwidth$beamcounter\_baseline0/maps/map$mapcounter"
+				echo "Processing: MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res4_beamwidth$beamcounter\_baseline0/maps/map$mapcounter"
 				echo " "
 
 				# Get the current test
-				cp ../TestGen/Results/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res2_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/test.txt test.txt
+				cp ../TestGen/Results/FullRun/Nodes1000_Res4/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res4_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/test.txt test.txt
 
 				# Run the simulator
 				./WorldEngine.x86_64 &
@@ -66,7 +66,7 @@ do
 
 				# Remove the temporary test
 				rm test.txt
-				mv performance.txt ../TestGen/Results/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res2_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/performance.txt
+				mv performance.txt ../TestGen/Results/FullRun/Nodes1000_Res4/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res4_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/performance.txt
 
 				# Allow 30 seconds for gezbo to clean up
 				sleep 30

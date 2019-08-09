@@ -186,7 +186,7 @@ class PRM:
         return True
 
     # Finds paths from start vertex to end vertex which satisfy the kinematic model
-    def find_all_paths(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1):
+    def find_all_paths(self, drone_kinematic_values, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1, score_baseline=False):
 
         # Debug Counter
         debug_counter = 0
@@ -198,7 +198,7 @@ class PRM:
         finished_paths = []
 
         # Create a path scorer to score each path
-        ranking_obj = RankingSystem(paths=[])
+        ranking_obj = RankingSystem(paths=[], baseline=score_baseline)
 
         # Create a drone kinematic model at the starting position
         # Create an initial state
@@ -538,7 +538,7 @@ class PRM:
 
                 # Get the scores for each of the paths
                 ranking_obj.update_paths(frontier)
-                scores, linear_scores, angular_scores = ranking_obj.calculate_scores()
+                scores = ranking_obj.calculate_scores()
 
                 # Sort the frontier based on path score
                 # TODO: THIS IS THE WRONG WAY I WANT THE HIGHEST SCORE FIRST

@@ -380,7 +380,7 @@ class PRM:
 
                 # Get the scores for each of the paths
                 ranking_obj.update_paths(frontier)
-                scores, linear_scores, angular_scores = ranking_obj.calculate_scores()
+                scores = ranking_obj.calculate_scores()
 
                 # Sort the frontier based on path score
                 # Save them from smallest to largest as we take the item from the back of the queue
