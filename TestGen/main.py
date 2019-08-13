@@ -58,10 +58,10 @@ parser.add_argument('-l', '--scorebaseline',
                     help='This changes the score metric to random values. This is used to create a baseline with a kinematic model.')
 args = parser.parse_args()
 
-if args.visualize == True:
+if args.visualize:
     from PRM_Vis import PRM
 else:
-    from PRM_Vis import PRM
+    from PRM import PRM
 
 drone = None
 save_path = None

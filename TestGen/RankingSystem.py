@@ -33,8 +33,6 @@ class RankingSystem:
 	def calculate_scores(self):
 		# Used to save the scores of each path
 		self.scores = []
-		self.linear_scores = []
-		self.angular_scores = []
 
 		# For each path
 		for path in self.paths:
@@ -61,18 +59,26 @@ class RankingSystem:
 				in_vec = velocities[score_counter]
 				out_vec = velocities[score_counter + 1]
 
-				# Get the largest magnitude at that waypoint
-				largest_mag = maximum_vel_magnitude[score_counter]
+				# If we are on the first point there is no incoming vector so divide by 1
+				prev_largest_mag = 1
+				if score_counter > 0:
+					# Get the largest magnitude at that waypoint
+					prev_largest_mag = maximum_vel_magnitude[score_counter - 1]
 
-				# Calculate the difference of the vectors
-				diff_vec = [out_vec[0] - in_vec[0], out_vec[1] - in_vec[1], out_vec[2] - in_vec[2]]
+				# Calculate linear score
+				linear_score = self.get_magnitude_vector(in_vec) / float(prev_largest_mag)
 
-				# Calculate the magnitude of the vector
-				diff_vec_mag = sqrt(pow(diff_vec[0], 2) + pow(diff_vec[1], 2) + pow(diff_vec[2], 2))
+				# If its the first point assume the vector is straight up (as it is hovering fighting gravity)
+				# This is done so we can calculate the angle relative to it
+				if score_counter == 0:
+					in_vec = [0, 0, 1]
 
-				# Normalize the vector
-				normalized_magnitude = diff_vec_mag / (largest_mag * 2)
-				point_score.append(normalized_magnitude)
+				# Calculate the angle between vectors
+				angle = self.angle_between_vectors(in_vec, out_vec)
+				angular_vel_score = angle / radians(180)
+
+				# Save the scores
+				point_score.append(linear_score * angular_vel_score)
 
 			# The final score is the summation of point_scores
 			self.scores.append(sum(point_score))
@@ -129,8 +135,6 @@ class RankingSystem:
 			file = open(folder + details_file_name, "w")
 			file.write("Path: " + str(index) + '\n')
 			file.write("Path Total Score: " + str(self.scores[index]) + '\n')
-			file.write("Path Linear Score: " + str(self.linear_scores[index]) + '\n')
-			file.write("Path Angular Score: " + str(self.angular_scores[index]) + '\n')
 			file.write("Waypoints: " + str(waypoints) + '\n')
 			file.write("Velocity: " + str(velocity) + '\n')
 			file.write("Attitude: " + str(angles) + '\n')
@@ -162,3 +166,7 @@ class RankingSystem:
 		v1_u = self.unit_vector(v1)
 		v2_u = self.unit_vector(v2)
 		return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+
+	def get_magnitude_vector(self, v1):
+		mag = sqrt(pow(v1[0], 2) + pow(v1[1], 2) + pow(v1[2], 2))
+		return mag

@@ -18,69 +18,73 @@ current_dir="$PWD"
 # Change the port number inside the new build
 sed -i -e 's/(25001)/(25003)/g' ./config.txt
 
-for seedcounter in 10
+for nodescounter in 1000
 do
-	for depthcounter in 10
+	for rescounter in 4
 	do
-		for beamcounter in 25
+		for depthcounter in 10
 		do
-			# Get the total number of tests to run 
-			mapcounter=1
-			totaltests=$(ls ../TestGen/Results/FullRun/Nodes1000_Res4/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res4_beamwidth$beamcounter\_baseline0/maps | wc -l)
-
-			echo "--------------------------------------------------------"
-			echo "Processing: /TestGen/Results/FullRun/Nodes1000_Res4/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res4_beamwidth$beamcounter\_baseline0"
-			echo "Total tests found: $totaltests"
-			echo "--------------------------------------------------------"
-
-			while [ $mapcounter -le $totaltests ]
+			for beamcounter in 100
 			do
+				# Get the total number of tests to run 
+				mapcounter=1
+				totaltests=$(ls ../TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0/maps | wc -l)
 
-				echo "Processing: MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res4_beamwidth$beamcounter\_baseline0/maps/map$mapcounter"
-				echo " "
+				echo "--------------------------------------------------------"
+				echo "Processing: /TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0"
+				echo "Total tests found: $totaltests"
+				echo "--------------------------------------------------------"
 
-				# Get the current test
-				cp ../TestGen/Results/FullRun/Nodes1000_Res4/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res4_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/test.txt test.txt
+				while [ $mapcounter -le $totaltests ]
+				do
 
-				# Run the simulator
-				./WorldEngine.x86_64 &
+					echo "Processing: MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0/maps/map$mapcounter"
+					echo " "
 
-				# Get the PID so that I can kill it later
-				unity_PID=$!
+					# Get the current test
+					cp ../TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/test.txt test.txt
 
-				# Wait 30 seconds for unity to start
-				sleep 30
+					# Run the simulator
+					./WorldEngine.x86_64 &
 
-				# Launch the ros file
-				roslaunch flightcontroller fly.launch port:="25003" test_location:="$current_dir" save_location:="$current_dir" &
+					# Get the PID so that I can kill it later
+					unity_PID=$!
 
-				# Get the PID so that I can kill it later
-				roslaunch_PID=$!
+					# Wait 30 seconds for unity to start
+					sleep 30
 
-				# Each test is given 30 seconds
-				sleep 75
+					# Launch the ros file
+					roslaunch flightcontroller fly.launch port:="25003" test_location:="$current_dir" save_location:="$current_dir" &
 
-				# Kill the code
-				kill -INT $unity_PID
-				kill -INT $roslaunch_PID
+					# Get the PID so that I can kill it later
+					roslaunch_PID=$!
 
-				# Remove the temporary test
-				rm test.txt
-				mv performance.txt ../TestGen/Results/FullRun/Nodes1000_Res4/MIT_seed$seedcounter\_depth$depthcounter\_nodes1000_res4_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/performance.txt
+					# Each test is given 30 seconds
+					sleep 75
 
-				# Allow 30 seconds for gezbo to clean up
-				sleep 30
+					# Kill the code
+					kill -INT $unity_PID
+					kill -INT $roslaunch_PID
 
-				# Increment the mapcounter
-				((mapcounter++))
+					# Remove the temporary test
+					rm test.txt
+					mv performance.txt ../TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/performance.txt
 
-			# End mapcounter
+					# Allow 30 seconds for gezbo to clean up
+					sleep 30
+
+					# Increment the mapcounter
+					((mapcounter++))
+
+				# End mapcounter
+				done
+			# End beamcounter
 			done
-		# End beamcounter
+		# End depthcounter
 		done
-	# End depthcounter
+	# End rescounter
 	done
-# End seedcounter
+# End nodescounter
 done
 
 # Go back to the original dir

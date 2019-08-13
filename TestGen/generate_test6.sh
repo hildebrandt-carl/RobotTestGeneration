@@ -4,9 +4,9 @@ seed=10
 
 for res in 2 4
 do
-  for nodes in 1000 2000
+  for nodes in 1000
   do
-    for beamwidth in 100
+    for beamwidth in 10
     do
         for depth in 10
         do
