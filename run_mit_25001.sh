@@ -20,14 +20,14 @@ sed -i -e 's/(25001)/(25001)/g' ./config.txt
 
 for nodescounter in 1000
 do
-	for rescounter in 2 4
+	for rescounter in 4
 	do
 		for depthcounter in 10
 		do
-			for beamcounter in 1 4 25
+			for beamcounter in 50
 			do
 				# Get the total number of tests to run 
-				mapcounter=1
+				mapcounter=51
 				totaltests=$(ls ../TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0/maps | wc -l)
 
 				echo "--------------------------------------------------------"

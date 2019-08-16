@@ -2,12 +2,11 @@ import numpy as np
 from scipy.spatial import ConvexHull
 from copy import copy
 
-
 class DroneReachabilitySet:
 
-    def __init__(self, drone_kinematic):
+    def __init__(self, robot_kinematic):
         # Save the initial drones kinematic
-        self.initial_drone = drone_kinematic
+        self.initial_drone = robot_kinematic
 
         # # keeps a list of all drone positions
         # self.x_vals = np.copy(x_positions)

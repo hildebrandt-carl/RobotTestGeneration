@@ -20,11 +20,11 @@ sed -i -e 's/(25001)/(25003)/g' ./config.txt
 
 for nodescounter in 1000
 do
-	for rescounter in 4
+	for rescounter in 2 4
 	do
 		for depthcounter in 10
 		do
-			for beamcounter in 100
+			for beamcounter in 3 10 100
 			do
 				# Get the total number of tests to run 
 				mapcounter=1

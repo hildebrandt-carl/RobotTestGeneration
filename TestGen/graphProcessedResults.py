@@ -10,8 +10,8 @@ all_folders = ["./Results/FullRun-08-08-19/nodes1000_res2/",
                "./Results/FullRun-08-09-19/nodes1000_res4/",
                "./Results/FullRun-08-11-19/nodes1000_res2/",
                "./Results/FullRun-08-11-19/nodes1000_res4/",
-               "./Results/FullRun-08-13-19/nodes1000_res2/",
-               "./Results/FullRun-08-13-19/nodes1000_res4/"]
+               "./Results/FullRun-08-15-19/nodes1000_res2/",
+               "./Results/FullRun-08-15-19/nodes1000_res4/"]
 
 beam_lengths = [[1, 2, 3, 4, 5, 10],
                 [1, 2, 3, 4, 5, 10, 25, 50, 100],
@@ -29,6 +29,14 @@ save_names = ["OutputV*Angle_Res2_Depth3-10",
               "InputV*Angle_Res2_Depth10",
               "InputV*Angle_Res4_Depth10"]
 
+tick_names = ["OutV*Ang_R2D3-10",
+              "DV*Ang_R2D10",
+              "DV*Ang_Res4D10",
+              "SubVec_Res2D10",
+              "SubVec_Res4D10",
+              "InV*Ang_Res2D10",
+              "InV*Ang_Res4D10"]
+
 res_numbers = [2,
                2,
                4,
@@ -37,322 +45,138 @@ res_numbers = [2,
                2,
                4]
 
-fig = plt.figure()
-for i in range(0, len(all_folders)):
-    folder = all_folders[i]
-    beams = beam_lengths[i]
-    res = res_numbers[i]
 
-    testset_gen_times = []
-    testset_total_tests = []
-
-    for beam in beams:
-
-        if i == 0:
-            depths = [3, 4, 5, 6, 7, 8, 9, 10]
-        else:
-            depths = [10]
-
-        for depth in depths:
-
-            file_location = folder
-            file_name = "details_seed10_depth" + str(depth) + "_nodes1000_res" + str(res) + "_beamwidth" + str(beam) + ".txt"
-
-            # /Results/FullRun-08-08-19/nodes1000_res2/details_seed10_depth8_nodes1000_res2_beamwidth4.txt
-
-            # Get the time to generate that test set
-            time = get_numbers_after_string(file_name=file_location+file_name, the_string="Process finished successfully with time:")
-            total = get_numbers_after_string(file_name=file_location+file_name, the_string="DATA: Total unique paths found:")
-
-            assert(len(time) == 1)
-            assert (len(total) == 1)
-
-            testset_gen_times.append(time[0])
-            testset_total_tests.append(total[0])
-
-    plt.scatter(testset_total_tests, testset_gen_times, s=6, label=save_names[i])
-
-plt.xlabel("Number Tests")
-plt.ylabel("Test Suite Generation Time (s)")
-plt.title("Test Generation Scalability")
-plt.legend()
-plt.show()
-
-
-fig = plt.figure()
-for i in range(0, len(all_folders)):
-    folder = all_folders[i]
-    beams = beam_lengths[i]
-    res = res_numbers[i]
-
-    deviations = []
-    scores = []
-
-    for beam in beams:
-
-        if i == 0:
-            depths = [3, 4, 5, 6, 7, 8, 9, 10]
-        else:
-            depths = [10]
-
-        for depth in depths:
-
-            file_location = folder + "MIT_seed10_depth" + str(depth) + "_nodes1000_res" + str(res) + "_beamwidth" + str(beam) + "_baseline0/"
-            analysis_file_names = glob.glob(file_location + "maps/map*/analysis.txt")
-
-            for file_name in analysis_file_names:
-
-                # Get the time to generate that test set
-                dev = get_numbers_after_string(file_name=file_name, the_string="Average deviation from optimal trajectory:")
-                scr = get_numbers_after_string(file_name=file_name, the_string="Path Score:")
-
-                deviations.append(dev[0][0])
-                if i == 5 or i == 6:
-                    scores.append(scr[0][0] / 10)
-                else:
-                    scores.append(scr[0][0])
-
-    plt.scatter(scores, deviations, s=6, label=save_names[i])
-
-
+# Create the figures and add labels to axis
+f_average_deviation = plt.figure(1)
 plt.xlabel("Test Score")
 plt.ylabel("Average Spacial Deviation")
-plt.title("Score Compared to Spacial Deviation")
-# plt.legend()
-plt.show()
-
-
-
-fig = plt.figure()
-for i in range(0, len(all_folders)):
-    folder = all_folders[i]
-    beams = beam_lengths[i]
-    res = res_numbers[i]
-
-    deviations = []
-    scores = []
-
-    for beam in beams:
-
-        if i == 0:
-            depths = [3, 4, 5, 6, 7, 8, 9, 10]
-        else:
-            depths = [10]
-
-        for depth in depths:
-            file_location = folder + "MIT_seed10_depth" + str(depth) + "_nodes1000_res" + str(res) + "_beamwidth" + str(beam) + "_baseline0/"
-            analysis_file_names = glob.glob(file_location + "maps/map*/analysis.txt")
-
-            for file_name in analysis_file_names:
-
-                # Get the time to generate that test set
-                dev = get_numbers_after_string(file_name=file_name, the_string="Total deviation from optimal trajectory:")
-                scr = get_numbers_after_string(file_name=file_name, the_string="Path Score:")
-
-                if dev[0][0] > 450:
-                    print("Total Deviation over 450m (" + str(dev[0][0]) + "m): " + str(file_name))
-
-                deviations.append(dev[0][0])
-                if i == 5 or i == 6:
-                    scores.append(scr[0][0] / 10)
-                else:
-                    scores.append(scr[0][0])
-
-    plt.scatter(scores, deviations, s=6, label=save_names[i])
-
-
+f_total_deviation = plt.figure(2)
 plt.xlabel("Test Score")
 plt.ylabel("Total Spacial Deviation")
-plt.title("Score Compared to Spacial Deviation")
-# plt.legend()
-plt.show()
-
-
-
-
-
-
-fig = plt.figure()
-for i in range(0, len(all_folders)):
-    folder = all_folders[i]
-    beams = beam_lengths[i]
-    res = res_numbers[i]
-
-    number_waypoints = []
-    scores = []
-
-    for beam in beams:
-
-        if i == 0:
-            depths = [3, 4, 5, 6, 7, 8, 9, 10]
-        else:
-            depths = [10]
-
-        for depth in depths:
-
-            file_location = folder + "MIT_seed10_depth" + str(depth) + "_nodes1000_res" + str(res) + "_beamwidth" + str(beam) + "_baseline0/"
-            analysis_file_names = glob.glob(file_location + "maps/map*/analysis.txt")
-
-            for file_name in analysis_file_names:
-
-                # Get the time to generate that test set
-
-                scr = get_numbers_after_string(file_name=file_name, the_string="Path Score:")
-                way = get_numbers_after_string(file_name=file_name, the_string="Total waypoints:")
-
-                number_waypoints.append(way[0][0])
-                if i == 5 or i == 6:
-                    scores.append(scr[0][0] / 10)
-                else:
-                    scores.append(scr[0][0])
-
-    plt.scatter(scores, number_waypoints, s=6, label=save_names[i])
-
+f_average_time = plt.figure(3)
 plt.xlabel("Test Score")
-plt.ylabel("Total Waypoints")
-plt.title("Score Compared to Number Waypoints")
-plt.legend()
-plt.show()
+plt.ylabel("Average Temporal Deviation")
+f_total_time = plt.figure(4)
+plt.xlabel("Test Score")
+plt.ylabel("Total Temporal Deviation")
+f_dist_heuristic = plt.figure(5)
+plt.xlabel("Test Score")
+plt.ylabel("Distance Heuristic")
+f_time_heuristic = plt.figure(6)
+plt.xlabel("Test Score")
+plt.ylabel("Time Heuristic")
+f_dist_heuristic_box = plt.figure(7)
+plt.xlabel("Test Technique")
+plt.ylabel("Distance Heuristic")
+f_time_heuristic_box = plt.figure(8)
+plt.xlabel("Test Technique")
+plt.ylabel("Time Heuristic")
 
+distance_heuristic_box_data = []
+time_heuristic_box_data = []
 
-
-
-
-
-
-
-
-fig = plt.figure()
 for i in range(0, len(all_folders)):
     folder = all_folders[i]
     beams = beam_lengths[i]
     res = res_numbers[i]
 
-    number_waypoints = []
+    scores = []
+    average_deviation = []
     total_deviation = []
-
-    for beam in beams:
-
-        if i == 0:
-            depths = [3, 4, 5, 6, 7, 8, 9, 10]
-        else:
-            depths = [10]
-
-        for depth in depths:
-
-            file_location = folder + "MIT_seed10_depth" + str(depth) + "_nodes1000_res" + str(res) + "_beamwidth" + str(beam) + "_baseline0/"
-            analysis_file_names = glob.glob(file_location + "maps/map*/analysis.txt")
-
-            for file_name in analysis_file_names:
-
-                # Get the time to generate that test set
-
-                dev = get_numbers_after_string(file_name=file_name, the_string="Total deviation from optimal trajectory:")
-                way = get_numbers_after_string(file_name=file_name, the_string="Total waypoints:")
-
-                number_waypoints.append(way[0][0])
-                total_deviation.append(dev[0][0])
-
-    plt.scatter(total_deviation, number_waypoints, s=6, label=save_names[i])
-
-plt.xlabel("Total Spacial Deviation")
-plt.ylabel("Total Waypoints")
-plt.title("Spacial Deviation Compared to Number Waypoints")
-plt.legend()
-plt.show()
-
-
-
-
-
-
-
-fig = plt.figure()
-for i in range(0, len(all_folders)):
-    folder = all_folders[i]
-    beams = beam_lengths[i]
-    res = res_numbers[i]
-
-    avg_time = []
-    scores = []
-
-    for beam in beams:
-
-        if i == 0:
-            depths = [3, 4, 5, 6, 7, 8, 9, 10]
-        else:
-            depths = [10]
-
-        for depth in depths:
-            file_location = folder + "MIT_seed10_depth" + str(depth) + "_nodes1000_res" + str(res) + "_beamwidth" + str(beam) + "_baseline0/"
-            analysis_file_names = glob.glob(file_location + "maps/map*/analysis.txt")
-
-            for file_name in analysis_file_names:
-
-                # Get the time to generate that test set
-                av = get_numbers_after_string(file_name=file_name, the_string="Average time between waypoints:")
-                scr = get_numbers_after_string(file_name=file_name, the_string="Path Score:")
-
-                if av[0][0] > 20:
-                    print("Average time over 20 seconds: " + str(file_name))
-
-                avg_time.append(av[0][0])
-                if i == 5 or i == 6:
-                    scores.append(scr[0][0] / 10)
-                else:
-                    scores.append(scr[0][0])
-
-    plt.scatter(scores, avg_time, s=6, label=save_names[i])
-
-
-plt.xlabel("Test Score")
-plt.ylabel("Average Time Between Waypoints")
-plt.title("Score Compared to Average Time Between Waypoints")
-# plt.legend()
-plt.show()
-
-
-
-
-
-
-fig = plt.figure()
-for i in range(0, len(all_folders)):
-    folder = all_folders[i]
-    beams = beam_lengths[i]
-    res = res_numbers[i]
-
+    average_time = []
     total_time = []
-    scores = []
+    distance_heuristic = []
+    time_heuristic = []
 
     for beam in beams:
-
         if i == 0:
             depths = [3, 4, 5, 6, 7, 8, 9, 10]
         else:
             depths = [10]
 
         for depth in depths:
+
             file_location = folder + "MIT_seed10_depth" + str(depth) + "_nodes1000_res" + str(res) + "_beamwidth" + str(beam) + "_baseline0/"
             analysis_file_names = glob.glob(file_location + "maps/map*/analysis.txt")
 
             for file_name in analysis_file_names:
+                # Get the average and total deviation for that test
+                avg_dev = get_numbers_after_string(file_name=file_name, the_string="Average deviation from optimal trajectory:")
+                tot_dev = get_numbers_after_string(file_name=file_name, the_string="Total deviation from optimal trajectory:")
 
-                # Get the time to generate that test set
-                tt = get_numbers_after_string(file_name=file_name, the_string="Total time between waypoints:")
+                # Get the score for that test
                 scr = get_numbers_after_string(file_name=file_name, the_string="Path Score:")
 
-                total_time.append(tt[0][0])
-                if i == 5 or i == 6:
-                    scores.append(scr[0][0] / 10)
-                else:
-                    scores.append(scr[0][0])
+                # Get the average and total time for that test
+                avg_time = get_numbers_after_string(file_name=file_name, the_string="Average time between waypoints:")
+                tot_time = get_numbers_after_string(file_name=file_name, the_string="Total time between waypoints:")
 
+                # Get the total distance travelled and the total trajectory length
+                tot_dist = get_numbers_after_string(file_name=file_name, the_string="Total distance travelled:")
+                traj_len = get_numbers_after_string(file_name=file_name, the_string="Trajectory length:")
+                optimal_distance_heuristic = tot_dist[0][0] / traj_len[0][0]
+
+                # Get the number of waypoints (This should be equal to the trajectory's optimal time)
+                num_way = get_numbers_after_string(file_name=file_name, the_string="Total waypoints:")
+                optimal_time_heuristic = tot_time[0][0] / num_way[0][0]
+
+                # Check for any anomalies
+                if tot_dev[0][0] > 450:
+                    print("Total Deviation over 450m (" + str(tot_dev[0][0]) + "m): " + str(file_name))
+
+                if avg_time[0][0] > 20:
+                    print("Average time over 20 seconds (" + str(avg_time[0][0]) + "s): " + str(file_name))
+
+                if optimal_distance_heuristic > 2.2:
+                    print("Optimal distance heuristic over 2.2 (" + str(optimal_distance_heuristic) + "): " + str(file_name))
+
+                # Save the data
+                average_deviation.append(avg_dev[0][0])
+                total_deviation.append(tot_dev[0][0])
+                scores.append(scr[0][0])
+                average_time.append(avg_time[0][0])
+                total_time.append(tot_time[0][0])
+                distance_heuristic.append(optimal_distance_heuristic)
+                time_heuristic.append(optimal_time_heuristic)
+
+    # Save the time heuristic and distance heuristic
+    distance_heuristic_box_data.append(distance_heuristic)
+    time_heuristic_box_data.append(time_heuristic)
+
+    # Plot the data
+    f_average_deviation = plt.figure(1)
+    plt.scatter(scores, average_deviation, s=6, label=save_names[i])
+    f_total_deviation = plt.figure(2)
+    plt.scatter(scores, total_deviation, s=6, label=save_names[i])
+    f_average_time = plt.figure(3)
+    plt.scatter(scores, average_time, s=6, label=save_names[i])
+    f_total_time = plt.figure(4)
     plt.scatter(scores, total_time, s=6, label=save_names[i])
+    f_dist_heuristic = plt.figure(5)
+    plt.scatter(scores, distance_heuristic, s=6, label=save_names[i])
+    f_time_heuristic = plt.figure(6)
+    plt.scatter(scores, time_heuristic, s=6, label=save_names[i])
 
+# Update the figure legends and show them
+f_average_deviation = plt.figure(1)
+plt.legend(prop={'size': 6})
+f_total_deviation = plt.figure(2)
+plt.legend(prop={'size': 6})
+f_average_time = plt.figure(3)
+plt.legend(prop={'size': 6})
+f_total_time = plt.figure(4)
+plt.legend(prop={'size': 6})
+f_dist_heuristic = plt.figure(5)
+plt.legend(prop={'size': 6})
+f_time_heuristic = plt.figure(6)
+plt.legend(prop={'size': 6})
 
-plt.xlabel("Test Score")
-plt.ylabel("Total Time")
-plt.title("Score Compared to Total Time")
-# plt.legend()
+f_dist_heuristic_box = plt.figure(7)
+plt.boxplot(distance_heuristic_box_data)
+plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=7, rotation=45)
+f_time_heuristic_box = plt.figure(8)
+plt.boxplot(time_heuristic_box_data)
+plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=7, rotation=45)
+
+# Show the figures
 plt.show()

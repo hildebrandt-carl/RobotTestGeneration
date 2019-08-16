@@ -13,6 +13,8 @@ from enum import Enum
 import sys
 import argparse
 import time
+from PRM import PRM
+
 
 class DroneType(Enum):
     BEBOP = 1
@@ -24,28 +26,29 @@ start_time = time.time()
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--drone',
-                    default="bebop",
+                    default="mit",
                     type=str,
                     help='Select drone type (bebop), (hector), (mit)')
+parser.add_argument('-t', '--type',
+                    default="score",
+                    type=str,
+                    help='Select search type (random), (maxvel), (kinematic), (score)')
 parser.add_argument('-x', '--depth',
-                    default=5,
+                    default=10,
                     type=int,
                     help='Total number of state changes allowed per trajectory')
 parser.add_argument('-b', '--beamwidth',
-                    default=1,
+                    default=10,
                     type=int,
                     help='The beam width used in the frontier exploration')
 parser.add_argument('-n', '--nodes',
-                    default=50,
+                    default=250,
                     type=int,
                     help='Number of nodes considered')
 parser.add_argument('-r', '--resolution',
-                    default=2,
+                    default=4,
                     type=int,
                     help='Resolution of the sample space')
-parser.add_argument('-v', '--visualize',
-                    action='store_true',
-                    help='Visualize the beam search process')
 parser.add_argument('-p', '--plotting',
                     action='store_true',
                     help='Save the tests as 3D figures')
@@ -53,15 +56,7 @@ parser.add_argument('-s', '--seed',
                     default=10,
                     type=int,
                     help='Use to set a seed for the PRM construction phase. Set to 0 for to use time as seed')
-parser.add_argument('-l', '--scorebaseline',
-                    action='store_true',
-                    help='This changes the score metric to random values. This is used to create a baseline with a kinematic model.')
 args = parser.parse_args()
-
-if args.visualize:
-    from PRM_Vis import PRM
-else:
-    from PRM import PRM
 
 drone = None
 save_path = None
@@ -69,15 +64,15 @@ save_path = None
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_baseline" + str(int(args.scorebaseline)) + "/"
+    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_" + str(args.type) + "/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
-    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_baseline" + str(int(args.scorebaseline)) + "/"
+    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_" + str(args.type) + "/"
 elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
-    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_baseline" + str(int(args.scorebaseline)) + "/"
+    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_" + str(args.type) + "/"
 
 # Do you want to plot the figures or not
 plotting = False
@@ -100,42 +95,45 @@ traj_search_conditions = {"number_nodes": int(args.nodes),
                           "beam_width": float(args.beamwidth)}
 
 # Robot kinematics
-robot_kinematics = {}
+drone_kinematic = {}
 if drone == DroneType.BEBOP:
-    robot_kinematics["m"] = 0.5
-    robot_kinematics["d"] = 0.16
-    robot_kinematics["kf"] = 6.11e-8
-    robot_kinematics["km"] = 1.5e-9
-    robot_kinematics["max_rotor_speed"] = 8000
-    robot_kinematics["inertial_properties"] = [2.32e-3, 2.32e-3, 4.00e-3]
-    robot_kinematics["position"] = initial_conditions["start_point"]
-    robot_kinematics["attitude"] = [0, 0, 0]
-    robot_kinematics["velocity"] = [0, 0, 0]
-    robot_kinematics["angular_velocity"] = [0, 0, 0]
+    drone_kinematic["m"] = 0.5
+    drone_kinematic["d"] = 0.16
+    drone_kinematic["kf"] = 6.11e-8
+    drone_kinematic["km"] = 1.5e-9
+    drone_kinematic["max_rotor_speed"] = 8000
+    drone_kinematic["inertial_properties"] = [2.32e-3, 2.32e-3, 4.00e-3]
+    drone_kinematic["position"] = initial_conditions["start_point"]
+    drone_kinematic["attitude"] = [0, 0, 0]
+    drone_kinematic["velocity"] = [0, 0, 0]
+    drone_kinematic["angular_velocity"] = [0, 0, 0]
+    drone_kinematic["maximum_velocity"] = 10
 
 elif drone == DroneType.HECTOR:
-    robot_kinematics["m"] = 1.477
-    robot_kinematics["d"] = 0.275
-    robot_kinematics["kf"] = 4.142069415e-05
-    robot_kinematics["km"] = -7.011631909766668e-5
-    robot_kinematics["max_rotor_speed"] = 600
-    robot_kinematics["inertial_properties"] = [0.01464, 0.01464, 0.02664]
-    robot_kinematics["position"] = initial_conditions["start_point"]
-    robot_kinematics["attitude"] = [0, 0, 0]
-    robot_kinematics["velocity"] = [0, 0, 0]
-    robot_kinematics["angular_velocity"] = [0, 0, 0]
+    drone_kinematic["m"] = 1.477
+    drone_kinematic["d"] = 0.275
+    drone_kinematic["kf"] = 4.142069415e-05
+    drone_kinematic["km"] = -7.011631909766668e-5
+    drone_kinematic["max_rotor_speed"] = 600
+    drone_kinematic["inertial_properties"] = [0.01464, 0.01464, 0.02664]
+    drone_kinematic["position"] = initial_conditions["start_point"]
+    drone_kinematic["attitude"] = [0, 0, 0]
+    drone_kinematic["velocity"] = [0, 0, 0]
+    drone_kinematic["angular_velocity"] = [0, 0, 0]
+    drone_kinematic["maximum_velocity"] = 10
 
 elif drone == DroneType.MIT:
-    robot_kinematics["m"] = 1.0
-    robot_kinematics["d"] = 0.175
-    robot_kinematics["kf"] = 1.91e-6
-    robot_kinematics["km"] = 2.6e-7
-    robot_kinematics["max_rotor_speed"] = 2200.0
-    robot_kinematics["inertial_properties"] = [0.0049, 0.0049, 0.0049]
-    robot_kinematics["position"] = initial_conditions["start_point"]
-    robot_kinematics["attitude"] = [0, 0, 0]
-    robot_kinematics["velocity"] = [0, 0, 0]
-    robot_kinematics["angular_velocity"] = [0, 0, 0]
+    drone_kinematic["m"] = 1.0
+    drone_kinematic["d"] = 0.175
+    drone_kinematic["kf"] = 1.91e-6
+    drone_kinematic["km"] = 2.6e-7
+    drone_kinematic["max_rotor_speed"] = 2200.0
+    drone_kinematic["inertial_properties"] = [0.0049, 0.0049, 0.0049]
+    drone_kinematic["position"] = initial_conditions["start_point"]
+    drone_kinematic["attitude"] = [0, 0, 0]
+    drone_kinematic["velocity"] = [0, 0, 0]
+    drone_kinematic["angular_velocity"] = [0, 0, 0]
+    drone_kinematic["maximum_velocity"] = 15
 
 # Create the Figure manager
 fig_manager = FigureManager(save_path)
@@ -181,11 +179,36 @@ if plotting:
                                  only_save=True)
 
 print("UPDATE: Finding all paths")
-all_paths = p.find_all_paths(drone_kinematic_values=robot_kinematics,
-                             kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
-                             total_waypoints=traj_search_conditions["search_depth"],
-                             beam_width=traj_search_conditions["beam_width"],
-                             score_baseline=args.scorebaseline)
+all_paths = None
+# Use random selection of nodes
+if args.type == "random":
+    all_paths = p.find_all_paths_random(total_waypoints=traj_search_conditions["search_depth"],
+                                        beam_width=traj_search_conditions["beam_width"])
+
+# Use random selection of nodes within max velocity
+elif args.type == "maxvel":
+    all_paths = p.find_all_paths_maxvel(max_velocity=drone_kinematic["maximum_velocity"],
+                                        total_waypoints=traj_search_conditions["search_depth"],
+                                        beam_width=traj_search_conditions["beam_width"])
+
+
+# Use random selection of nodes within reachable set
+elif args.type == "kinematic":
+    all_paths = p.find_all_paths_kinematic(robot_kinematic_model=drone_kinematic,
+                                           kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
+                                           total_waypoints=traj_search_conditions["search_depth"],
+                                           beam_width=traj_search_conditions["beam_width"])
+
+# Use scored selection of nodes within reachable set
+elif args.type == "score":
+    all_paths = p.find_all_paths_score(robot_kinematic_model=drone_kinematic,
+                                       kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
+                                       total_waypoints=traj_search_conditions["search_depth"],
+                                       beam_width=traj_search_conditions["beam_width"])
+else:
+    print("ERROR: Search type not recognised")
+    exit()
+
 
 # Display the selected paths
 if plotting:
@@ -205,16 +228,31 @@ print("DATA: Total unique paths found: " + str(len(all_paths)))
 if len(all_paths) > 0:
 
     # Create a ranking system object
-    ranking_obj = RankingSystem(paths=all_paths)
+    ranking_obj = RankingSystem()
 
-    # Score each of the paths
-    ranking_obj.calculate_scores()
+    # We need to go through all recorded paths and record which are valid and which are not
+    valid_paths = ranking_obj.validate_paths(paths=all_paths,
+                                             robot_kinematic_model=drone_kinematic,
+                                             kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"])
 
-    # print("\nINFO: Displaying the score")
-    # print(ranking_obj.get_scores())
+    print("Total paths found: " + str(len(all_paths)))
+    print("Valid paths found: " + str(len(valid_paths)))
+
+    # Display the selected paths
+    if plotting:
+        # Show the map after the prm construction phase
+        print("UPDATE: Displaying Valid Trajectories")
+        map_plt = fig_manager.plot_selected_trajectories(nodes=p.get_vertices(),
+                                                         selected_paths=valid_paths,
+                                                         figure_size=(10, 10))
+
+        # Display the figure
+        fig_manager.display_and_save(fig=map_plt,
+                                     save_name='valid_trajectories',
+                                     only_save=True)
 
     # Save the scores
-    ranking_obj.save_trajectories_according_to_score(folder=save_path)
+    ranking_obj.save_trajectories_according_to_score(paths=valid_paths, folder=save_path)
 
 # Print Completion
 print("UPDATE: Completed")
