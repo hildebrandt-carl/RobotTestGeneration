@@ -168,3 +168,9 @@ You can get the current GPS co-ordinates using:
 $ rostopic echo /bebop/states/ardrone3/PilotingState/PositionChanged
 
 **note:** if they latitude and longitude are 500, that means it does not have a gps lock
+
+
+
+
+Top TIP: To restart your network manager after running one of the simulations use:
+$ sudo service network-manager restart
