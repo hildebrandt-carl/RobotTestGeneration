@@ -23,6 +23,13 @@ https://forum.developer.parrot.com/t/exporting-flight-plans-from-freeflight-pro-
 https://forum.developer.parrot.com/t/what-flight-plan-format-mavlink-and-waypoint/7387/6
 
 
+You need to install the bebop driver as follows:
+$ sudo apt-get install build-essential python-rosdep python-catkin-tools
+$ cd ros_ws/
+$ rosdep update
+$ rosdep install --from-paths src -i
+
+
 If you want to connect to the drone you can use the:
 http://localhost:9002
 
@@ -156,3 +163,8 @@ $ curl -T flightplan.mavlink ftp://192.168.42.1:61
 
 You can then follow the waypoint files as:
 $ rostopic pub --once bebop/autoflight/start std_msgs/String '{data: test.mavlink}'
+
+You can get the current GPS co-ordinates using:
+$ rostopic echo /bebop/states/ardrone3/PilotingState/PositionChanged
+
+**note:** if they latitude and longitude are 500, that means it does not have a gps lock
