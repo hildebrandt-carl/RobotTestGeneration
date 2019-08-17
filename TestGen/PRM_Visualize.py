@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 from Trajectory import Trajectory
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial import ConvexHull
-import time
 
 
 class PRM:
@@ -26,8 +25,7 @@ class PRM:
         self.AdjacencyMatrix = None
 
         # Check the map bounds are correct
-        if map_x_bounds[1] > map_x_bounds[0] and map_y_bounds[1] > map_y_bounds[0] and map_z_bounds[1] > map_z_bounds[
-            0]:
+        if map_x_bounds[1] > map_x_bounds[0] and map_y_bounds[1] > map_y_bounds[0] and map_z_bounds[1] > map_z_bounds[0]:
             # Set the map bounds
             self.x_bounds = map_x_bounds
             self.y_bounds = map_y_bounds
@@ -113,7 +111,7 @@ class PRM:
 
     # Used to populate the graph with a set of nodes in random positions
     def populate_with_nodes(self, num_vertices, input_seed=0):
-
+        
         if input_seed == 0:
             # Set the seed based on the time
             random.seed(time.time())
@@ -121,7 +119,7 @@ class PRM:
             random.seed(input_seed)
 
         # Iterate through the vertices
-        for i in range(0, num_vertices - 2):
+        for i in range(0, num_vertices-2):
 
             # Generate a random position (0-1) * (range) + minimum
             x = random.random() * (self.x_bounds[1] - self.x_bounds[0]) + self.x_bounds[0]
@@ -195,9 +193,6 @@ class PRM:
 
     # Finds paths from start vertex to end vertex using random search
     def find_all_paths_random(self, total_waypoints=5, beam_width=1, search_time=60):
-        # Record the start time
-        start_time = time.time()
-
         # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
 
@@ -223,6 +218,8 @@ class PRM:
         counter = 0
         # While there are unfinished paths
         while len(frontier) > 0:
+            # For plotting
+            considered = []
 
             # You should have a temporary paths which is added after all nodes have been processed
 
@@ -257,6 +254,8 @@ class PRM:
                     temp_finished_paths.append(current_path)
                     # Restart the beam search
                     continue
+
+                considered.append(current_pos)
 
                 # Used to save the x,y and z position of the waypoints inside the maximum velocity range
                 in_x = []
@@ -298,6 +297,117 @@ class PRM:
                     if len(new_path) <= total_waypoints:
                         temp_frontier.append(new_path)
 
+
+
+
+            # Plot the state after beam search
+            # Create the figure
+            fig = plt.figure()
+            ax = Axes3D(fig)
+
+            # Create a list of standard nodes
+            px_vals = []
+            py_vals = []
+            pz_vals = []
+
+            # Create a list of source and sink nodes
+            psource_x = []
+            psource_y = []
+            psource_z = []
+            psink_x = []
+            psink_y = []
+            psink_z = []
+
+            # For each node
+            for node in self.V:
+                # Get the x,y and z values
+                x, y, z = node.get_position()
+
+                # Check if this is a source
+                if node.get_source():
+                    # Save the position of the source node
+                    psource_x.append(x)
+                    psource_y.append(y)
+                    psource_z.append(z)
+                # Check if this is a source
+                elif node.get_sink():
+                    # Save the position of the source node
+                    psink_x.append(x)
+                    psink_y.append(y)
+                    psink_z.append(z)
+                else:
+                    # Save the positions or random nodes
+                    px_vals.append(x)
+                    py_vals.append(y)
+                    pz_vals.append(z)
+
+            pcons_x = []
+            pcons_y = []
+            pcons_z = []
+            for c in considered:
+                pcons_x.append(c[0])
+                pcons_y.append(c[1])
+                pcons_z.append(c[2])
+
+                item_to_remove = []
+                for j in range(0, len(px_vals)):
+                    if px_vals[j] == c[0] and py_vals[j] == c[1] and pz_vals[j] == c[2]:
+                        item_to_remove.append(j)
+
+                for r in item_to_remove:
+                    px_vals.pop(r)
+                    py_vals.pop(r)
+                    pz_vals.pop(r)
+
+            # Plot the values
+            ax.scatter(psource_x, psource_y, psource_z, c='g', label='Starting Position')
+            ax.scatter(psink_x, psink_y, psink_z, c='r', label='Ending Position')
+            ax.scatter(px_vals, py_vals, pz_vals, c='b', label='Possible Waypoints')
+            ax.scatter(pcons_x, pcons_y, pcons_z, c='m', label='Processed Waypoints')
+
+            for kinematic_path in temp_frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    px_arr.append(p[0])
+                    py_arr.append(p[1])
+                    pz_arr.append(p[2])
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            px_arr = []
+            py_arr = []
+            pz_arr = []
+            for kin in current_path:
+                px_arr.append(kin[0])
+                py_arr.append(kin[1])
+                pz_arr.append(kin[2])
+
+            ax.plot3D(px_arr, py_arr, pz_arr, color='blue', linewidth=1.2)
+
+            for kinematic_path in frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    px_arr.append(p[0])
+                    py_arr.append(p[1])
+                    pz_arr.append(p[2])
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            ax.set_xlabel('X-axis')
+            ax.set_ylabel('Y-axis')
+            ax.set_zlabel('Z-axis')
+            ax.set_xlim([-20, 40])
+            ax.set_ylim([-20, 40])
+            ax.set_zlim([-20, 30])
+            plt.legend()
+            plt.show()
+
+
+
             # Check that none of the finished paths have been added before
             paths_to_add = []
             for upath in temp_finished_paths:
@@ -307,6 +417,7 @@ class PRM:
                         seen_before = True
                 if not seen_before:
                     paths_to_add.append(upath)
+
 
             # When we are done processing the frontier
             # Check if we a have found any finished paths
@@ -352,11 +463,93 @@ class PRM:
                 scores = list(scores)
                 frontier = list(frontier)
 
-            # Check if you have run out of time
-            end_time = time.time()
-            if (end_time - start_time) > search_time:
-                print("Search out of time")
-                break
+
+
+
+            # Create the figure
+            fig = plt.figure()
+            ax = Axes3D(fig)
+
+            # Create a list of standard nodes
+            px_vals = []
+            py_vals = []
+            pz_vals = []
+
+            # Create a list of source and sink nodes
+            psource_x = []
+            psource_y = []
+            psource_z = []
+            psink_x = []
+            psink_y = []
+            psink_z = []
+
+            # For each node
+            for node in self.V:
+                # Get the x,y and z values
+                x, y, z = node.get_position()
+
+                # Check if this is a source
+                if node.get_source():
+                    # Save the position of the source node
+                    psource_x.append(x)
+                    psource_y.append(y)
+                    psource_z.append(z)
+                # Check if this is a source
+                elif node.get_sink():
+                    # Save the position of the source node
+                    psink_x.append(x)
+                    psink_y.append(y)
+                    psink_z.append(z)
+                else:
+                    # Save the positions or random nodes
+                    px_vals.append(x)
+                    py_vals.append(y)
+                    pz_vals.append(z)
+
+            pcons_x = []
+            pcons_y = []
+            pcons_z = []
+            for c in considered:
+                pcons_x.append(c[0])
+                pcons_y.append(c[1])
+                pcons_z.append(c[2])
+
+                item_to_remove = []
+                for j in range(0, len(px_vals)):
+                    if px_vals[j] == c[0] and py_vals[j] == c[1] and pz_vals[j] == c[2]:
+                        item_to_remove.append(j)
+
+                for r in item_to_remove:
+                    px_vals.pop(r)
+                    py_vals.pop(r)
+                    pz_vals.pop(r)
+
+            # Plot the values
+            ax.scatter(psource_x, psource_y, psource_z, c='g', label='Starting Position')
+            ax.scatter(psink_x, psink_y, psink_z, c='r', label='Ending Position')
+            ax.scatter(px_vals, py_vals, pz_vals, c='b', label='Possible Waypoints')
+            ax.scatter(pcons_x, pcons_y, pcons_z, c='m', label='Processed Waypoints')
+
+            for kinematic_path in frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    px_arr.append(p[0])
+                    py_arr.append(p[1])
+                    pz_arr.append(p[2])
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            ax.set_xlabel('X-axis')
+            ax.set_ylabel('Y-axis')
+            ax.set_zlabel('Z-axis')
+            ax.set_xlim([-20, 40])
+            ax.set_ylim([-20, 40])
+            ax.set_zlim([-20, 30])
+            plt.legend()
+            plt.show()
+
 
         # put back all deleted vertices
         self.V = temp_v
@@ -395,17 +588,11 @@ class PRM:
                 kinematic_path.append(next_state)
             final_paths.append(kinematic_path)
 
-        # Print the search time
-        print("Time taken for search: " + str(time.time() - start_time))
-
         # Return the finished paths
         return final_paths
 
     # Finds paths from start vertex to end vertex which satisfy the maximum velocity of the drone
     def find_all_paths_maxvel(self, max_velocity=1, total_waypoints=5, beam_width=1, search_time=60):
-        # Record the start time
-        start_time = time.time()
-
         # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
 
@@ -431,6 +618,8 @@ class PRM:
         counter = 0
         # While there are unfinished paths
         while len(frontier) > 0:
+            # For plotting
+            considered = []
 
             # You should have a temporary paths which is added after all nodes have been processed
 
@@ -466,6 +655,8 @@ class PRM:
                     # Restart the beam search
                     continue
 
+                considered.append(current_pos)
+
                 # Create a list of standard nodes
                 x_vals = []
                 y_vals = []
@@ -495,7 +686,7 @@ class PRM:
                     dy = y - current_pos[1]
                     dz = z - current_pos[2]
                     # Calculate the distance to the current node
-                    distance_to_source = math.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
+                    distance_to_source = math.sqrt(dx**2 + dy**2 + dz**2)
 
                     # If the distance to source is less than maximum_velocity
                     if distance_to_source <= max_velocity:
@@ -525,6 +716,116 @@ class PRM:
                     if len(new_path) <= total_waypoints:
                         temp_frontier.append(new_path)
 
+
+
+
+            # Plot the state after beam search
+            # Create the figure
+            fig = plt.figure()
+            ax = Axes3D(fig)
+
+            # Create a list of standard nodes
+            px_vals = []
+            py_vals = []
+            pz_vals = []
+
+            # Create a list of source and sink nodes
+            psource_x = []
+            psource_y = []
+            psource_z = []
+            psink_x = []
+            psink_y = []
+            psink_z = []
+
+            # For each node
+            for node in self.V:
+                # Get the x,y and z values
+                x, y, z = node.get_position()
+
+                # Check if this is a source
+                if node.get_source():
+                    # Save the position of the source node
+                    psource_x.append(x)
+                    psource_y.append(y)
+                    psource_z.append(z)
+                # Check if this is a source
+                elif node.get_sink():
+                    # Save the position of the source node
+                    psink_x.append(x)
+                    psink_y.append(y)
+                    psink_z.append(z)
+                else:
+                    # Save the positions or random nodes
+                    px_vals.append(x)
+                    py_vals.append(y)
+                    pz_vals.append(z)
+
+            pcons_x = []
+            pcons_y = []
+            pcons_z = []
+            for c in considered:
+                pcons_x.append(c[0])
+                pcons_y.append(c[1])
+                pcons_z.append(c[2])
+
+                item_to_remove = []
+                for j in range(0, len(px_vals)):
+                    if px_vals[j] == c[0] and py_vals[j] == c[1] and pz_vals[j] == c[2]:
+                        item_to_remove.append(j)
+
+                for r in item_to_remove:
+                    px_vals.pop(r)
+                    py_vals.pop(r)
+                    pz_vals.pop(r)
+
+            # Plot the values
+            ax.scatter(psource_x, psource_y, psource_z, c='g', label='Starting Position')
+            ax.scatter(psink_x, psink_y, psink_z, c='r', label='Ending Position')
+            ax.scatter(px_vals, py_vals, pz_vals, c='b', label='Possible Waypoints')
+            ax.scatter(pcons_x, pcons_y, pcons_z, c='m', label='Processed Waypoints')
+
+            for kinematic_path in temp_frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    px_arr.append(p[0])
+                    py_arr.append(p[1])
+                    pz_arr.append(p[2])
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            px_arr = []
+            py_arr = []
+            pz_arr = []
+            for kin in current_path:
+                px_arr.append(kin[0])
+                py_arr.append(kin[1])
+                pz_arr.append(kin[2])
+
+            ax.plot3D(px_arr, py_arr, pz_arr, color='blue', linewidth=1.2)
+
+            for kinematic_path in frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    px_arr.append(p[0])
+                    py_arr.append(p[1])
+                    pz_arr.append(p[2])
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            ax.set_xlabel('X-axis')
+            ax.set_ylabel('Y-axis')
+            ax.set_zlabel('Z-axis')
+            ax.set_xlim([-20, 40])
+            ax.set_ylim([-20, 40])
+            ax.set_zlim([-20, 30])
+            plt.legend()
+            plt.show()
+
+
             # Check that none of the finished paths have been added before
             paths_to_add = []
             for upath in temp_finished_paths:
@@ -535,13 +836,13 @@ class PRM:
                 if not seen_before:
                     paths_to_add.append(upath)
 
+
             # When we are done processing the frontier
             # Check if we a have found any finished paths
             if len(paths_to_add) > 0:
                 # Add the finished paths to the finalized paths
                 finished_paths += paths_to_add
                 print("Finished Paths Found: " + str(len(finished_paths)))
-                
 
                 # Remove all nodes along the paths from the graph
                 for path in paths_to_add:
@@ -557,6 +858,7 @@ class PRM:
                 frontier.append([starting_state])
                 # Do not add the temp frontier and so continue back to the main loop
                 continue
+
 
             # Only add the frontier if there is one
             if len(temp_frontier) > 0:
@@ -580,11 +882,93 @@ class PRM:
                 scores = list(scores)
                 frontier = list(frontier)
 
-            # Check if you have run out of time
-            end_time = time.time()
-            if (end_time - start_time) > search_time:
-                print("Search out of time")
-                break
+
+
+            # Create the figure
+            fig = plt.figure()
+            ax = Axes3D(fig)
+
+            # Create a list of standard nodes
+            px_vals = []
+            py_vals = []
+            pz_vals = []
+
+            # Create a list of source and sink nodes
+            psource_x = []
+            psource_y = []
+            psource_z = []
+            psink_x = []
+            psink_y = []
+            psink_z = []
+
+            # For each node
+            for node in self.V:
+                # Get the x,y and z values
+                x, y, z = node.get_position()
+
+                # Check if this is a source
+                if node.get_source():
+                    # Save the position of the source node
+                    psource_x.append(x)
+                    psource_y.append(y)
+                    psource_z.append(z)
+                # Check if this is a source
+                elif node.get_sink():
+                    # Save the position of the source node
+                    psink_x.append(x)
+                    psink_y.append(y)
+                    psink_z.append(z)
+                else:
+                    # Save the positions or random nodes
+                    px_vals.append(x)
+                    py_vals.append(y)
+                    pz_vals.append(z)
+
+            pcons_x = []
+            pcons_y = []
+            pcons_z = []
+            for c in considered:
+                pcons_x.append(c[0])
+                pcons_y.append(c[1])
+                pcons_z.append(c[2])
+
+                item_to_remove = []
+                for j in range(0, len(px_vals)):
+                    if px_vals[j] == c[0] and py_vals[j] == c[1] and pz_vals[j] == c[2]:
+                        item_to_remove.append(j)
+
+                for r in item_to_remove:
+                    px_vals.pop(r)
+                    py_vals.pop(r)
+                    pz_vals.pop(r)
+
+            # Plot the values
+            ax.scatter(psource_x, psource_y, psource_z, c='g', label='Starting Position')
+            ax.scatter(psink_x, psink_y, psink_z, c='r', label='Ending Position')
+            ax.scatter(px_vals, py_vals, pz_vals, c='b', label='Possible Waypoints')
+            ax.scatter(pcons_x, pcons_y, pcons_z, c='m', label='Processed Waypoints')
+
+            for kinematic_path in frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    px_arr.append(p[0])
+                    py_arr.append(p[1])
+                    pz_arr.append(p[2])
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            ax.set_xlabel('X-axis')
+            ax.set_ylabel('Y-axis')
+            ax.set_zlabel('Z-axis')
+            ax.set_xlim([-20, 40])
+            ax.set_ylim([-20, 40])
+            ax.set_zlim([-20, 30])
+            plt.legend()
+            plt.show()
+
+
 
         # put back all deleted vertices
         self.V = temp_v
@@ -623,17 +1007,11 @@ class PRM:
                 kinematic_path.append(next_state)
             final_paths.append(kinematic_path)
 
-        # Print the search time
-        print("Time taken for search: " + str(time.time() - start_time))
-
         # Return the finished paths
         return final_paths
 
     # Finds paths from start vertex to end vertex which satisfy the kinematic model
     def find_all_paths_kinematic(self, robot_kinematic_model, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1, search_time=60):
-        # Record the start time
-        start_time = time.time()
-
         # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
 
@@ -664,6 +1042,9 @@ class PRM:
         counter = 0
         # While there are unfinished paths
         while len(frontier) > 0:
+            # For plotting
+            considered = []
+            kinematic_draw = []
 
             # Sort the current paths to be ordered based on score
             # You should have a temporary paths which is added after all nodes have been processed
@@ -708,7 +1089,12 @@ class PRM:
                 reachability_space_generator = DroneReachabilitySet(robot_kinematic=current_kinematic)
 
                 # Calculate the reachable space for that drone kinematic in one time step
-                positions = reachability_space_generator.calculate_reachable_area(sample_resolution=kinematic_sample_resolution)
+                positions = reachability_space_generator.calculate_reachable_area(
+                    sample_resolution=kinematic_sample_resolution)
+
+                # For plotting
+                considered.append(source_pos)
+                kinematic_draw.append(positions)
 
                 # Calculate the largest distance between the source node and all sample points in the reachable area.
                 current_kinematic.calculate_maximum_velocity(positions)
@@ -748,8 +1134,10 @@ class PRM:
                     # If the waypoint is inside
                     if inside[i]:
                         # And are not the same position or previous (stop oscillation)
-                        not_same_pos = (waypoints[i][0] != source_pos[0] and waypoints[i][1] != source_pos[1] and waypoints[i][2] != source_pos[2])
-                        not_prev_pos = (waypoints[i][0] != previous_pos[0] and waypoints[i][1] != previous_pos[1] and waypoints[i][2] != previous_pos[2])
+                        not_same_pos = (waypoints[i][0] != source_pos[0] and waypoints[i][1] != source_pos[1] and
+                                        waypoints[i][2] != source_pos[2])
+                        not_prev_pos = (waypoints[i][0] != previous_pos[0] and waypoints[i][1] != previous_pos[1] and
+                                        waypoints[i][2] != previous_pos[2])
                         if not_same_pos and not_prev_pos:
                             in_x.append(waypoints[i][0])
                             in_y.append(waypoints[i][1])
@@ -798,6 +1186,137 @@ class PRM:
                     # If the path is shorter than the requested length
                     if len(new_path) <= total_waypoints:
                         temp_frontier.append(new_path)
+
+            # Plot the state after beam search
+            # Create the figure
+            fig = plt.figure()
+            ax = Axes3D(fig)
+
+            # Create a list of standard nodes
+            px_vals = []
+            py_vals = []
+            pz_vals = []
+
+            # Create a list of source and sink nodes
+            psource_x = []
+            psource_y = []
+            psource_z = []
+            psink_x = []
+            psink_y = []
+            psink_z = []
+
+            # For each node
+            for node in self.V:
+                # Get the x,y and z values
+                x, y, z = node.get_position()
+
+                # Check if this is a source
+                if node.get_source():
+                    # Save the position of the source node
+                    psource_x.append(x)
+                    psource_y.append(y)
+                    psource_z.append(z)
+                # Check if this is a source
+                elif node.get_sink():
+                    # Save the position of the source node
+                    psink_x.append(x)
+                    psink_y.append(y)
+                    psink_z.append(z)
+                else:
+                    # Save the positions or random nodes
+                    px_vals.append(x)
+                    py_vals.append(y)
+                    pz_vals.append(z)
+
+            pcons_x = []
+            pcons_y = []
+            pcons_z = []
+            for c in considered:
+                pcons_x.append(c[0])
+                pcons_y.append(c[1])
+                pcons_z.append(c[2])
+
+                item_to_remove = []
+                for j in range(0, len(px_vals)):
+                    if px_vals[j] == c[0] and py_vals[j] == c[1] and pz_vals[j] == c[2]:
+                        item_to_remove.append(j)
+
+                for r in item_to_remove:
+                    px_vals.pop(r)
+                    py_vals.pop(r)
+                    pz_vals.pop(r)
+
+            pkx = []
+            pky = []
+            pkz = []
+            hull = None
+            for points in kinematic_draw:
+                try:
+                    hull = ConvexHull(points)
+                except:
+                    hull = None
+                for point in points:
+                    pkx.append(point[0])
+                    pky.append(point[1])
+                    pkz.append(point[2])
+
+            if hull != None:
+                for s in hull.simplices:
+                    s = np.append(s, s[0])  # Here we cycle back to the first coordinate
+                    ax.plot(points[s, 0], points[s, 1], points[s, 2], "r-")
+
+            # Plot the values
+            ax.scatter(psource_x, psource_y, psource_z, c='g', label='Starting Position')
+            ax.scatter(psink_x, psink_y, psink_z, c='r', label='Ending Position')
+            ax.scatter(px_vals, py_vals, pz_vals, c='b', label='Possible Waypoints')
+            ax.scatter(pcons_x, pcons_y, pcons_z, c='m', label='Processed Waypoints')
+
+            for kinematic_path in temp_frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    x, y, z = p.get_position()
+                    px_arr.append(x)
+                    py_arr.append(y)
+                    pz_arr.append(z)
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            px_arr = []
+            py_arr = []
+            pz_arr = []
+            for kin in current_path:
+                x, y, z = kin.get_position()
+                px_arr.append(x)
+                py_arr.append(y)
+                pz_arr.append(z)
+
+            ax.plot3D(px_arr, py_arr, pz_arr, color='blue', linewidth=1.2)
+
+            for kinematic_path in frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    x, y, z = p.get_position()
+                    px_arr.append(x)
+                    py_arr.append(y)
+                    pz_arr.append(z)
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            ax.set_xlabel('X-axis')
+            ax.set_ylabel('Y-axis')
+            ax.set_zlabel('Z-axis')
+            ax.set_xlim([-20, 40])
+            ax.set_ylim([-20, 40])
+            ax.set_zlim([-20, 30])
+            plt.legend()
+            plt.show()
+
+
+
 
             # When we are done processing the frontier
             # Check if we a have found any finished paths
@@ -844,26 +1363,115 @@ class PRM:
                 scores = list(scores)
                 frontier = list(frontier)
 
-            # Check if you have run out of time
-            end_time = time.time()
-            if (end_time - start_time) > search_time:
-                print("Search out of time")
-                break
 
-        # put back all deleted vertices
+            # TO BE DELETED
+            # Create the figure
+            fig = plt.figure()
+            ax = Axes3D(fig)
+
+            # Create a list of standard nodes
+            px_vals = []
+            py_vals = []
+            pz_vals = []
+
+            # Create a list of source and sink nodes
+            psource_x = []
+            psource_y = []
+            psource_z = []
+            psink_x = []
+            psink_y = []
+            psink_z = []
+
+            # For each node
+            for node in self.V:
+                # Get the x,y and z values
+                x, y, z = node.get_position()
+
+                # Check if this is a source
+                if node.get_source():
+                    # Save the position of the source node
+                    psource_x.append(x)
+                    psource_y.append(y)
+                    psource_z.append(z)
+                # Check if this is a source
+                elif node.get_sink():
+                    # Save the position of the source node
+                    psink_x.append(x)
+                    psink_y.append(y)
+                    psink_z.append(z)
+                else:
+                    # Save the positions or random nodes
+                    px_vals.append(x)
+                    py_vals.append(y)
+                    pz_vals.append(z)
+
+            pcons_x = []
+            pcons_y = []
+            pcons_z = []
+            for c in considered:
+                pcons_x.append(c[0])
+                pcons_y.append(c[1])
+                pcons_z.append(c[2])
+
+                item_to_remove = []
+                for j in range(0, len(px_vals)):
+                    if px_vals[j] == c[0] and py_vals[j] == c[1] and pz_vals[j] == c[2]:
+                        item_to_remove.append(j)
+
+                for r in item_to_remove:
+                    px_vals.pop(r)
+                    py_vals.pop(r)
+                    pz_vals.pop(r)
+
+            pkx = []
+            pky = []
+            pkz = []
+            hull = None
+            for points in kinematic_draw:
+                try:
+                    hull = ConvexHull(points)
+                except:
+                    hull = None
+                for point in points:
+                    pkx.append(point[0])
+                    pky.append(point[1])
+                    pkz.append(point[2])
+
+            # Plot the values
+            ax.scatter(psource_x, psource_y, psource_z, c='g', label='Starting Position')
+            ax.scatter(psink_x, psink_y, psink_z, c='r', label='Ending Position')
+            ax.scatter(px_vals, py_vals, pz_vals, c='b', label='Possible Waypoints')
+            ax.scatter(pcons_x, pcons_y, pcons_z, c='m', label='Processed Waypoints')
+
+            for kinematic_path in frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    x, y, z = p.get_position()
+                    px_arr.append(x)
+                    py_arr.append(y)
+                    pz_arr.append(z)
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            ax.set_xlabel('X-axis')
+            ax.set_ylabel('Y-axis')
+            ax.set_zlabel('Z-axis')
+            ax.set_xlim([-20, 40])
+            ax.set_ylim([-20, 40])
+            ax.set_zlim([-20, 30])
+            plt.legend()
+            plt.show()
+
+        # put back all deleted verticies
         self.V = temp_v
-
-        # Print the search time
-        print("Time taken for search: " + str(time.time() - start_time))
 
         # Return the finished paths
         return finished_paths
 
     # Finds paths from start vertex to end vertex which satisfy the kinematic model and scoring criteria
     def find_all_paths_score(self, robot_kinematic_model, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1, search_time=60):
-        # Record the start time
-        start_time = time.time()
-
         # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
 
@@ -897,6 +1505,9 @@ class PRM:
         counter = 0
         # While there are unfinished paths
         while len(frontier) > 0:
+            # For plotting
+            considered = []
+            kinematic_draw = []
 
             # Sort the current paths to be ordered based on score
             # You should have a temporary paths which is added after all nodes have been processed
@@ -942,6 +1553,10 @@ class PRM:
 
                 # Calculate the reachable space for that drone kinematic in one time step
                 positions = reachability_space_generator.calculate_reachable_area(sample_resolution=kinematic_sample_resolution)
+
+                # For plotting
+                considered.append(source_pos)
+                kinematic_draw.append(positions)
 
                 # Calculate the largest distance between the source node and all sample points in the reachable area.
                 current_kinematic.calculate_maximum_velocity(positions)
@@ -1032,6 +1647,143 @@ class PRM:
                     if len(new_path) <= total_waypoints:
                         temp_frontier.append(new_path)
 
+
+
+
+            # Plot the state after beam search
+            # Create the figure
+            fig = plt.figure()
+            ax = Axes3D(fig)
+
+            # Create a list of standard nodes
+            px_vals = []
+            py_vals = []
+            pz_vals = []
+
+            # Create a list of source and sink nodes
+            psource_x = []
+            psource_y = []
+            psource_z = []
+            psink_x = []
+            psink_y = []
+            psink_z = []
+
+            # For each node
+            for node in self.V:
+                # Get the x,y and z values
+                x, y, z = node.get_position()
+
+                # Check if this is a source
+                if node.get_source():
+                    # Save the position of the source node
+                    psource_x.append(x)
+                    psource_y.append(y)
+                    psource_z.append(z)
+                # Check if this is a source
+                elif node.get_sink():
+                    # Save the position of the source node
+                    psink_x.append(x)
+                    psink_y.append(y)
+                    psink_z.append(z)
+                else:
+                    # Save the positions or random nodes
+                    px_vals.append(x)
+                    py_vals.append(y)
+                    pz_vals.append(z)
+
+            pcons_x = []
+            pcons_y = []
+            pcons_z = []
+            for c in considered:
+                pcons_x.append(c[0])
+                pcons_y.append(c[1])
+                pcons_z.append(c[2])
+
+                item_to_remove = []
+                for j in range(0, len(px_vals)):
+                    if px_vals[j] == c[0] and py_vals[j] == c[1] and pz_vals[j] == c[2]:
+                        item_to_remove.append(j)
+
+                for r in item_to_remove:
+                    px_vals.pop(r)
+                    py_vals.pop(r)
+                    pz_vals.pop(r)
+
+            pkx = []
+            pky = []
+            pkz = []
+            hull = None
+            for points in kinematic_draw:
+                try:
+                    hull = ConvexHull(points)
+                except:
+                    hull = None
+                for point in points:
+                    pkx.append(point[0])
+                    pky.append(point[1])
+                    pkz.append(point[2])
+
+            if hull != None:
+                for s in hull.simplices:
+                    s = np.append(s, s[0])  # Here we cycle back to the first coordinate
+                    ax.plot(points[s, 0], points[s, 1], points[s, 2], "r-")
+
+            # Plot the values
+            ax.scatter(psource_x, psource_y, psource_z, c='g', label='Starting Position')
+            ax.scatter(psink_x, psink_y, psink_z, c='r', label='Ending Position')
+            ax.scatter(px_vals, py_vals, pz_vals, c='b', label='Possible Waypoints')
+            ax.scatter(pcons_x, pcons_y, pcons_z, c='m', label='Processed Waypoints')
+
+            for kinematic_path in temp_frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    x, y, z = p.get_position()
+                    px_arr.append(x)
+                    py_arr.append(y)
+                    pz_arr.append(z)
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            px_arr = []
+            py_arr = []
+            pz_arr = []
+            for kin in current_path:
+                x, y, z = kin.get_position()
+                px_arr.append(x)
+                py_arr.append(y)
+                pz_arr.append(z)
+
+            ax.plot3D(px_arr, py_arr, pz_arr, color='blue', linewidth=1.2)
+
+            for kinematic_path in frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    x, y, z = p.get_position()
+                    px_arr.append(x)
+                    py_arr.append(y)
+                    pz_arr.append(z)
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            ax.set_xlabel('X-axis')
+            ax.set_ylabel('Y-axis')
+            ax.set_zlabel('Z-axis')
+            ax.set_xlim([-20, 40])
+            ax.set_ylim([-20, 40])
+            ax.set_zlim([-20, 30])
+            plt.legend()
+            plt.show()
+
+
+
+
+
+
+
             # When we are done processing the frontier
             # Check if we a have found any finished paths
             if len(temp_finished_paths) > 0:
@@ -1057,6 +1809,7 @@ class PRM:
 
             # Only add the frontier if there is one
             if len(temp_frontier) > 0:
+
                 # Add the new frontier to the frontier
                 frontier += temp_frontier
 
@@ -1072,17 +1825,108 @@ class PRM:
                 scores = list(scores)
                 frontier = list(frontier)
 
-            # Check if you have run out of time
-            end_time = time.time()
-            if (end_time - start_time) > search_time:
-                print("Search out of time")
-                break
+            # TO BE DELETED
+            # Create the figure
+            fig = plt.figure()
+            ax = Axes3D(fig)
+
+            # Create a list of standard nodes
+            px_vals = []
+            py_vals = []
+            pz_vals = []
+
+            # Create a list of source and sink nodes
+            psource_x = []
+            psource_y = []
+            psource_z = []
+            psink_x = []
+            psink_y = []
+            psink_z = []
+
+            # For each node
+            for node in self.V:
+                # Get the x,y and z values
+                x, y, z = node.get_position()
+
+                # Check if this is a source
+                if node.get_source():
+                    # Save the position of the source node
+                    psource_x.append(x)
+                    psource_y.append(y)
+                    psource_z.append(z)
+                # Check if this is a source
+                elif node.get_sink():
+                    # Save the position of the source node
+                    psink_x.append(x)
+                    psink_y.append(y)
+                    psink_z.append(z)
+                else:
+                    # Save the positions or random nodes
+                    px_vals.append(x)
+                    py_vals.append(y)
+                    pz_vals.append(z)
+
+            pcons_x = []
+            pcons_y = []
+            pcons_z = []
+            for c in considered:
+                pcons_x.append(c[0])
+                pcons_y.append(c[1])
+                pcons_z.append(c[2])
+
+                item_to_remove = []
+                for j in range(0, len(px_vals)):
+                    if px_vals[j] == c[0] and py_vals[j] == c[1] and pz_vals[j] == c[2]:
+                        item_to_remove.append(j)
+
+                for r in item_to_remove:
+                    px_vals.pop(r)
+                    py_vals.pop(r)
+                    pz_vals.pop(r)
+
+            pkx = []
+            pky = []
+            pkz = []
+            hull = None
+            for points in kinematic_draw:
+                try:
+                    hull = ConvexHull(points)
+                except:
+                    hull = None
+                for point in points:
+                    pkx.append(point[0])
+                    pky.append(point[1])
+                    pkz.append(point[2])
+
+            # Plot the values
+            ax.scatter(psource_x, psource_y, psource_z, c='g', label='Starting Position')
+            ax.scatter(psink_x, psink_y, psink_z, c='r', label='Ending Position')
+            ax.scatter(px_vals, py_vals, pz_vals, c='b', label='Possible Waypoints')
+            ax.scatter(pcons_x, pcons_y, pcons_z, c='m', label='Processed Waypoints')
+
+            for kinematic_path in frontier:
+                px_arr = []
+                py_arr = []
+                pz_arr = []
+                for p in kinematic_path:
+                    x, y, z = p.get_position()
+                    px_arr.append(x)
+                    py_arr.append(y)
+                    pz_arr.append(z)
+
+                ax.plot3D(px_arr, py_arr, pz_arr, color='green', linewidth=1.2)
+
+            ax.set_xlabel('X-axis')
+            ax.set_ylabel('Y-axis')
+            ax.set_zlabel('Z-axis')
+            ax.set_xlim([-20, 40])
+            ax.set_ylim([-20, 40])
+            ax.set_zlim([-20, 30])
+            plt.legend()
+            plt.show()
 
         # put back all deleted vertices
         self.V = temp_v
-
-        # Print the search time
-        print("Time taken for search: " + str(time.time() - start_time))
 
         # Return the finished paths
         return finished_paths

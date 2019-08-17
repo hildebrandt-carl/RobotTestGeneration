@@ -13,7 +13,7 @@ from enum import Enum
 import sys
 import argparse
 import time
-from PRM import PRM
+
 
 
 class DroneType(Enum):
@@ -30,19 +30,19 @@ parser.add_argument('-d', '--drone',
                     type=str,
                     help='Select drone type (bebop), (hector), (mit)')
 parser.add_argument('-t', '--type',
-                    default="score",
+                    default="kinematic",
                     type=str,
                     help='Select search type (random), (maxvel), (kinematic), (score)')
 parser.add_argument('-x', '--depth',
-                    default=10,
+                    default=3,
                     type=int,
                     help='Total number of state changes allowed per trajectory')
 parser.add_argument('-b', '--beamwidth',
-                    default=10,
+                    default=1,
                     type=int,
                     help='The beam width used in the frontier exploration')
 parser.add_argument('-n', '--nodes',
-                    default=250,
+                    default=5,
                     type=int,
                     help='Number of nodes considered')
 parser.add_argument('-r', '--resolution',
@@ -52,10 +52,17 @@ parser.add_argument('-r', '--resolution',
 parser.add_argument('-p', '--plotting',
                     action='store_true',
                     help='Save the tests as 3D figures')
+parser.add_argument('-g', '--debug',
+                    action='store_true',
+                    help='Displays each stage during the selection phase')
 parser.add_argument('-s', '--seed',
-                    default=10,
+                    default=12,
                     type=int,
                     help='Use to set a seed for the PRM construction phase. Set to 0 for to use time as seed')
+parser.add_argument('-i', '--searchtime',
+                    default=60,
+                    type=int,
+                    help='The amount of time allowed for path searching')
 args = parser.parse_args()
 
 drone = None
@@ -64,27 +71,33 @@ save_path = None
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_" + str(args.type) + "/"
+    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
-    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_" + str(args.type) + "/"
+    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "/"
 elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
-    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_" + str(args.type) + "/"
+    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "/"
 
 # Do you want to plot the figures or not
 plotting = False
 if args.plotting == True:
     plotting = True
 
+# If we are debugging
+if args.debug == True:
+    from PRM_Visualize import PRM
+else:
+    from PRM import PRM
+
 # Test initial conditions
 initial_conditions = {"map_x_bounds": [0, 30],
                       "map_y_bounds": [0, 30],
                       "map_z_bounds": [0, 15],
                       "start_point": [1, 1, 1],
-                      "end_point": [15, 15, 8]}
+                      "end_point": [29, 29, 14]}
 
 # Specified by the tester
 human_specified_factors = {"kinematic_sampling_resolution": args.resolution}
@@ -107,7 +120,7 @@ if drone == DroneType.BEBOP:
     drone_kinematic["attitude"] = [0, 0, 0]
     drone_kinematic["velocity"] = [0, 0, 0]
     drone_kinematic["angular_velocity"] = [0, 0, 0]
-    drone_kinematic["maximum_velocity"] = 10
+    drone_kinematic["maximum_velocity"] = 15
 
 elif drone == DroneType.HECTOR:
     drone_kinematic["m"] = 1.477
@@ -120,7 +133,7 @@ elif drone == DroneType.HECTOR:
     drone_kinematic["attitude"] = [0, 0, 0]
     drone_kinematic["velocity"] = [0, 0, 0]
     drone_kinematic["angular_velocity"] = [0, 0, 0]
-    drone_kinematic["maximum_velocity"] = 10
+    drone_kinematic["maximum_velocity"] = 15
 
 elif drone == DroneType.MIT:
     drone_kinematic["m"] = 1.0
@@ -133,7 +146,7 @@ elif drone == DroneType.MIT:
     drone_kinematic["attitude"] = [0, 0, 0]
     drone_kinematic["velocity"] = [0, 0, 0]
     drone_kinematic["angular_velocity"] = [0, 0, 0]
-    drone_kinematic["maximum_velocity"] = 15
+    drone_kinematic["maximum_velocity"] = 20
 
 # Create the Figure manager
 fig_manager = FigureManager(save_path)
@@ -183,13 +196,15 @@ all_paths = None
 # Use random selection of nodes
 if args.type == "random":
     all_paths = p.find_all_paths_random(total_waypoints=traj_search_conditions["search_depth"],
-                                        beam_width=traj_search_conditions["beam_width"])
+                                        beam_width=traj_search_conditions["beam_width"],
+                                        search_time=args.searchtime)
 
 # Use random selection of nodes within max velocity
 elif args.type == "maxvel":
     all_paths = p.find_all_paths_maxvel(max_velocity=drone_kinematic["maximum_velocity"],
                                         total_waypoints=traj_search_conditions["search_depth"],
-                                        beam_width=traj_search_conditions["beam_width"])
+                                        beam_width=traj_search_conditions["beam_width"],
+                                        search_time=args.searchtime)
 
 
 # Use random selection of nodes within reachable set
@@ -197,16 +212,18 @@ elif args.type == "kinematic":
     all_paths = p.find_all_paths_kinematic(robot_kinematic_model=drone_kinematic,
                                            kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
                                            total_waypoints=traj_search_conditions["search_depth"],
-                                           beam_width=traj_search_conditions["beam_width"])
+                                           beam_width=traj_search_conditions["beam_width"],
+                                           search_time=args.searchtime)
 
 # Use scored selection of nodes within reachable set
 elif args.type == "score":
     all_paths = p.find_all_paths_score(robot_kinematic_model=drone_kinematic,
                                        kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
                                        total_waypoints=traj_search_conditions["search_depth"],
-                                       beam_width=traj_search_conditions["beam_width"])
+                                       beam_width=traj_search_conditions["beam_width"],
+                                       search_time=args.searchtime)
 else:
-    print("ERROR: Search type not recognised")
+    print("ERROR: Search type not recognized")
     exit()
 
 
