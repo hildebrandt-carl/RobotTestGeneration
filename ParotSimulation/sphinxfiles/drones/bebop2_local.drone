@@ -13,5 +13,5 @@
   <interface>eth1</interface>
   <!-- 'wlan0' may need to be replaced the actual wifi interface name -->
   <!-- <stolen_interface>wlan0:eth0:192.168.42.1/24</stolen_interface> -->
-  <stolen_interface>enp0:eth0:192.168.42.1/24</stolen_interface>
+  <stolen_interface>enp0:enp1p3:192.168.42.1/24</stolen_interface>
 </drone>

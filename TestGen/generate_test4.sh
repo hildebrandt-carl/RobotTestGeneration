@@ -6,7 +6,7 @@ searchtype='score'
 
 for res in 4
 do
-  for nodes in 10000
+  for nodes in 5000
   do
     for beamwidth in 1
     do

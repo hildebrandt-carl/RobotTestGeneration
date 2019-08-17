@@ -65,23 +65,27 @@ I believe this uploads the file to the following directory on the drone
 $ sudo systemctl start firmwared.service
 
 1) Launch the simulator
-$ sphinx /home/autosoftlab/Desktop/ParoteSimulation/worlds/outdoor_1.world /home/autosoftlab/Desktop/ParoteSimulation/drones/bebop2_local.drone::with_front_cam=true
+$ sphinx /home/autosoftlab/Desktop/RobotTestGeneration/ParotSimulation/sphinxfiles/worlds/outdoor_1.world /home/autosoftlab/Desktop/RobotTestGeneration/ParotSimulation/sphinxfiles/drones/bebop2_local.drone::with_front_cam=true
 
 2) Launch the driver
-$ roslaunch bebop_driver bebop_node.launch
+$ source devel/setup.zsh
+$ roslaunch bebop_driver bebop_node.launch ip:="10.202.0.1"
 
-3) Upload the waypoints
+3a) Upload the waypoints
 $ curl -T test.mavlink ftp://10.202.0.1:61/
 
 4) Start following waypoints
 $ rostopic pub --once bebop/autoflight/start std_msgs/String '{data: test.mavlink}'
 
+3b) Launch the joy controller we have created
+$ source devel/setup.zsh
+$ rosrun joy joy_node
+$ rosrun bebop_utils joy_to_bebop.py
 
+**Note:** A command from the controller will stop the drone from following a flight plan!
 
 # Right now if I upload a file and it finds it it will take off and then not do anything.
 Two possiblilites. Maybe it goes through the sequence of waypoints too quickly. So I will do a test where I make the number of waypoints much longer. The second possibility is that for some reason after finding the first file it defaults to the normal file name "flightplan"
-
-
 
 
 The mavros file format is as follows:
@@ -110,3 +114,45 @@ We are sending waypoints ie <COMMAND>=16. You can find the defintion of this com
        ...
 
 Documentation for mavlink also confirms this (https://mavlink.io/en/messages/common.html#MAV_CMD_NAV_WAYPOINT). This states that param5 is latitude and param6 longitude.
+
+
+
+To do this in the cage do the following:
+
+First start by turning the parrot drone on. The parrot drone will create a wifi hotspot which you can then connect to.
+
+To connect we can use the ethernet wifi cards we have bought.
+
+We need to assign static IP to the ether port. To do this run:
+
+$ ifconfig
+>>> It should be an enp1p* connection
+
+Now assign the IP address:
+
+$ sudo ifconfig enp1p1 192.168.1.2
+
+Then launch the internet browser and connect to "192.168.1.252"
+
+
+
+Next launch the ROS code using
+
+2) Launch the driver
+$ roslaunch bebop_driver bebop_node.launch ip:="192.168.42.1"
+
+Check that it is working using:
+
+You can view the images taken by the drone using: 
+$ rosrun image_view image_view image:=/bebop/image_raw
+
+You can then control the drone by running:
+$ source devel/setup.zsh
+$ rosrun joy joy_node
+$ rosrun bebop_utils joy_to_bebop.py
+
+You can upload waypoint files using:
+$ curl -T flightplan.mavlink ftp://192.168.42.1:61
+
+You can then follow the waypoint files as:
+$ rostopic pub --once bebop/autoflight/start std_msgs/String '{data: test.mavlink}'
