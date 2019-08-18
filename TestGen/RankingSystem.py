@@ -1,5 +1,6 @@
 from FigureManager import FigureManager
 from UnityConverter import UnityConverter
+from MavlinkConverter import MavlinkConverter
 from DroneReachabilitySet import DroneReachabilitySet
 from DroneKinematic import DroneKinematic
 from math import sqrt, radians
@@ -142,8 +143,9 @@ class RankingSystem:
 
     # Save the paths to a directory
     def save_trajectories_according_to_score(self, paths, folder):
-        # Create the converter class
-        converter = UnityConverter(save_directory=folder)
+        # Create the converter class's
+        unity_converter = UnityConverter(save_directory=folder)
+        mavlink_converter = MavlinkConverter(save_directory=folder)
 
         # Get the scores
         scores, _, _ = self.calculate_scores(paths=paths)
@@ -173,19 +175,12 @@ class RankingSystem:
             save_directory = "maps/map" + str(path_counter) + "/"
             unity_file_name = save_directory + "test.txt"
             details_file_name = save_directory + "details.txt"
+            mavros_file_name = save_directory + "flightplan.mavlink"
 
             # Check the save location is created
             if not os.path.isdir(folder + save_directory):
                 # If not create it
                 os.makedirs(folder + save_directory)
-
-            # print("Path: " + str(index))
-            # print("Path Score: " + str(self.scores[index]))
-            # print("Waypoints: " + str(waypoints))
-            # print("Velocity: " + str(velocity))
-            # print("Attitude: " + str(angles))
-            # print("Save Location: " + unity_file_name)
-            # print("------------")
 
             # Write this information to file
             file = open(folder + details_file_name, "w")
@@ -198,10 +193,10 @@ class RankingSystem:
             file.close()
 
             # Save the test to a unity file
-            converter.unity_text_file(waypoints=waypoints,
-                                      expected_velocity=velocity,
-                                      corridor=[],
-                                      save_name=unity_file_name)
+            unity_converter.unity_text_file(waypoints=waypoints, expected_velocity=velocity, corridor=[], save_name=unity_file_name)
+
+            # Save the test to a mavlink waypoint file
+            mavlink_converter.mavlink_waypoint_file(waypoints=waypoints, save_name=mavros_file_name)
 
             # Create the plot and save it
             plt = fig_manager.plot_single_trajectory(waypoints)

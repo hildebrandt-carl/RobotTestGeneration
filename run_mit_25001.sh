@@ -6,17 +6,20 @@ ROS_MASTER_URI=http://localhost:11311
 # Source the ros workspace
 source ROS_WS/devel/setup.zsh
 
+# Used to save the port number
+port=25001
+
 # Create a temporary unity folder
-cp -r ./Unity/Build ./Build25001
+cp -r ./Unity/Build ./Build$port
 
 # Go into the directory
-cd ./Build25001
+cd ./Build$port
 
 # Get current directory
 current_dir="$PWD"
 
 # Change the port number inside the new build
-sed -i -e 's/(25001)/(25001)/g' ./config.txt
+sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
 for nodescounter in 1000
 do
@@ -24,59 +27,81 @@ do
 	do
 		for depthcounter in 10
 		do
-			for beamcounter in 50
+			for beamcounter in 10
 			do
-				# Get the total number of tests to run 
-				mapcounter=51
-				totaltests=$(ls ../TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0/maps | wc -l)
-
-				echo "--------------------------------------------------------"
-				echo "Processing: /TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0"
-				echo "Total tests found: $totaltests"
-				echo "--------------------------------------------------------"
-
-				while [ $mapcounter -le $totaltests ]
+				for simtype in 'random' 'kinematic'
 				do
+					for searchtime in 600
+					do
+							# Get the folder
+							folder=/TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype
 
-					echo "Processing: MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0/maps/map$mapcounter"
-					echo " "
+							# Get the total number of tests to run 
+							mapcounter=1
+							totaltests=$(ls ..$folder/maps | wc -l)
 
-					# Get the current test
-					cp ../TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/test.txt test.txt
+							echo "--------------------------------------------------------"
+							echo "Processing: $folder"
+							echo "Total tests found: $totaltests"
+							echo "--------------------------------------------------------"
 
-					# Run the simulator
-					./WorldEngine.x86_64 &
+							while [ $mapcounter -le $totaltests ]
+							do
+								echo "Processing: $folder/maps/map$mapcounter"
+								echo " "
 
-					# Get the PID so that I can kill it later
-					unity_PID=$!
+								for speed in -1 20
+								do
 
-					# Wait 30 seconds for unity to start
-					sleep 30
+									# Get the current test
+									cp ..$folder/maps/map$mapcounter/test.txt test.txt
 
-					# Launch the ros file
-					roslaunch flightcontroller fly.launch port:="25001" test_location:="$current_dir" save_location:="$current_dir" &
+									# Run the simulator
+									./WorldEngine.x86_64 &
 
-					# Get the PID so that I can kill it later
-					roslaunch_PID=$!
+									# Get the PID so that I can kill it later
+									unity_PID=$!
 
-					# Each test is given 30 seconds
-					sleep 75
+									# Wait 30 seconds for unity to start
+									sleep 30
 
-					# Kill the code
-					kill -INT $unity_PID
-					kill -INT $roslaunch_PID
+									# Launch the ros file
+									roslaunch flightcontroller fly.launch port:="$port" test_location:="$current_dir" save_location:="$current_dir" speed:="$speed" &
 
-					# Remove the temporary test
-					rm test.txt
-					mv performance.txt ../TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_baseline0/maps/map$mapcounter/performance.txt
+									# Get the PID so that I can kill it later
+									roslaunch_PID=$!
 
-					# Allow 30 seconds for gezbo to clean up
-					sleep 30
+									# Each test is given 30 seconds
+									sleep 75
 
-					# Increment the mapcounter
-					((mapcounter++))
+									# Kill the code
+									kill -INT $unity_PID
+									kill -INT $roslaunch_PID
 
-				# End mapcounter
+									# Remove the temporary test
+									rm test.txt
+									
+									# Save the test to the appropriate file
+									if [ $speed -eq -1 ]
+									then
+										mv performance.txt ..$folder/maps/map$mapcounter/performance_waypoint.txt
+									else
+										mv performance.txt ..$folder/maps/map$mapcounter/performance_constant.txt
+									fi
+
+									# Allow 30 seconds for gezbo to clean up
+									sleep 30
+								
+								# End speed
+								done
+
+								# Increment the mapcounter
+								((mapcounter++))
+							# End mapcounter
+							done
+					# End searchtime
+					done
+				# End simtype
 				done
 			# End beamcounter
 			done
@@ -91,6 +116,6 @@ done
 cd ..
 
 # Delete the temp files
-rm -r Build25001/
+rm -r Build$port/
 
 echo Completed Script

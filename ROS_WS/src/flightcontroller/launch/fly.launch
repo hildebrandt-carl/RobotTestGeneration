@@ -13,9 +13,14 @@
   <arg name="ip" default="127.0.01" />
   <arg name="port" default="25001" />
 
+  <!-- Set the requested velocity, -1 is waypoint mode -->
+  <arg name="speed" default="10" />
+
   <include file="$(find flightcontroller)/launch/angle.launch"/>
   <include file="$(find flightcontroller)/launch/velocity.launch"/>
-  <include file="$(find flightcontroller)/launch/position.launch"/>
+  <include file="$(find flightcontroller)/launch/position.launch">
+    <arg name="speed" value="$(arg speed)"/>
+  </include>
 
   <!--include core flightgoggles launch file-->
   <include file="$(find flightgoggles)/launch/core.launch">

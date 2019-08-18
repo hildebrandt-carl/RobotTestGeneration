@@ -28,12 +28,18 @@ class PositionController():
     gains = rospy.get_param('/position_controller_node/gains', {'p': 1, 'i': 0.0, 'd': 0.0})
     Kp, Ki, Kd = gains['p'], gains['i'], gains['d']
 
+    # Getting the requested speed
+    self.speed = rospy.get_param('/position_controller_node/speed')
+
     # Display incoming parameters
     rospy.loginfo(str(rospy.get_name()) + ": Lauching with the following parameters:")
     rospy.loginfo(str(rospy.get_name()) + ": p - " + str(Kp))
     rospy.loginfo(str(rospy.get_name()) + ": i - " + str(Ki))
     rospy.loginfo(str(rospy.get_name()) + ": d - " + str(Kd))
     rospy.loginfo(str(rospy.get_name()) + ": rate - " + str(self.rate))
+
+    # Display the requested speed
+    rospy.loginfo(str(rospy.get_name()) + ": speed - " + str(self.speed))
 
     # Creating the PID's
     self.pos_x_PID = PID(Kp, Ki, Kd, self.rate)
@@ -75,19 +81,36 @@ class PositionController():
         y_proportion = self.pos_y_PID.get_output(self.y_setpoint, self.y_pos)
         z_proportion = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
 
-        total = abs(x_proportion) + abs(y_proportion) + abs(z_proportion)
+        # Initialize the components of the vector
+        x_vel = 0
+        y_vel = 0
+        z_vel = 0
 
-        # If we are not moving yet
-        if total == 0:
-          total = 1
+        # If we are in waypoint mode
+        if self.speed == -1:
+          # Set the velocity based on distance
+          x_vel = self.pos_x_PID.get_output(self.x_setpoint, self.x_pos)
+          y_vel = self.pos_y_PID.get_output(self.y_setpoint, self.y_pos)
+          z_vel = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
+          print("x_vel: " + str(x_vel))
+          print("y_vel: " + str(y_vel))
+          print("z_vel: " + str(z_vel))
 
-        # Set the velocity to 10 m/s
-        velocity_total = 10.0 # m/s
+        # If we are in constant speed mode
+        else:
+          total = abs(x_proportion) + abs(y_proportion) + abs(z_proportion)
 
-        # Cacluate the velocity in the x and y direction
-        x_vel = velocity_total * (x_proportion/total)
-        y_vel = velocity_total * (y_proportion/total)
-        z_vel = velocity_total * (z_proportion/total)
+          # If we are not moving yet
+          if total == 0:
+            total = 1
+
+          # Set the velocity to in m/s
+          velocity_total = self.speed # m/s
+
+          # Calculate the velocity in the x and y direction
+          x_vel = velocity_total * (x_proportion/total)
+          y_vel = velocity_total * (y_proportion/total)
+          z_vel = velocity_total * (z_proportion/total)
 
         # Create and publish the data
         velocity = Vector3(x_vel, -1* y_vel, z_vel)

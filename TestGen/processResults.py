@@ -6,7 +6,7 @@ import glob
 from math import sqrt, pow
 
 
-beams = [1, 3, 5, 25]
+beams = [10]
 depths = [10]
 resolutions = [4]
 
@@ -14,9 +14,9 @@ for res in resolutions:
     for beam in beams:
         for depth in depths:
 
-            file_location = "./Results/FullRun-08-09-19/nodes1000_res" + str(res) + "/MIT_seed10_depth" + str(depth) + "_nodes1000_res" + str(res) + "_beamwidth" + str(beam) + "_baseline0/"
-            file_names = glob.glob(file_location + "maps/map*/performance.txt")
-            print(file_location + "maps/map*/performance.txt")
+            file_location = "./Results/MIT_seed10_depth" + str(depth) + "_nodes1000_res" + str(res) + "_beamwidth" + str(beam) + "_searchtime600_random/"
+            file_names = glob.glob(file_location + "maps/map*/performance_waypoint.txt")
+            print(file_location + "maps/map*/performance_waypoint.txt")
 
             # https://stackoverflow.com/questions/56463412/distance-from-a-point-to-a-line-segment-in-3d-python
             def get_numbers_from_string(string_var):
@@ -81,7 +81,7 @@ for res in resolutions:
                 print("-------------------------------------------")
 
                 # Work out the folder name by removing the word performance.txt
-                folder_name = file_name[:-15]
+                folder_name = file_name[:-len("performance_waypoint.txt")]
 
                 # Used to store current test information
                 current_drone_position = []
@@ -249,7 +249,7 @@ for res in resolutions:
                 test_worst_deviation.append(max(current_deviation))
 
                 # Save the details of that test into the correct folder
-                file = open(folder_name + "analysis.txt", "w")
+                file = open(folder_name + "analysis_waypoint.txt", "w")
                 file.write("Path Score: " + str(path_score) + "\n")
                 file.write("Time between waypoints: " + str(current_waypoint_time) + "\n")
                 file.write("Average time between waypoints: " + str(average_time_between_waypoints) + "\n")
@@ -294,7 +294,7 @@ for res in resolutions:
                 ax.set_zlabel('Z-axis')
                 plt.title("Optimal vs. true trajectory")
                 ax.legend()
-                plt.savefig(folder_name + 'flight_comparison.png')
+                plt.savefig(folder_name + 'flight_comparison_waypoint.png')
                 plt.close()
 
                 # Plot the trajectory deviation
@@ -304,7 +304,7 @@ for res in resolutions:
                 plt.xlabel("Time")
                 plt.ylabel("Deviation")
                 plt.title("Deviation from optimal trajectory")
-                plt.savefig(folder_name + 'deviation.png')
+                plt.savefig(folder_name + 'deviation_waypoint.png')
                 plt.close()
 
             print("")

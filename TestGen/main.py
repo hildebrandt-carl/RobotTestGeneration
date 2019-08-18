@@ -34,7 +34,7 @@ parser.add_argument('-t', '--type',
                     type=str,
                     help='Select search type (random), (maxvel), (kinematic), (score)')
 parser.add_argument('-x', '--depth',
-                    default=3,
+                    default=5,
                     type=int,
                     help='Total number of state changes allowed per trajectory')
 parser.add_argument('-b', '--beamwidth',
@@ -42,7 +42,7 @@ parser.add_argument('-b', '--beamwidth',
                     type=int,
                     help='The beam width used in the frontier exploration')
 parser.add_argument('-n', '--nodes',
-                    default=5,
+                    default=100,
                     type=int,
                     help='Number of nodes considered')
 parser.add_argument('-r', '--resolution',
@@ -56,7 +56,7 @@ parser.add_argument('-g', '--debug',
                     action='store_true',
                     help='Displays each stage during the selection phase')
 parser.add_argument('-s', '--seed',
-                    default=12,
+                    default=20,
                     type=int,
                     help='Use to set a seed for the PRM construction phase. Set to 0 for to use time as seed')
 parser.add_argument('-i', '--searchtime',
@@ -93,11 +93,11 @@ else:
     from PRM import PRM
 
 # Test initial conditions
-initial_conditions = {"map_x_bounds": [0, 30],
-                      "map_y_bounds": [0, 30],
-                      "map_z_bounds": [0, 15],
-                      "start_point": [1, 1, 1],
-                      "end_point": [29, 29, 14]}
+initial_conditions = {"map_x_bounds": [0, 10],
+                      "map_y_bounds": [0, 10],
+                      "map_z_bounds": [0, 5],
+                      "start_point": [0.1, 0.1, 0.1],
+                      "end_point": [5, 5, 2.5]}
 
 # Specified by the tester
 human_specified_factors = {"kinematic_sampling_resolution": args.resolution}
@@ -110,7 +110,7 @@ traj_search_conditions = {"number_nodes": int(args.nodes),
 # Robot kinematics
 drone_kinematic = {}
 if drone == DroneType.BEBOP:
-    drone_kinematic["m"] = 0.5
+    drone_kinematic["m"] = 0.71
     drone_kinematic["d"] = 0.16
     drone_kinematic["kf"] = 6.11e-8
     drone_kinematic["km"] = 1.5e-9
@@ -120,7 +120,7 @@ if drone == DroneType.BEBOP:
     drone_kinematic["attitude"] = [0, 0, 0]
     drone_kinematic["velocity"] = [0, 0, 0]
     drone_kinematic["angular_velocity"] = [0, 0, 0]
-    drone_kinematic["maximum_velocity"] = 15
+    drone_kinematic["maximum_velocity"] = 20 # This take horizontal and vertical into consideration
 
 elif drone == DroneType.HECTOR:
     drone_kinematic["m"] = 1.477
@@ -137,16 +137,16 @@ elif drone == DroneType.HECTOR:
 
 elif drone == DroneType.MIT:
     drone_kinematic["m"] = 1.0
-    drone_kinematic["d"] = 0.175
+    drone_kinematic["d"] = 0.16
     drone_kinematic["kf"] = 1.91e-6
     drone_kinematic["km"] = 2.6e-7
-    drone_kinematic["max_rotor_speed"] = 2200.0
+    drone_kinematic["max_rotor_speed"] = 2000.0
     drone_kinematic["inertial_properties"] = [0.0049, 0.0049, 0.0049]
     drone_kinematic["position"] = initial_conditions["start_point"]
     drone_kinematic["attitude"] = [0, 0, 0]
     drone_kinematic["velocity"] = [0, 0, 0]
     drone_kinematic["angular_velocity"] = [0, 0, 0]
-    drone_kinematic["maximum_velocity"] = 20
+    drone_kinematic["maximum_velocity"] = 20 # This take horizontal and vertical into consideration
 
 # Create the Figure manager
 fig_manager = FigureManager(save_path)

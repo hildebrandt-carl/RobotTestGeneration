@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <launch>
 
+  <arg name="speed" default="10" />
+
   <node pkg="flightcontroller" type="position_controller.py" name="position_controller_node" output="screen">
     <param name="gains/p" type="double" value="1" />
     <param name="gains/i" type="double" value="0.0" />
     <param name="gains/d" type="double" value="0.1" />
+    <param name="speed" type="double" value="$(arg speed)" />
   </node>
 
 </launch>
