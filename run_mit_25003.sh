@@ -21,7 +21,7 @@ current_dir="$PWD"
 # Change the port number inside the new build
 sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
-for nodescounter in 1000
+for nodescounter in 2500
 do
 	for rescounter in 4
 	do
@@ -29,12 +29,12 @@ do
 		do
 			for beamcounter in 10
 			do
-				for simtype in 'random' 'maxvel' 'kinematic' 'score'
+				for simtype in 'score'
 				do
-					for searchtime in 600
+					for searchtime in 21600
 					do
 							# Get the folder
-							folder=/TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype
+							folder=/TestGen/Results/FullNewRun/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype
 
 							# Get the total number of tests to run 
 							mapcounter=1

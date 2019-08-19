@@ -1,13 +1,12 @@
 #!/bin/zsh
 
 seed=10
-searchtime=600
 searchtype='random'
 drone='mit'
-
+searchtime=21600
 for res in 4
 do
-  for nodes in 1000
+  for nodes in 2500
   do
     for beamwidth in 10
     do

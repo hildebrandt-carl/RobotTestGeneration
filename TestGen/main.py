@@ -60,9 +60,9 @@ parser.add_argument('-s', '--seed',
                     type=int,
                     help='Use to set a seed for the PRM construction phase. Set to 0 for to use time as seed')
 parser.add_argument('-i', '--searchtime',
-                    default=60,
+                    default=30,
                     type=int,
-                    help='The amount of time allowed for path searching')
+                    help='The amount of time allowed for path searching in seconds')
 args = parser.parse_args()
 
 drone = None
@@ -93,11 +93,11 @@ else:
     from PRM import PRM
 
 # Test initial conditions
-initial_conditions = {"map_x_bounds": [0, 10],
-                      "map_y_bounds": [0, 10],
-                      "map_z_bounds": [0, 5],
+initial_conditions = {"map_x_bounds": [0, 30],
+                      "map_y_bounds": [0, 30],
+                      "map_z_bounds": [0, 15],
                       "start_point": [0.1, 0.1, 0.1],
-                      "end_point": [5, 5, 2.5]}
+                      "end_point": [15, 15, 7.5]}
 
 # Specified by the tester
 human_specified_factors = {"kinematic_sampling_resolution": args.resolution}

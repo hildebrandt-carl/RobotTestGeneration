@@ -29,12 +29,12 @@ do
 		do
 			for beamcounter in 10
 			do
-				for simtype in 'random' 'kinematic'
+				for simtype in 'kinematic' 'score'
 				do
 					for searchtime in 600
 					do
 							# Get the folder
-							folder=/TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype
+							folder=/TestGen/Results/FullNewRun/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype
 
 							# Get the total number of tests to run 
 							mapcounter=1

@@ -1,5 +1,5 @@
 import argparse
-import time
+from math import cos, pi
 
 
 parser = argparse.ArgumentParser()
@@ -11,11 +11,11 @@ parser.add_argument('-o', '--longitude',
                     default=0.0,
                     type=float,
                     help='The initial longitude')
-parser.add_argument('-h', '--altitude',
+parser.add_argument('-l', '--altitude',
                     default=0.0,
                     type=float,
                     help='The initial altitude')
-parser.add_argument('-l', '--loadfile',
+parser.add_argument('-f', '--loadfile',
                     default="flightplan_raw.mavlink",
                     type=str,
                     help='The flight plan you want to convert')
@@ -39,17 +39,17 @@ with open(args.loadfile, "r") as f:
             values = line.split('\t')
 
             # Get the new latitude
-            current_latitude = values[8]
+            current_latitude = float(values[8])
 
             # Get the new longitude
-            current_longitude = values[9]
+            current_longitude = float(values[9])
 
             # Get the new altitude
-            new_altitude = values[10]
+            current_altitude = float(values[10])
 
             # Update the co-ordinates
             new_latitude = current_latitude + args.latitude
-            new_longitude = current_longitude + args.longitude
+            new_longitude = (current_longitude / cos(args.latitude * (pi / 180.0))) + args.longitude
             new_altitude = current_altitude + args.altitude
 
             # Write the new line to the file
@@ -58,12 +58,12 @@ with open(args.loadfile, "r") as f:
                 new_line += '\t' + values[i] 
 
             # Add the new latitude and longitude to the file
-            new_line += '\t' + new_latitude 
-            new_line += '\t' + new_longitude 
-            new_line += '\t' + new_altitude 
+            new_line += '\t' + str(new_latitude)
+            new_line += '\t' + str(new_longitude)
+            new_line += '\t' + str(new_altitude)
 
             # Add the last part to the line
-            new_line +=  '\t' + values[11]
+            new_line += '\t' + values[11] + "\n"
 
             # Save the line
             new_file.write(new_line)

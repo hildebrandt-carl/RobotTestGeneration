@@ -24,7 +24,7 @@ class MavlinkConverter:
             new_latitude = (waypoint[1] * m)
 
             # Calculate the new longitude point
-            new_longitude = (waypoint[0] * m) / cos(initial_lat * (pi / 180.0))
+            new_longitude = (waypoint[0] * m)
 
             # Calculate the new altitude point
             new_alt = waypoint[2]

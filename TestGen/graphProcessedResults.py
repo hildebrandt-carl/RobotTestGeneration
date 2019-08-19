@@ -1,182 +1,238 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import glob
+import matplotlib.pyplot as plt
+import numpy as np
 from processResultsUtils import get_numbers_after_string
-from processResultsUtils import lineseg_dist
 
 
-all_folders = ["./Results/FullRun-08-08-19/nodes1000_res2/",
-               "./Results/FullRun-08-09-19/nodes1000_res2/",
-               "./Results/FullRun-08-09-19/nodes1000_res4/",
-               "./Results/FullRun-08-11-19/nodes1000_res2/",
-               "./Results/FullRun-08-11-19/nodes1000_res4/",
-               "./Results/FullRun-08-15-19/nodes1000_res2/",
-               "./Results/FullRun-08-15-19/nodes1000_res4/"]
+all_folders = ["./Results/FullRun/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime600_random/",
+               "./Results/FullRun/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime600_maxvel/",
+               "./Results/FullRun/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime600_kinematic/",
+               "./Results/FullRun/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime600_score/"]
 
-beam_lengths = [[1, 2, 3, 4, 5, 10],
-                [1, 2, 3, 4, 5, 10, 25, 50, 100],
-                [1, 3, 5, 25],
-                [1, 2, 3, 4, 5, 10, 25, 50, 100],
-                [1, 2, 3, 4, 5, 10],
-                [1, 2, 3, 4, 5, 10, 25, 50, 100],
-                [1, 2, 3, 4, 5, 10, 25, 50, 100]]
+beam_lengths = [10]
+depths = [10]
+res_numbers = [4]
 
-save_names = ["OutputV*Angle_Res2_Depth3-10",
-              "DeltaV*Angle_Res2_Depth10",
-              "DeltaV*Angle_Res4_Depth10",
-              "SubVector_Res2_Depth10",
-              "SubVector_Res4_Depth10",
-              "InputV*Angle_Res2_Depth10",
-              "InputV*Angle_Res4_Depth10"]
+save_names = ["Random Search",
+              "Random + Max Velocity",
+              "Random + Kinematic",
+              "Score + Kinematic"]
 
-tick_names = ["OutV*Ang_R2D3-10",
-              "DV*Ang_R2D10",
-              "DV*Ang_Res4D10",
-              "SubVec_Res2D10",
-              "SubVec_Res4D10",
-              "InV*Ang_Res2D10",
-              "InV*Ang_Res4D10"]
+tick_names = ["Random Search",
+              "Random + Max Velocity",
+              "Random + Kinematic",
+              "Score + Kinematic"]
 
-res_numbers = [2,
-               2,
-               4,
-               2,
-               4,
-               2,
-               4]
+systems = ["waypoint",
+           "constant"]
 
+system_constant_time = []
+system_constant_distance = []
+system_waypoint_time = []
+system_waypoint_distance = []
 
-# Create the figures and add labels to axis
-f_average_deviation = plt.figure(1)
-plt.xlabel("Test Score")
-plt.ylabel("Average Spacial Deviation")
-f_total_deviation = plt.figure(2)
-plt.xlabel("Test Score")
-plt.ylabel("Total Spacial Deviation")
-f_average_time = plt.figure(3)
-plt.xlabel("Test Score")
-plt.ylabel("Average Temporal Deviation")
-f_total_time = plt.figure(4)
-plt.xlabel("Test Score")
-plt.ylabel("Total Temporal Deviation")
-f_dist_heuristic = plt.figure(5)
-plt.xlabel("Test Score")
-plt.ylabel("Distance Heuristic")
-f_time_heuristic = plt.figure(6)
-plt.xlabel("Test Score")
-plt.ylabel("Time Heuristic")
-f_dist_heuristic_box = plt.figure(7)
-plt.xlabel("Test Technique")
-plt.ylabel("Distance Heuristic")
-f_time_heuristic_box = plt.figure(8)
-plt.xlabel("Test Technique")
-plt.ylabel("Time Heuristic")
+for system in systems:
 
-distance_heuristic_box_data = []
-time_heuristic_box_data = []
+    # Create the figures and add labels to axis
+    f_average_deviation = plt.figure(1)
+    plt.xlabel("Test Score")
+    plt.ylabel("Average Spacial Deviation")
+    plt.title("System: " + system)
+    f_total_deviation = plt.figure(2)
+    plt.xlabel("Test Score")
+    plt.ylabel("Total Spacial Deviation")
+    plt.title("System: " + system)
+    f_average_time = plt.figure(3)
+    plt.xlabel("Test Score")
+    plt.ylabel("Average Temporal Deviation")
+    plt.title("System: " + system)
+    f_total_time = plt.figure(4)
+    plt.xlabel("Test Score")
+    plt.ylabel("Total Temporal Deviation")
+    plt.title("System: " + system)
+    f_dist_heuristic = plt.figure(5)
+    plt.xlabel("Test Score")
+    plt.ylabel("Distance Heuristic")
+    plt.title("System: " + system)
+    f_time_heuristic = plt.figure(6)
+    plt.xlabel("Test Score")
+    plt.ylabel("Time Heuristic")
+    plt.title("System: " + system)
+    f_dist_heuristic_box = plt.figure(7)
+    plt.xlabel("Test Technique")
+    plt.ylabel("Distance Heuristic")
+    plt.title("System: " + system)
+    f_time_heuristic_box = plt.figure(8)
+    plt.xlabel("Test Technique")
+    plt.ylabel("Time Heuristic")
+    plt.title("System: " + system)
 
-for i in range(0, len(all_folders)):
-    folder = all_folders[i]
-    beams = beam_lengths[i]
-    res = res_numbers[i]
+    distance_heuristic_box_data = []
+    time_heuristic_box_data = []
 
-    scores = []
-    average_deviation = []
-    total_deviation = []
-    average_time = []
-    total_time = []
-    distance_heuristic = []
-    time_heuristic = []
+    for i in range(0, len(all_folders)):
+        folder = all_folders[i]
 
-    for beam in beams:
-        if i == 0:
-            depths = [3, 4, 5, 6, 7, 8, 9, 10]
-        else:
-            depths = [10]
+        scores = []
+        average_deviation = []
+        total_deviation = []
+        average_time = []
+        total_time = []
+        distance_heuristic = []
+        time_heuristic = []
+        maximum_deviation = []
 
         for depth in depths:
+            for beam in beam_lengths:
 
-            file_location = folder + "MIT_seed10_depth" + str(depth) + "_nodes1000_res" + str(res) + "_beamwidth" + str(beam) + "_baseline0/"
-            analysis_file_names = glob.glob(file_location + "maps/map*/analysis.txt")
+                file_location = folder
+                analysis_file_names = glob.glob(file_location + "maps/map*/analysis_" + system + ".txt")
 
-            for file_name in analysis_file_names:
-                # Get the average and total deviation for that test
-                avg_dev = get_numbers_after_string(file_name=file_name, the_string="Average deviation from optimal trajectory:")
-                tot_dev = get_numbers_after_string(file_name=file_name, the_string="Total deviation from optimal trajectory:")
+                for file_name in analysis_file_names:
+                    # Get the average and total deviation for that test
+                    avg_dev = get_numbers_after_string(file_name=file_name, the_string="Average deviation from optimal trajectory:")
+                    tot_dev = get_numbers_after_string(file_name=file_name, the_string="Total deviation from optimal trajectory:")
 
-                # Get the score for that test
-                scr = get_numbers_after_string(file_name=file_name, the_string="Path Score:")
+                    # Get the score for that test
+                    scr = get_numbers_after_string(file_name=file_name, the_string="Path Score:")
 
-                # Get the average and total time for that test
-                avg_time = get_numbers_after_string(file_name=file_name, the_string="Average time between waypoints:")
-                tot_time = get_numbers_after_string(file_name=file_name, the_string="Total time between waypoints:")
+                    # Get the average and total time for that test
+                    avg_time = get_numbers_after_string(file_name=file_name, the_string="Average time between waypoints:")
+                    tot_time = get_numbers_after_string(file_name=file_name, the_string="Total time between waypoints:")
 
-                # Get the total distance travelled and the total trajectory length
-                tot_dist = get_numbers_after_string(file_name=file_name, the_string="Total distance travelled:")
-                traj_len = get_numbers_after_string(file_name=file_name, the_string="Trajectory length:")
-                optimal_distance_heuristic = tot_dist[0][0] / traj_len[0][0]
+                    # Get the maximum deviation from the optimal trajectory
+                    max_dev = get_numbers_after_string(file_name=file_name, the_string="Maximum deviation from optimal trajectory:")
 
-                # Get the number of waypoints (This should be equal to the trajectory's optimal time)
-                num_way = get_numbers_after_string(file_name=file_name, the_string="Total waypoints:")
-                optimal_time_heuristic = tot_time[0][0] / num_way[0][0]
+                    # Get the total distance travelled and the total trajectory length
+                    tot_dist = get_numbers_after_string(file_name=file_name, the_string="Total distance travelled:")
+                    traj_len = get_numbers_after_string(file_name=file_name, the_string="Trajectory length:")
+                    optimal_distance_heuristic = tot_dist[0][0] / traj_len[0][0]
 
-                # Check for any anomalies
-                if tot_dev[0][0] > 450:
-                    print("Total Deviation over 450m (" + str(tot_dev[0][0]) + "m): " + str(file_name))
+                    # Get the number of waypoints (This should be equal to the trajectory's optimal time)
+                    num_way = get_numbers_after_string(file_name=file_name, the_string="Total waypoints:")
+                    optimal_time_heuristic = tot_time[0][0] / num_way[0][0]
 
-                if avg_time[0][0] > 20:
-                    print("Average time over 20 seconds (" + str(avg_time[0][0]) + "s): " + str(file_name))
+                    # Check for any anomalies
+                    if tot_dev[0][0] > 450:
+                        print("Total Deviation over 450m (" + str(tot_dev[0][0]) + "m): " + str(file_name))
 
-                if optimal_distance_heuristic > 2.2:
-                    print("Optimal distance heuristic over 2.2 (" + str(optimal_distance_heuristic) + "): " + str(file_name))
+                    if avg_time[0][0] > 20:
+                        print("Average time over 20 seconds (" + str(avg_time[0][0]) + "s): " + str(file_name))
 
-                # Save the data
-                average_deviation.append(avg_dev[0][0])
-                total_deviation.append(tot_dev[0][0])
-                scores.append(scr[0][0])
-                average_time.append(avg_time[0][0])
-                total_time.append(tot_time[0][0])
-                distance_heuristic.append(optimal_distance_heuristic)
-                time_heuristic.append(optimal_time_heuristic)
+                    if optimal_distance_heuristic > 2.5:
+                        print("Optimal distance heuristic over 2.2 (" + str(optimal_distance_heuristic) + "): " + str(file_name))
 
-    # Save the time heuristic and distance heuristic
-    distance_heuristic_box_data.append(distance_heuristic)
-    time_heuristic_box_data.append(time_heuristic)
+                    # Save the data
+                    average_deviation.append(avg_dev[0][0])
+                    total_deviation.append(tot_dev[0][0])
+                    scores.append(scr[0][0])
+                    average_time.append(avg_time[0][0])
+                    total_time.append(tot_time[0][0])
+                    distance_heuristic.append(optimal_distance_heuristic)
+                    time_heuristic.append(optimal_time_heuristic)
+                    maximum_deviation.append(max_dev)
 
-    # Plot the data
+        # Save the time heuristic and distance heuristic
+        distance_heuristic_box_data.append(distance_heuristic)
+        time_heuristic_box_data.append(time_heuristic)
+
+        # Plot the data
+        f_average_deviation = plt.figure(1)
+        plt.scatter(scores, average_deviation, s=6, label=save_names[i])
+        plt.title("System: " + system)
+        f_total_deviation = plt.figure(2)
+        plt.scatter(scores, total_deviation, s=6, label=save_names[i])
+        plt.title("System: " + system)
+        f_average_time = plt.figure(3)
+        plt.scatter(scores, average_time, s=6, label=save_names[i])
+        plt.title("System: " + system)
+        f_total_time = plt.figure(4)
+        plt.scatter(scores, total_time, s=6, label=save_names[i])
+        plt.title("System: " + system)
+        f_dist_heuristic = plt.figure(5)
+        plt.scatter(scores, distance_heuristic, s=6, label=save_names[i])
+        plt.title("System: " + system)
+        f_time_heuristic = plt.figure(6)
+        plt.scatter(scores, time_heuristic, s=6, label=save_names[i])
+
+        # Save the data into each respective system
+        if system == "constant":
+            system_constant_distance.append(distance_heuristic)
+            system_constant_time.append(time_heuristic)
+        elif system == "waypoint":
+            system_waypoint_distance.append(distance_heuristic)
+            system_waypoint_time.append(time_heuristic)
+
+    # Update the figure legends and show them
     f_average_deviation = plt.figure(1)
-    plt.scatter(scores, average_deviation, s=6, label=save_names[i])
+    plt.legend(prop={'size': 6})
+    plt.title("System: " + system)
     f_total_deviation = plt.figure(2)
-    plt.scatter(scores, total_deviation, s=6, label=save_names[i])
+    plt.legend(prop={'size': 6})
+    plt.title("System: " + system)
     f_average_time = plt.figure(3)
-    plt.scatter(scores, average_time, s=6, label=save_names[i])
+    plt.legend(prop={'size': 6})
+    plt.title("System: " + system)
     f_total_time = plt.figure(4)
-    plt.scatter(scores, total_time, s=6, label=save_names[i])
+    plt.legend(prop={'size': 6})
+    plt.title("System: " + system)
     f_dist_heuristic = plt.figure(5)
-    plt.scatter(scores, distance_heuristic, s=6, label=save_names[i])
+    plt.legend(prop={'size': 6})
     f_time_heuristic = plt.figure(6)
-    plt.scatter(scores, time_heuristic, s=6, label=save_names[i])
+    plt.title("System: " + system)
+    plt.legend(prop={'size': 6})
+    plt.title("System: " + system)
 
-# Update the figure legends and show them
-f_average_deviation = plt.figure(1)
-plt.legend(prop={'size': 6})
-f_total_deviation = plt.figure(2)
-plt.legend(prop={'size': 6})
-f_average_time = plt.figure(3)
-plt.legend(prop={'size': 6})
-f_total_time = plt.figure(4)
-plt.legend(prop={'size': 6})
-f_dist_heuristic = plt.figure(5)
-plt.legend(prop={'size': 6})
-f_time_heuristic = plt.figure(6)
-plt.legend(prop={'size': 6})
+    f_dist_heuristic_box = plt.figure(7)
+    plt.boxplot(distance_heuristic_box_data)
+    plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=7, rotation=0)
+    plt.title("System: " + system)
+    f_time_heuristic_box = plt.figure(8)
+    plt.boxplot(time_heuristic_box_data)
+    plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=7, rotation=0)
+    plt.title("System: " + system)
 
-f_dist_heuristic_box = plt.figure(7)
-plt.boxplot(distance_heuristic_box_data)
-plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=7, rotation=45)
-f_time_heuristic_box = plt.figure(8)
-plt.boxplot(time_heuristic_box_data)
-plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=7, rotation=45)
+    # Show the figures
+    plt.show()
 
-# Show the figures
+
+# Display the compared box plots
+def set_box_color(bp, color):
+    plt.setp(bp['boxes'], color=color)
+    # plt.setp(bp['whiskers'], color=color)
+    # plt.setp(bp['caps'], color=color)
+    # plt.setp(bp['medians'], color=color)
+
+plt.figure()
+bpl = plt.boxplot(system_constant_distance, positions=np.array(range(len(system_constant_distance)))*2.0-0.4, sym='', widths=0.6)
+bpr = plt.boxplot(system_waypoint_distance, positions=np.array(range(len(system_waypoint_distance)))*2.0+0.4, sym='', widths=0.6)
+set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
+set_box_color(bpr, '#2C7BB6')
+
+# draw temporary red and blue lines and use them to create a legend
+plt.plot([], c='#D7191C', label='Constant Velocity')
+plt.plot([], c='#2C7BB6', label='Waypoint Controller')
+plt.legend()
+plt.xticks(range(0, len(tick_names) * 2, 2), tick_names, fontsize=7, rotation=15)
+plt.xlim(-2, len(tick_names)*2)
+plt.tight_layout()
+plt.ylabel("Normalized Total Deviation")
+plt.xlabel("Test Generation Technique")
+plt.show()
+
+plt.figure()
+bpl = plt.boxplot(system_constant_time, positions=np.array(range(len(system_constant_time)))*2.0-0.4, sym='', widths=0.6)
+bpr = plt.boxplot(system_waypoint_time, positions=np.array(range(len(system_waypoint_time)))*2.0+0.4, sym='', widths=0.6)
+set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
+set_box_color(bpr, '#2C7BB6')
+
+# draw temporary red and blue lines and use them to create a legend
+plt.plot([], c='#D7191C', label='Constant Velocity')
+plt.plot([], c='#2C7BB6', label='Waypoint Controller')
+plt.legend()
+plt.xticks(range(0, len(tick_names) * 2, 2), tick_names, fontsize=7, rotation=15)
+plt.xlim(-2, len(tick_names)*2)
+plt.tight_layout()
+plt.ylabel("Normalized Total Time")
+plt.xlabel("Test Generation Technique")
 plt.show()
