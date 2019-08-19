@@ -58,9 +58,9 @@ with open(args.loadfile, "r") as f:
                 new_line += '\t' + values[i] 
 
             # Add the new latitude and longitude to the file
-            new_line += '\t' + str(new_latitude)
-            new_line += '\t' + str(new_longitude)
-            new_line += '\t' + str(new_altitude)
+            new_line += '\t' + format(new_latitude, '.8f')
+            new_line += '\t' + format(new_longitude, '.8f')
+            new_line += '\t' + format(new_altitude, '.8f')
 
             # Add the last part to the line
             new_line += '\t' + values[11] + "\n"
