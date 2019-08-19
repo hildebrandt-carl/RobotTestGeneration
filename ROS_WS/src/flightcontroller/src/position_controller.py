@@ -92,9 +92,6 @@ class PositionController():
           x_vel = self.pos_x_PID.get_output(self.x_setpoint, self.x_pos)
           y_vel = self.pos_y_PID.get_output(self.y_setpoint, self.y_pos)
           z_vel = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
-          print("x_vel: " + str(x_vel))
-          print("y_vel: " + str(y_vel))
-          print("z_vel: " + str(z_vel))
 
         # If we are in constant speed mode
         else:
