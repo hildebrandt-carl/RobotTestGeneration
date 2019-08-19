@@ -175,7 +175,7 @@ class RankingSystem:
             save_directory = "maps/map" + str(path_counter) + "/"
             unity_file_name = save_directory + "test.txt"
             details_file_name = save_directory + "details.txt"
-            mavros_file_name = save_directory + "flightplan.mavlink"
+            mavros_file_name = save_directory + "flightplan_raw.mavlink"
 
             # Check the save location is created
             if not os.path.isdir(folder + save_directory):

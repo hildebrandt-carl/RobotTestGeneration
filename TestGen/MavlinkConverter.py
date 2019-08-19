@@ -5,7 +5,7 @@ class MavlinkConverter:
         # Save directory
         self.save_directory = save_directory
 
-    def mavlink_waypoint_file(self, waypoints, save_name, initial_lat=38.040150, initial_long=-78.505532, initial_alt=150):
+    def mavlink_waypoint_file(self, waypoints, save_name):
         file = open(self.save_directory + save_name, "w")
 
         # The first line of the waypoint file
@@ -21,13 +21,13 @@ class MavlinkConverter:
             m = (1.0 / ((2.0 * pi / 360.0) * r_earth)) / 1000
 
             # Calculate the new latitude point
-            new_latitude = initial_lat + (waypoint[1] * m)
+            new_latitude = (waypoint[1] * m)
 
             # Calculate the new longitude point
-            new_longitude = initial_long + (waypoint[0] * m) / cos(initial_lat * (pi / 180.0))
+            new_longitude = (waypoint[0] * m) / cos(initial_lat * (pi / 180.0))
 
             # Calculate the new altitude point
-            new_alt = initial_alt + waypoint[2]
+            new_alt = waypoint[2]
 
             # Save this to the Mavlink file
             initial_string = "\n0\t0\t3\t16\t0.000000\t1.000000\t0.000000\t0.000000\t"
