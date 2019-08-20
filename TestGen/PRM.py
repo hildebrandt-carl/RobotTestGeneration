@@ -274,10 +274,18 @@ class PRM:
                     # Get the x,y and z values
                     x, y, z = node.get_position()
 
-                    not_same_pos = (x != current_pos[0] and y != current_pos[1] and z != current_pos[2])
-                    not_prev_pos = (x != previous_pos[0] and y != previous_pos[1] and z != previous_pos[2])
+                    # Make sure the current node is not in the graph
+                    in_path = False
+                    # For each node in the current path
+                    for prev_node in current_path:
+                        # Get that nodes position
+                        px, py, pz = prev_node
+                        # If this current considered node is in the path
+                        if x == px and y == py and z == pz:
+                            in_path = True
+
                     # Add them to the list
-                    if not_same_pos and not_prev_pos:
+                    if not in_path:
                         in_x.append(x)
                         in_y.append(y)
                         in_z.append(z)
@@ -323,6 +331,7 @@ class PRM:
                 # Add the finished paths to the finalized paths
                 finished_paths += paths_to_add
                 print("Finished Paths Found: " + str(len(finished_paths)))
+                print("Path found at time: " + str(time.time() - start_time))
 
                 # Remove all nodes along the paths from the graph
                 for path in paths_to_add:
@@ -519,11 +528,18 @@ class PRM:
 
                     # If the distance to source is less than maximum_velocity
                     if distance_to_source <= max_velocity:
-                        # And they not the same position or previous position (stop oscillation)
-                        not_same_pos = (x != current_pos[0] and y != current_pos[1] and z != current_pos[2])
-                        not_prev_pos = (x != previous_pos[0] and y != previous_pos[1] and z != previous_pos[2])
+                        # Make sure the current node is not in the graph
+                        in_path = False
+                        # For each node in the current path
+                        for prev_node in current_path:
+                            # Get that nodes position
+                            px, py, pz = prev_node
+                            # If this current considered node is in the path
+                            if x == px and y == py and z == pz:
+                                in_path = True
+
                         # Add them to the list
-                        if not_same_pos and not_prev_pos:
+                        if not in_path:
                             in_x.append(x)
                             in_y.append(y)
                             in_z.append(z)
@@ -564,7 +580,7 @@ class PRM:
                 # Add the finished paths to the finalized paths
                 finished_paths += paths_to_add
                 print("Finished Paths Found: " + str(len(finished_paths)))
-                
+                print("Path found at time: " + str(time.time() - start_time))
 
                 # Remove all nodes along the paths from the graph
                 for path in paths_to_add:
@@ -658,7 +674,8 @@ class PRM:
         return final_paths
 
     # Finds paths from start vertex to end vertex which satisfy the kinematic model
-    def find_all_paths_kinematic(self, robot_kinematic_model, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1, search_time=60):
+    def find_all_paths_kinematic(self, robot_kinematic_model, kinematic_sample_resolution=5, total_waypoints=5,
+                                 beam_width=1, search_time=60):
         # Record the start time
         start_time = time.time()
 
@@ -742,7 +759,8 @@ class PRM:
                 reachability_space_generator = DroneReachabilitySet(robot_kinematic=current_kinematic)
 
                 # Calculate the reachable space for that drone kinematic in one time step
-                positions = reachability_space_generator.calculate_reachable_area(sample_resolution=kinematic_sample_resolution)
+                positions = reachability_space_generator.calculate_reachable_area(
+                    sample_resolution=kinematic_sample_resolution)
 
                 # Calculate the largest distance between the source node and all sample points in the reachable area.
                 current_kinematic.calculate_maximum_velocity(positions)
@@ -758,10 +776,21 @@ class PRM:
                     # Get the x,y and z values
                     x, y, z = node.get_position()
 
+                    # Make sure the current node is not in the graph
+                    in_path = False
+                    # For each node in the current path
+                    for prev_node in current_path:
+                        # Get that nodes position
+                        px, py, pz = prev_node.get_position()
+                        # If this current considered node is in the path
+                        if x == px and y == py and z == pz:
+                            in_path = True
+
                     # Create a list of the x,y and z values
-                    x_vals.append(x)
-                    y_vals.append(y)
-                    z_vals.append(z)
+                    if not in_path:
+                        x_vals.append(x)
+                        y_vals.append(y)
+                        z_vals.append(z)
 
                     # If this is the sink node
                     if node.get_sink():
@@ -782,8 +811,10 @@ class PRM:
                     # If the waypoint is inside
                     if inside[i]:
                         # And are not the same position or previous (stop oscillation)
-                        not_same_pos = (waypoints[i][0] != source_pos[0] and waypoints[i][1] != source_pos[1] and waypoints[i][2] != source_pos[2])
-                        not_prev_pos = (waypoints[i][0] != previous_pos[0] and waypoints[i][1] != previous_pos[1] and waypoints[i][2] != previous_pos[2])
+                        not_same_pos = (waypoints[i][0] != source_pos[0] and waypoints[i][1] != source_pos[1] and
+                                        waypoints[i][2] != source_pos[2])
+                        not_prev_pos = (waypoints[i][0] != previous_pos[0] and waypoints[i][1] != previous_pos[1] and
+                                        waypoints[i][2] != previous_pos[2])
                         if not_same_pos and not_prev_pos:
                             in_x.append(waypoints[i][0])
                             in_y.append(waypoints[i][1])
@@ -842,6 +873,7 @@ class PRM:
                 # Add the finished paths to the finilized paths
                 finished_paths += temp_finished_paths
                 print("Finished Paths Found: " + str(len(finished_paths)))
+                print("Path found at time: " + str(time.time() - start_time))
 
                 # Remove all nodes along the paths from the graph
                 for path in finished_paths:
@@ -902,7 +934,8 @@ class PRM:
         return finished_paths
 
     # Finds paths from start vertex to end vertex which satisfy the kinematic model and scoring criteria
-    def find_all_paths_score(self, robot_kinematic_model, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1, search_time=60):
+    def find_all_paths_score(self, robot_kinematic_model, kinematic_sample_resolution=5, total_waypoints=5,
+                             beam_width=1, search_time=60, best_angle=180):
         # Record the start time
         start_time = time.time()
 
@@ -989,7 +1022,8 @@ class PRM:
                 reachability_space_generator = DroneReachabilitySet(robot_kinematic=current_kinematic)
 
                 # Calculate the reachable space for that drone kinematic in one time step
-                positions = reachability_space_generator.calculate_reachable_area(sample_resolution=kinematic_sample_resolution)
+                positions = reachability_space_generator.calculate_reachable_area(
+                    sample_resolution=kinematic_sample_resolution)
 
                 # Calculate the largest distance between the source node and all sample points in the reachable area.
                 current_kinematic.calculate_maximum_velocity(positions)
@@ -1005,10 +1039,21 @@ class PRM:
                     # Get the x,y and z values
                     x, y, z = node.get_position()
 
+                    # Make sure the current node is not in the graph
+                    in_path = False
+                    # For each node in the current path
+                    for prev_node in current_path:
+                        # Get that nodes position
+                        px, py, pz = prev_node.get_position()
+                        # If this current considered node is in the path
+                        if x == px and y == py and z == pz:
+                            in_path = True
+
                     # Create a list of the x,y and z values
-                    x_vals.append(x)
-                    y_vals.append(y)
-                    z_vals.append(z)
+                    if not in_path:
+                        x_vals.append(x)
+                        y_vals.append(y)
+                        z_vals.append(z)
 
                     # If this is the sink node
                     if node.get_sink():
@@ -1029,8 +1074,10 @@ class PRM:
                     # If the waypoint is inside
                     if inside[i]:
                         # And are not the same position or previous (stop oscillation)
-                        not_same_pos = (waypoints[i][0] != source_pos[0] and waypoints[i][1] != source_pos[1] and waypoints[i][2] != source_pos[2])
-                        not_prev_pos = (waypoints[i][0] != previous_pos[0] and waypoints[i][1] != previous_pos[1] and waypoints[i][2] != previous_pos[2])
+                        not_same_pos = (waypoints[i][0] != source_pos[0] and waypoints[i][1] != source_pos[1] and
+                                        waypoints[i][2] != source_pos[2])
+                        not_prev_pos = (waypoints[i][0] != previous_pos[0] and waypoints[i][1] != previous_pos[1] and
+                                        waypoints[i][2] != previous_pos[2])
                         if not_same_pos and not_prev_pos:
                             in_x.append(waypoints[i][0])
                             in_y.append(waypoints[i][1])
@@ -1089,6 +1136,7 @@ class PRM:
                 # Add the finished paths to the finalized paths
                 finished_paths += temp_finished_paths
                 print("Finished Paths Found: " + str(len(finished_paths)))
+                print("Path found at time: " + str(time.time() - start_time))
 
                 # Remove all nodes along the paths from the graph
                 for path in finished_paths:
@@ -1112,7 +1160,7 @@ class PRM:
                 frontier += temp_frontier
 
                 # Get the scores for each of the paths
-                scores, _, _ = ranking_obj.calculate_scores(paths=frontier)
+                scores, _, _ = ranking_obj.calculate_scores(paths=frontier, best_angle=best_angle)
 
                 # Sort the frontier based on path score
                 # Save them from smallest to largest as we take the item from the back of the queue

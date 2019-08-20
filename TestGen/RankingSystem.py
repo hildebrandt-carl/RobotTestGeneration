@@ -14,7 +14,7 @@ class RankingSystem:
         pass
 
     # Calculate the scores
-    def calculate_scores(self, paths):
+    def calculate_scores(self, paths, best_angle=90):
         # Used to save the scores of each path
         scores = []
         linear_scores = []
@@ -69,7 +69,7 @@ class RankingSystem:
 
                 # Calculate the angle between vectors
                 angle = self.angle_between_vectors(in_vec, out_vec)
-                angular_vel_score = angle / radians(180)
+                angular_vel_score = 1 - (abs(angle - radians(best_angle)) / radians(best_angle))
                 angular_path_score.append(angular_vel_score)
 
                 # Calculate the point score

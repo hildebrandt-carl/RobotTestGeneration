@@ -30,7 +30,7 @@ parser.add_argument('-d', '--drone',
                     type=str,
                     help='Select drone type (bebop), (hector), (mit)')
 parser.add_argument('-t', '--type',
-                    default="kinematic",
+                    default="score",
                     type=str,
                     help='Select search type (random), (maxvel), (kinematic), (score)')
 parser.add_argument('-x', '--depth',
@@ -63,6 +63,10 @@ parser.add_argument('-i', '--searchtime',
                     default=30,
                     type=int,
                     help='The amount of time allowed for path searching in seconds')
+parser.add_argument('-l', '--scoreangle',
+                    default=180,
+                    type=int,
+                    help='The angle you assume to be the best')
 args = parser.parse_args()
 
 drone = None
@@ -71,15 +75,15 @@ save_path = None
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "/"
+    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_angle" + str(args.scoreangle) +"/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
-    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "/"
+    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_angle" + str(args.scoreangle) +"/"
 elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
-    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "/"
+    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_angle" + str(args.scoreangle) +"/"
 
 # Do you want to plot the figures or not
 plotting = False
@@ -93,11 +97,11 @@ else:
     from PRM import PRM
 
 # Test initial conditions
-initial_conditions = {"map_x_bounds": [0, 30],
-                      "map_y_bounds": [0, 30],
-                      "map_z_bounds": [0, 15],
+initial_conditions = {"map_x_bounds": [0, 40],
+                      "map_y_bounds": [0, 40],
+                      "map_z_bounds": [0, 20],
                       "start_point": [0.1, 0.1, 0.1],
-                      "end_point": [15, 15, 7.5]}
+                      "end_point": [20, 20, 10]}
 
 # Specified by the tester
 human_specified_factors = {"kinematic_sampling_resolution": args.resolution}
@@ -221,7 +225,8 @@ elif args.type == "score":
                                        kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
                                        total_waypoints=traj_search_conditions["search_depth"],
                                        beam_width=traj_search_conditions["beam_width"],
-                                       search_time=args.searchtime)
+                                       search_time=args.searchtime,
+                                       best_angle=args.scoreangle)
 else:
     print("ERROR: Search type not recognized")
     exit()

@@ -4,24 +4,26 @@ import numpy as np
 from processResultsUtils import get_numbers_after_string
 
 
-all_folders = ["./Results/FullRun/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime600_random/",
-               "./Results/FullRun/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime600_maxvel/",
-               "./Results/FullRun/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime600_kinematic/",
-               "./Results/FullRun/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime600_score/"]
+all_folders = ["./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_kinematic_angle180/",
+               "./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_score_angle180/",
+               "./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_score_angle135/",
+               "./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_score_angle90/"]
+
 
 beam_lengths = [10]
 depths = [10]
 res_numbers = [4]
 
-save_names = ["Random Search",
-              "Random + Max Velocity",
-              "Random + Kinematic",
-              "Score + Kinematic"]
+save_names = ["Random + Kinematic",
+              "Score + Kinematic 180",
+              "Score + Kinematic 135",
+              "Score + Kinematic 90"]
 
-tick_names = ["Random Search",
-              "Random + Max Velocity",
-              "Random + Kinematic",
-              "Score + Kinematic"]
+tick_names = ["Random + Kinematic",
+              "Score + Kinematic 180",
+              "Score + Kinematic 135",
+              "Score + Kinematic 90"]
+
 
 systems = ["waypoint",
            "constant"]
@@ -30,42 +32,44 @@ system_constant_time = []
 system_constant_distance = []
 system_waypoint_time = []
 system_waypoint_distance = []
+system_constant_maximum_deviation = []
+system_waypoint_maximum_deviation = []
 
 for system in systems:
 
-    # Create the figures and add labels to axis
-    f_average_deviation = plt.figure(1)
-    plt.xlabel("Test Score")
-    plt.ylabel("Average Spacial Deviation")
-    plt.title("System: " + system)
-    f_total_deviation = plt.figure(2)
-    plt.xlabel("Test Score")
-    plt.ylabel("Total Spacial Deviation")
-    plt.title("System: " + system)
-    f_average_time = plt.figure(3)
-    plt.xlabel("Test Score")
-    plt.ylabel("Average Temporal Deviation")
-    plt.title("System: " + system)
-    f_total_time = plt.figure(4)
-    plt.xlabel("Test Score")
-    plt.ylabel("Total Temporal Deviation")
-    plt.title("System: " + system)
-    f_dist_heuristic = plt.figure(5)
-    plt.xlabel("Test Score")
-    plt.ylabel("Distance Heuristic")
-    plt.title("System: " + system)
-    f_time_heuristic = plt.figure(6)
-    plt.xlabel("Test Score")
-    plt.ylabel("Time Heuristic")
-    plt.title("System: " + system)
-    f_dist_heuristic_box = plt.figure(7)
-    plt.xlabel("Test Technique")
-    plt.ylabel("Distance Heuristic")
-    plt.title("System: " + system)
-    f_time_heuristic_box = plt.figure(8)
-    plt.xlabel("Test Technique")
-    plt.ylabel("Time Heuristic")
-    plt.title("System: " + system)
+    # # Create the figures and add labels to axis
+    # f_average_deviation = plt.figure(1)
+    # plt.xlabel("Test Score")
+    # plt.ylabel("Average Spacial Deviation")
+    # plt.title("System: " + system)
+    # f_total_deviation = plt.figure(2)
+    # plt.xlabel("Test Score")
+    # plt.ylabel("Total Spacial Deviation")
+    # plt.title("System: " + system)
+    # f_average_time = plt.figure(3)
+    # plt.xlabel("Test Score")
+    # plt.ylabel("Average Temporal Deviation")
+    # plt.title("System: " + system)
+    # f_total_time = plt.figure(4)
+    # plt.xlabel("Test Score")
+    # plt.ylabel("Total Temporal Deviation")
+    # plt.title("System: " + system)
+    # f_dist_heuristic = plt.figure(5)
+    # plt.xlabel("Test Score")
+    # plt.ylabel("Distance Heuristic")
+    # plt.title("System: " + system)
+    # f_time_heuristic = plt.figure(6)
+    # plt.xlabel("Test Score")
+    # plt.ylabel("Time Heuristic")
+    # plt.title("System: " + system)
+    # f_dist_heuristic_box = plt.figure(7)
+    # plt.xlabel("Test Technique")
+    # plt.ylabel("Distance Heuristic")
+    # plt.title("System: " + system)
+    # f_time_heuristic_box = plt.figure(8)
+    # plt.xlabel("Test Technique")
+    # plt.ylabel("Time Heuristic")
+    # plt.title("System: " + system)
 
     distance_heuristic_box_data = []
     time_heuristic_box_data = []
@@ -130,80 +134,82 @@ for system in systems:
                     total_time.append(tot_time[0][0])
                     distance_heuristic.append(optimal_distance_heuristic)
                     time_heuristic.append(optimal_time_heuristic)
-                    maximum_deviation.append(max_dev)
+                    maximum_deviation.append(max_dev[0][0])
 
         # Save the time heuristic and distance heuristic
         distance_heuristic_box_data.append(distance_heuristic)
         time_heuristic_box_data.append(time_heuristic)
 
-        # Plot the data
-        f_average_deviation = plt.figure(1)
-        plt.scatter(scores, average_deviation, s=6, label=save_names[i])
-        plt.title("System: " + system)
-        f_total_deviation = plt.figure(2)
-        plt.scatter(scores, total_deviation, s=6, label=save_names[i])
-        plt.title("System: " + system)
-        f_average_time = plt.figure(3)
-        plt.scatter(scores, average_time, s=6, label=save_names[i])
-        plt.title("System: " + system)
-        f_total_time = plt.figure(4)
-        plt.scatter(scores, total_time, s=6, label=save_names[i])
-        plt.title("System: " + system)
-        f_dist_heuristic = plt.figure(5)
-        plt.scatter(scores, distance_heuristic, s=6, label=save_names[i])
-        plt.title("System: " + system)
-        f_time_heuristic = plt.figure(6)
-        plt.scatter(scores, time_heuristic, s=6, label=save_names[i])
+        # # Plot the data
+        # f_average_deviation = plt.figure(1)
+        # plt.scatter(scores, average_deviation, s=6, label=save_names[i])
+        # plt.title("System: " + system)
+        # f_total_deviation = plt.figure(2)
+        # plt.scatter(scores, total_deviation, s=6, label=save_names[i])
+        # plt.title("System: " + system)
+        # f_average_time = plt.figure(3)
+        # plt.scatter(scores, average_time, s=6, label=save_names[i])
+        # plt.title("System: " + system)
+        # f_total_time = plt.figure(4)
+        # plt.scatter(scores, total_time, s=6, label=save_names[i])
+        # plt.title("System: " + system)
+        # f_dist_heuristic = plt.figure(5)
+        # plt.scatter(scores, distance_heuristic, s=6, label=save_names[i])
+        # plt.title("System: " + system)
+        # f_time_heuristic = plt.figure(6)
+        # plt.scatter(scores, time_heuristic, s=6, label=save_names[i])
 
         # Save the data into each respective system
         if system == "constant":
-            system_constant_distance.append(distance_heuristic)
-            system_constant_time.append(time_heuristic)
+            system_constant_distance.append(total_deviation)
+            system_constant_time.append(total_time)
+            system_constant_maximum_deviation.append(maximum_deviation)
         elif system == "waypoint":
-            system_waypoint_distance.append(distance_heuristic)
-            system_waypoint_time.append(time_heuristic)
+            system_waypoint_distance.append(total_deviation)
+            system_waypoint_time.append(total_time)
+            system_waypoint_maximum_deviation.append(maximum_deviation)
 
-    # Update the figure legends and show them
-    f_average_deviation = plt.figure(1)
-    plt.legend(prop={'size': 6})
-    plt.title("System: " + system)
-    f_total_deviation = plt.figure(2)
-    plt.legend(prop={'size': 6})
-    plt.title("System: " + system)
-    f_average_time = plt.figure(3)
-    plt.legend(prop={'size': 6})
-    plt.title("System: " + system)
-    f_total_time = plt.figure(4)
-    plt.legend(prop={'size': 6})
-    plt.title("System: " + system)
-    f_dist_heuristic = plt.figure(5)
-    plt.legend(prop={'size': 6})
-    f_time_heuristic = plt.figure(6)
-    plt.title("System: " + system)
-    plt.legend(prop={'size': 6})
-    plt.title("System: " + system)
+    # # Update the figure legends and show them
+    # f_average_deviation = plt.figure(1)
+    # plt.legend(prop={'size': 6})
+    # plt.title("System: " + system)
+    # f_total_deviation = plt.figure(2)
+    # plt.legend(prop={'size': 6})
+    # plt.title("System: " + system)
+    # f_average_time = plt.figure(3)
+    # plt.legend(prop={'size': 6})
+    # plt.title("System: " + system)
+    # f_total_time = plt.figure(4)
+    # plt.legend(prop={'size': 6})
+    # plt.title("System: " + system)
+    # f_dist_heuristic = plt.figure(5)
+    # plt.legend(prop={'size': 6})
+    # f_time_heuristic = plt.figure(6)
+    # plt.title("System: " + system)
+    # plt.legend(prop={'size': 6})
+    # plt.title("System: " + system)
 
-    f_dist_heuristic_box = plt.figure(7)
-    plt.boxplot(distance_heuristic_box_data)
-    plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=7, rotation=0)
-    plt.title("System: " + system)
-    f_time_heuristic_box = plt.figure(8)
-    plt.boxplot(time_heuristic_box_data)
-    plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=7, rotation=0)
-    plt.title("System: " + system)
+    # f_dist_heuristic_box = plt.figure(7)
+    # plt.boxplot(distance_heuristic_box_data)
+    # plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=7, rotation=0)
+    # plt.title("System: " + system)
+    # f_time_heuristic_box = plt.figure(8)
+    # plt.boxplot(time_heuristic_box_data)
+    # plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=7, rotation=0)
+    # plt.title("System: " + system)
 
-    # Show the figures
-    plt.show()
+    # # Show the figures
+    # plt.show()
 
 
 # Display the compared box plots
 def set_box_color(bp, color):
-    plt.setp(bp['boxes'], color=color)
+    plt.setp(bp['boxes'], color=color, linewidth=2)
     # plt.setp(bp['whiskers'], color=color)
     # plt.setp(bp['caps'], color=color)
     # plt.setp(bp['medians'], color=color)
 
-plt.figure()
+plt.figure(1)
 bpl = plt.boxplot(system_constant_distance, positions=np.array(range(len(system_constant_distance)))*2.0-0.4, sym='', widths=0.6)
 bpr = plt.boxplot(system_waypoint_distance, positions=np.array(range(len(system_waypoint_distance)))*2.0+0.4, sym='', widths=0.6)
 set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
@@ -216,11 +222,11 @@ plt.legend()
 plt.xticks(range(0, len(tick_names) * 2, 2), tick_names, fontsize=7, rotation=15)
 plt.xlim(-2, len(tick_names)*2)
 plt.tight_layout()
-plt.ylabel("Normalized Total Deviation")
+plt.ylabel("Total Deviation")
 plt.xlabel("Test Generation Technique")
-plt.show()
 
-plt.figure()
+
+plt.figure(2)
 bpl = plt.boxplot(system_constant_time, positions=np.array(range(len(system_constant_time)))*2.0-0.4, sym='', widths=0.6)
 bpr = plt.boxplot(system_waypoint_time, positions=np.array(range(len(system_waypoint_time)))*2.0+0.4, sym='', widths=0.6)
 set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
@@ -233,6 +239,31 @@ plt.legend()
 plt.xticks(range(0, len(tick_names) * 2, 2), tick_names, fontsize=7, rotation=15)
 plt.xlim(-2, len(tick_names)*2)
 plt.tight_layout()
-plt.ylabel("Normalized Total Time")
+plt.ylabel("Total Time")
 plt.xlabel("Test Generation Technique")
+
+
+# plt.figure(3)
+# for system in systems:
+#     if system == "constant":
+#         data = system_constant_maximum_deviation
+#     else:
+#         data = system_waypoint_maximum_deviation
+
+
+#     for i in range(0, len(data)):
+
+#         # Create the x and y axis
+#         obstacle_distance = np.linspace(0, 10, 10)
+#         number_failures = []
+
+#         for j in obstacle_distance:
+#             number_failures.append(sum(data[i] > j))
+
+#         plt.plot(obstacle_distance, number_failures, label=str(system) + ": " + str(tick_names[i]))
+        
+#     plt.xlabel("Minimum Acceptable Deviation")
+#     plt.ylabel("Number of Failing Tests")
+#     plt.legend()
+
 plt.show()

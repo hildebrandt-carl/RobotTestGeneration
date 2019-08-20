@@ -21,23 +21,25 @@ current_dir="$PWD"
 # Change the port number inside the new build
 sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
-for nodescounter in 1000
+depthcounter=10
+
+for nodescounter in 3200
 do
 	for rescounter in 4
 	do
-		for depthcounter in 10
+		for angle in 90
 		do
 			for beamcounter in 10
 			do
-				for simtype in 'kinematic' 'score'
+				for simtype in 'score'
 				do
-					for searchtime in 600
+					for searchtime in 36000
 					do
 							# Get the folder
-							folder=/TestGen/Results/FullNewRun/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype
+							folder=/TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype\_angle$angle
 
 							# Get the total number of tests to run 
-							mapcounter=1
+							mapcounter=45
 							totaltests=$(ls ..$folder/maps | wc -l)
 
 							echo "--------------------------------------------------------"
@@ -45,7 +47,7 @@ do
 							echo "Total tests found: $totaltests"
 							echo "--------------------------------------------------------"
 
-							while [ $mapcounter -le $totaltests ]
+							while [ $mapcounter -le 50 ]
 							do
 								echo "Processing: $folder/maps/map$mapcounter"
 								echo " "
