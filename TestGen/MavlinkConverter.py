@@ -11,6 +11,9 @@ class MavlinkConverter:
         # The first line of the waypoint file
         file.write('QGC WPL 120')
 
+        # Keep track of the index
+        index = 0
+
         # Go through each waypoint
         for waypoint in waypoints:
  
@@ -30,11 +33,14 @@ class MavlinkConverter:
             new_alt = waypoint[2]
 
             # Save this to the Mavlink file
-            initial_string = "\n0\t0\t3\t16\t0.000000\t1.000000\t0.000000\t0.000000\t"
+            initial_string = "\n" + str(index) + "\t0\t3\t16\t0.000000\t1.000000\t0.000000\t0.000000\t"
             latitude = format(new_latitude, '.10f')
             longitude = format(new_longitude, '.10f')
             altitude = format(new_alt, '.10f')
             end_string = "1\t"
+
+            # Inclrement the index
+            index += 1
 
             # Save it in Mavlink format
             file.write(initial_string + latitude + '\t' + longitude + '\t' + altitude + '\t' + end_string)

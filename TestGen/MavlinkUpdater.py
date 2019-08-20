@@ -31,6 +31,9 @@ with open(args.loadfile, "r") as f:
     # Create a new file
     new_file = open(args.savefile, "w") 
 
+    # Start with an index of 0
+    index = 0
+
     # Read every line
     for line in f:
         # If the line is a waypoint file
@@ -53,14 +56,15 @@ with open(args.loadfile, "r") as f:
             new_altitude = current_altitude + args.altitude
 
             # Write the new line to the file
-            new_line = values[0]
+            new_line = str(index)
+            index += 1
             for i in range(1, 8):
                 new_line += '\t' + values[i] 
 
             # Add the new latitude and longitude to the file
-            new_line += '\t' + format(new_latitude, '.8f')
-            new_line += '\t' + format(new_longitude, '.8f')
-            new_line += '\t' + format(new_altitude, '.8f')
+            new_line += '\t' + format(new_latitude, '.9f')
+            new_line += '\t' + format(new_longitude, '.9f')
+            new_line += '\t' + format(new_altitude, '.6f')
 
             # Add the last part to the line
             new_line += '\t' + values[11] + "\n"
