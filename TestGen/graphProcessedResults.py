@@ -4,26 +4,33 @@ import numpy as np
 from processResultsUtils import get_numbers_after_string
 
 
-all_folders = ["./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_kinematic_angle180/",
-               "./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_score_angle180/",
-               "./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_score_angle135/",
-               "./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_score_angle90/"]
-
+all_folders = ["./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_random_angle180/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_maxvel_angle180/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_kinematic_angle180/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle180/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle135/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle90/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle45/"]
 
 beam_lengths = [10]
 depths = [10]
 res_numbers = [4]
 
-save_names = ["Random + Kinematic",
+save_names = ["Random Search",
+              "Random + Max Velocity",
+              "Random + Kinematic",
               "Score + Kinematic 180",
               "Score + Kinematic 135",
-              "Score + Kinematic 90"]
+              "Score + Kinematic 90",
+              "Score + Kinematic 45"]
 
-tick_names = ["Random + Kinematic",
+tick_names = ["Random Search",
+              "Random + Max Velocity",
+              "Random + Kinematic",
               "Score + Kinematic 180",
               "Score + Kinematic 135",
-              "Score + Kinematic 90"]
-
+              "Score + Kinematic 90",
+              "Score + Kinematic 45"]
 
 systems = ["waypoint",
            "constant"]
@@ -85,6 +92,7 @@ for system in systems:
         distance_heuristic = []
         time_heuristic = []
         maximum_deviation = []
+        trajectory_length = []
 
         for depth in depths:
             for beam in beam_lengths:
@@ -116,6 +124,8 @@ for system in systems:
                     num_way = get_numbers_after_string(file_name=file_name, the_string="Total waypoints:")
                     optimal_time_heuristic = tot_time[0][0] / num_way[0][0]
 
+                    # Get the trajectory length
+
                     # Check for any anomalies
                     if tot_dev[0][0] > 450:
                         print("Total Deviation over 450m (" + str(tot_dev[0][0]) + "m): " + str(file_name))
@@ -135,6 +145,7 @@ for system in systems:
                     distance_heuristic.append(optimal_distance_heuristic)
                     time_heuristic.append(optimal_time_heuristic)
                     maximum_deviation.append(max_dev[0][0])
+                    trajectory_length.append(traj_len)
 
         # Save the time heuristic and distance heuristic
         distance_heuristic_box_data.append(distance_heuristic)

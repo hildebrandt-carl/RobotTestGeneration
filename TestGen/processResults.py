@@ -43,11 +43,13 @@ def lineseg_dist(p, a, b):
 
     return np.hypot(h, np.linalg.norm(c))
 
-
-all_folders = ["./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_kinematic_angle180/",
-               "./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_score_angle180/",
-               "./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_score_angle135/",
-               "./Results/SecondCompleteRun/MIT_seed10_depth10_nodes3200_res4_beamwidth10_searchtime36000_score_angle90/"]
+all_folders = ["./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_random_angle180/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_maxvel_angle180/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_kinematic_angle180/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle180/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle135/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle90/",
+               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle45/"]
 
 system_types = ["constant",
                 "waypoint"]

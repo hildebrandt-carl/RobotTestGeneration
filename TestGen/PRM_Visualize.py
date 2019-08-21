@@ -1471,7 +1471,7 @@ class PRM:
         return finished_paths
 
     # Finds paths from start vertex to end vertex which satisfy the kinematic model and scoring criteria
-    def find_all_paths_score(self, robot_kinematic_model, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1, search_time=60):
+    def find_all_paths_score(self, robot_kinematic_model, kinematic_sample_resolution=5, total_waypoints=5, beam_width=1, search_time=60, best_angle=180):
         # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
 
@@ -1814,7 +1814,7 @@ class PRM:
                 frontier += temp_frontier
 
                 # Get the scores for each of the paths
-                scores, _, _ = ranking_obj.calculate_scores(paths=frontier)
+                scores, _, _ = ranking_obj.calculate_scores(paths=frontier, best_angle=best_angle)
 
                 # Sort the frontier based on path score
                 # Save them from smallest to largest as we take the item from the back of the queue

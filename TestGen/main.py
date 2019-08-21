@@ -34,7 +34,7 @@ parser.add_argument('-t', '--type',
                     type=str,
                     help='Select search type (random), (maxvel), (kinematic), (score)')
 parser.add_argument('-x', '--depth',
-                    default=5,
+                    default=10,
                     type=int,
                     help='Total number of state changes allowed per trajectory')
 parser.add_argument('-b', '--beamwidth',
@@ -42,7 +42,7 @@ parser.add_argument('-b', '--beamwidth',
                     type=int,
                     help='The beam width used in the frontier exploration')
 parser.add_argument('-n', '--nodes',
-                    default=100,
+                    default=50,
                     type=int,
                     help='Number of nodes considered')
 parser.add_argument('-r', '--resolution',
@@ -56,7 +56,7 @@ parser.add_argument('-g', '--debug',
                     action='store_true',
                     help='Displays each stage during the selection phase')
 parser.add_argument('-s', '--seed',
-                    default=20,
+                    default=10,
                     type=int,
                     help='Use to set a seed for the PRM construction phase. Set to 0 for to use time as seed')
 parser.add_argument('-i', '--searchtime',

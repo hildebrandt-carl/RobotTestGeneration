@@ -78,6 +78,8 @@ class VelocityController():
 
       if self.started:
 
+        print("Requested Velocity Error: X:" + str(self.x_setpoint- self.x_vel) + "\t\t Y:" + str(self.y_setpoint- self.y_vel) + "\t\t Z:" + str(self.z_setpoint- self.z_vel))
+
         # Use a PID to calculate the angle you want to hold and thrust you want
         x_output = self.vel_x_PID.get_output(self.x_setpoint, self.x_vel)
         y_output = self.vel_y_PID.get_output(self.y_setpoint, self.y_vel)

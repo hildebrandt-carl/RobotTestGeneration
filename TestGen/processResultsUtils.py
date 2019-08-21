@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 def get_numbers_from_string(string_var):
     # Split by space
@@ -42,8 +43,14 @@ def get_numbers_after_string(file_name, the_string):
 
     nums = []
 
+    # Try open the file
+    file = None
+    try:
+        file = open(file_name, "r")
+    except:
+        return -math.inf
+
     # Get details from the simulation data
-    file = open(file_name, "r")
     for line in file:
         # Find the total time
         if the_string in line:

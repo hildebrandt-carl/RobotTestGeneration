@@ -63,8 +63,9 @@ class RankingSystem:
                     prev_largest_mag = maximum_vel_magnitude[score_counter - 1]
 
                 # Calculate linear score
-                in_vec_magnitude = self.get_magnitude_vector(in_vec)
-                linear_score = in_vec_magnitude / float(prev_largest_mag)
+                out_vec_magnitude = self.get_magnitude_vector(out_vec)
+                largest_mag = maximum_vel_magnitude[score_counter]
+                linear_score = out_vec_magnitude / float(largest_mag)
                 linear_path_score.append(linear_score)
 
                 # Calculate the angle between vectors
@@ -73,7 +74,8 @@ class RankingSystem:
                 angular_path_score.append(angular_vel_score)
 
                 # Calculate the point score
-                point_path_score.append(linear_score * angular_vel_score)
+                final_score = linear_score * angular_vel_score
+                point_path_score.append(final_score)
 
             # Save the scores
             linear_scores.append(sum(linear_path_score))
