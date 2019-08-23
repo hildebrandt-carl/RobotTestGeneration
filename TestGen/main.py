@@ -60,7 +60,7 @@ parser.add_argument('-s', '--seed',
                     type=int,
                     help='Use to set a seed for the PRM construction phase. Set to 0 for to use time as seed')
 parser.add_argument('-i', '--searchtime',
-                    default=30,
+                    default=300,
                     type=int,
                     help='The amount of time allowed for path searching in seconds')
 parser.add_argument('-l', '--scoreangle',
@@ -97,11 +97,11 @@ else:
     from PRM import PRM
 
 # Test initial conditions
-initial_conditions = {"map_x_bounds": [0, 40],
-                      "map_y_bounds": [0, 40],
-                      "map_z_bounds": [0, 20],
+initial_conditions = {"map_x_bounds": [0, 30],
+                      "map_y_bounds": [0, 30],
+                      "map_z_bounds": [0, 30],
                       "start_point": [0.1, 0.1, 0.1],
-                      "end_point": [20, 20, 10]}
+                      "end_point": [15, 15, 15]}
 
 # Specified by the tester
 human_specified_factors = {"kinematic_sampling_resolution": args.resolution}
@@ -166,121 +166,153 @@ FigureManager.y_range = {"lower": initial_conditions["map_y_bounds"][0],
 FigureManager.z_range = {"lower": initial_conditions["map_z_bounds"][0],
                          "upper": initial_conditions["map_z_bounds"][1]}
 
-# Generate the prm map
-print("UPDATE: Populating Trajectory Graph")
-# Create the PRM object
-p = PRM(start_pos=initial_conditions["start_point"],
-        end_pos=initial_conditions["end_point"],
-        map_x_bounds=initial_conditions["map_x_bounds"],
-        map_y_bounds=initial_conditions["map_y_bounds"],
-        map_z_bounds=initial_conditions["map_z_bounds"])
+# Used to keep track of how many paths were considered
+total_paths_considered = 0
+valid_paths_considered = 0
+current_seed = args.seed
+current_search_time = args.searchtime
 
-# Find valid positions for waypoints
-p.populate_with_nodes(num_vertices=traj_search_conditions["number_nodes"],
-                      input_seed=args.seed)
+# While we still have time
+while time.time() - start_time < args.searchtime and total_paths_considered <= 0:
+    # keep track of when this run started
+    run_start_time = time.time()
 
-# # Find possible connections between waypoints based on velocity
-# p.populate_with_edges(max_distance=robot_kinematics["max_velocity"],
-#                       min_distance=robot_kinematics["min_velocity"])
+    print("")
+    print('New Run!')
 
-if plotting:
-    # Show the map after the prm construction phase
-    print("UPDATE: Displaying Map")
-    map_plt = fig_manager.plot_prm_graph(nodes=p.get_vertices(),
-                                         edges=p.get_edges(),
-                                         figure_size=(10, 10))
+    # Generate the prm map
+    print("UPDATE: Populating Trajectory Graph")
+    # Create the PRM object
+    p = PRM(start_pos=initial_conditions["start_point"],
+            end_pos=initial_conditions["end_point"],
+            map_x_bounds=initial_conditions["map_x_bounds"],
+            map_y_bounds=initial_conditions["map_y_bounds"],
+            map_z_bounds=initial_conditions["map_z_bounds"])
 
-    # Display the figure
-    fig_manager.display_and_save(fig=map_plt,
-                                 save_name='original_map',
-                                 only_save=True)
+    # Find valid positions for waypoints
+    p.populate_with_nodes(num_vertices=traj_search_conditions["number_nodes"],
+                          input_seed=current_seed)
 
-print("UPDATE: Finding all paths")
-all_paths = None
-# Use random selection of nodes
-if args.type == "random":
-    all_paths = p.find_all_paths_random(total_waypoints=traj_search_conditions["search_depth"],
-                                        beam_width=traj_search_conditions["beam_width"],
-                                        search_time=args.searchtime)
+    # # Find possible connections between waypoints based on velocity
+    # p.populate_with_edges(max_distance=robot_kinematics["max_velocity"],
+    #                       min_distance=robot_kinematics["min_velocity"])
 
-# Use random selection of nodes within max velocity
-elif args.type == "maxvel":
-    all_paths = p.find_all_paths_maxvel(max_velocity=drone_kinematic["maximum_velocity"],
-                                        total_waypoints=traj_search_conditions["search_depth"],
-                                        beam_width=traj_search_conditions["beam_width"],
-                                        search_time=args.searchtime)
+    if plotting:
+        # Show the map after the prm construction phase
+        print("UPDATE: Displaying Map")
+        map_plt = fig_manager.plot_prm_graph(nodes=p.get_vertices(),
+                                             edges=p.get_edges(),
+                                             figure_size=(10, 10))
+
+        # Display the figure
+        fig_manager.display_and_save(fig=map_plt,
+                                     save_name='original_map',
+                                     only_save=True)
+
+    print("UPDATE: Finding all paths")
+    all_paths = None
+    # Use random selection of nodes
+    if args.type == "random":
+        all_paths = p.find_all_paths_random(total_waypoints=traj_search_conditions["search_depth"],
+                                            beam_width=traj_search_conditions["beam_width"],
+                                            search_time=current_search_time)
+
+    # Use random selection of nodes within max velocity
+    elif args.type == "maxvel":
+        all_paths = p.find_all_paths_maxvel(max_velocity=drone_kinematic["maximum_velocity"],
+                                            total_waypoints=traj_search_conditions["search_depth"],
+                                            beam_width=traj_search_conditions["beam_width"],
+                                            search_time=current_search_time)
 
 
-# Use random selection of nodes within reachable set
-elif args.type == "kinematic":
-    all_paths = p.find_all_paths_kinematic(robot_kinematic_model=drone_kinematic,
+    # Use random selection of nodes within reachable set
+    elif args.type == "kinematic":
+        all_paths = p.find_all_paths_kinematic(robot_kinematic_model=drone_kinematic,
+                                               kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
+                                               total_waypoints=traj_search_conditions["search_depth"],
+                                               beam_width=traj_search_conditions["beam_width"],
+                                               search_time=current_search_time)
+
+    # Use scored selection of nodes within reachable set
+    elif args.type == "score":
+        all_paths = p.find_all_paths_score(robot_kinematic_model=drone_kinematic,
                                            kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
                                            total_waypoints=traj_search_conditions["search_depth"],
                                            beam_width=traj_search_conditions["beam_width"],
-                                           search_time=args.searchtime)
+                                           search_time=current_search_time,
+                                           best_angle=args.scoreangle)
+    else:
+        print("ERROR: Search type not recognized")
+        exit()
 
-# Use scored selection of nodes within reachable set
-elif args.type == "score":
-    all_paths = p.find_all_paths_score(robot_kinematic_model=drone_kinematic,
-                                       kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
-                                       total_waypoints=traj_search_conditions["search_depth"],
-                                       beam_width=traj_search_conditions["beam_width"],
-                                       search_time=args.searchtime,
-                                       best_angle=args.scoreangle)
-else:
-    print("ERROR: Search type not recognized")
-    exit()
-
-
-# Display the selected paths
-if plotting:
-    # Show the map after the prm construction phase
-    print("UPDATE: Displaying Selected Trajectories")
-    map_plt = fig_manager.plot_selected_trajectories(nodes=p.get_vertices(),
-                                                     selected_paths=all_paths,
-                                                     figure_size=(10, 10))
-
-    # Display the figure
-    fig_manager.display_and_save(fig=map_plt,
-                                 save_name='selected_trajectories',
-                                 only_save=True)
-
-# Assert that we have found some paths
-print("DATA: Total unique paths found: " + str(len(all_paths)))
-if len(all_paths) > 0:
-
-    # Create a ranking system object
-    ranking_obj = RankingSystem()
-
-    # We need to go through all recorded paths and record which are valid and which are not
-    valid_paths = ranking_obj.validate_paths(paths=all_paths,
-                                             robot_kinematic_model=drone_kinematic,
-                                             kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"])
-
-    print("Total paths found: " + str(len(all_paths)))
-    print("Valid paths found: " + str(len(valid_paths)))
 
     # Display the selected paths
     if plotting:
         # Show the map after the prm construction phase
-        print("UPDATE: Displaying Valid Trajectories")
+        print("UPDATE: Displaying Selected Trajectories")
         map_plt = fig_manager.plot_selected_trajectories(nodes=p.get_vertices(),
-                                                         selected_paths=valid_paths,
+                                                         selected_paths=all_paths,
                                                          figure_size=(10, 10))
 
         # Display the figure
         fig_manager.display_and_save(fig=map_plt,
-                                     save_name='valid_trajectories',
+                                     save_name='selected_trajectories',
                                      only_save=True)
 
-    # Save the scores
-    ranking_obj.save_trajectories_according_to_score(paths=valid_paths, folder=save_path)
+    # Assert that we have found some paths
+    print("DATA: Total unique paths found: " + str(len(all_paths)))
+    if len(all_paths) > 0:
 
-# Print Completion
+        # Create a ranking system object
+        ranking_obj = RankingSystem()
+
+        # We need to go through all recorded paths and record which are valid and which are not
+        valid_paths = ranking_obj.validate_paths(paths=all_paths,
+                                                 robot_kinematic_model=drone_kinematic,
+                                                 kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"])
+
+        print("Paths considered that run: " + str(len(all_paths)))
+        print("Valid considered found run: " + str(len(valid_paths)))
+        print("")
+
+        # Display the selected paths
+        if plotting:
+            # Show the map after the prm construction phase
+            print("UPDATE: Displaying Valid Trajectories")
+            map_plt = fig_manager.plot_selected_trajectories(nodes=p.get_vertices(),
+                                                             selected_paths=valid_paths,
+                                                             figure_size=(10, 10))
+
+            # Display the figure
+            fig_manager.display_and_save(fig=map_plt,
+                                         save_name='valid_trajectories',
+                                         only_save=True)
+
+        # Save the scores
+        ranking_obj.save_trajectories_according_to_score(paths=valid_paths,
+                                                         folder=save_path,
+                                                         path_number=valid_paths_considered)
+
+    # Print Completion
+    print("DATA: Time for that run: " + str(time.time() - run_start_time))
+
+    # Keep track of the total
+    total_paths_considered += len(all_paths)
+    valid_paths_considered += len(valid_paths)
+
+    # If we are going to loop again increment the seed and work out what our new search time is:
+    current_search_time = current_search_time - (time.time() - run_start_time)
+    current_seed += 1
+
+    # Print how much time we have left
+    print("DATA: Time left: " + str(current_search_time))
+
+print("")
+print("-----------------------------------")
+print("DATA: Total time: " + str(time.time() - start_time))
+print("Total paths found: " + str(total_paths_considered))
+print("Valid paths found: " + str(valid_paths_considered))
 print("UPDATE: Completed")
-print("DATA: Total time - " + str(time.time() - start_time))
-
-
 
 
 

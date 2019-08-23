@@ -200,7 +200,6 @@ class PRM:
 
         # Keeps track of the number of files processed
         total_process_paths = 0
-        total_paths_print_counter = 0
 
         # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
@@ -260,7 +259,6 @@ class PRM:
                     # Add this path to the finished paths array
                     temp_finished_paths.append(current_path)
                     total_process_paths += 1
-                    total_paths_print_counter += 1
                     # Restart the beam search
                     continue
 
@@ -313,7 +311,6 @@ class PRM:
                         temp_frontier.append(new_path)
                     else:
                         total_process_paths += 1
-                        total_paths_print_counter += 1
 
             # Check that none of the finished paths have been added before
             paths_to_add = []
@@ -376,11 +373,6 @@ class PRM:
                 print("Search out of time")
                 break
 
-            # Check if we should print the time
-            if total_paths_print_counter > 500000:
-                print("Total paths processed: " + str(total_process_paths))
-                total_paths_print_counter = 0
-
         # put back all deleted vertices
         self.V = temp_v
 
@@ -420,6 +412,7 @@ class PRM:
 
         # Print the search time
         print("Time taken for search: " + str(time.time() - start_time))
+        print("Total paths processed: " + str(total_process_paths))
 
         # Return the finished paths
         return final_paths
@@ -431,7 +424,6 @@ class PRM:
 
         # Keeps track of the number of files processed
         total_process_paths = 0
-        total_paths_print_counter = 0
 
         # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
@@ -491,7 +483,6 @@ class PRM:
                     # Add this path to the finished paths array
                     temp_finished_paths.append(current_path)
                     total_process_paths += 1
-                    total_paths_print_counter += 1
                     # Restart the beam search
                     continue
 
@@ -562,7 +553,6 @@ class PRM:
                         temp_frontier.append(new_path)
                     else:
                         total_process_paths += 1
-                        total_paths_print_counter += 1
 
             # Check that none of the finished paths have been added before
             paths_to_add = []
@@ -625,11 +615,6 @@ class PRM:
                 print("Search out of time")
                 break
 
-            # Check if we should print the time
-            if total_paths_print_counter > 500000:
-                print("Total paths processed: " + str(total_process_paths))
-                total_paths_print_counter = 0
-
         # put back all deleted vertices
         self.V = temp_v
 
@@ -669,6 +654,7 @@ class PRM:
 
         # Print the search time
         print("Time taken for search: " + str(time.time() - start_time))
+        print("Total paths processed: " + str(total_process_paths))
 
         # Return the finished paths
         return final_paths
@@ -681,7 +667,6 @@ class PRM:
 
         # Keeps track of the number of files processed
         total_process_paths = 0
-        total_paths_print_counter = 0
 
         # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
@@ -751,7 +736,6 @@ class PRM:
                     # Add this path to the finished paths array
                     temp_finished_paths.append(current_path)
                     total_process_paths += 1
-                    total_paths_print_counter += 1
                     # Restart the beam search
                     continue
 
@@ -865,7 +849,6 @@ class PRM:
                         temp_frontier.append(new_path)
                     else:
                         total_process_paths += 1
-                        total_paths_print_counter += 1
 
             # When we are done processing the frontier
             # Check if we a have found any finished paths
@@ -919,16 +902,12 @@ class PRM:
                 print("Search out of time")
                 break
 
-            # Check if we should print the time
-            if total_paths_print_counter > 500000:
-                print("Total paths processed: " + str(total_process_paths))
-                total_paths_print_counter = 0
-
         # put back all deleted vertices
         self.V = temp_v
 
         # Print the search time
         print("Time taken for search: " + str(time.time() - start_time))
+        print("Total paths processed: " + str(total_process_paths))
 
         # Return the finished paths
         return finished_paths
@@ -941,7 +920,6 @@ class PRM:
 
         # Keeps track of the number of files processed
         total_process_paths = 0
-        total_paths_print_counter = 0
 
         # Make copies of vertices so they can be re-assigned after this function
         temp_v = copy.deepcopy(self.V)
@@ -1014,7 +992,6 @@ class PRM:
                     # Add this path to the finished paths array
                     temp_finished_paths.append(current_path)
                     total_process_paths += 1
-                    total_paths_print_counter += 1
                     # Restart the beam search
                     continue
 
@@ -1128,7 +1105,6 @@ class PRM:
                         temp_frontier.append(new_path)
                     else:
                         total_process_paths += 1
-                        total_paths_print_counter += 1
 
             # When we are done processing the frontier
             # Check if we a have found any finished paths
@@ -1177,16 +1153,12 @@ class PRM:
                 print("Search out of time")
                 break
 
-            # Check if we should print the time
-            if total_paths_print_counter > 500000:
-                print("Total paths processed: " + str(total_process_paths))
-                total_paths_print_counter = 0
-
         # put back all deleted vertices
         self.V = temp_v
 
         # Print the search time
         print("Time taken for search: " + str(time.time() - start_time))
+        print("Total paths processed: " + str(total_process_paths))
 
         # Return the finished paths
         return finished_paths

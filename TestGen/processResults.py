@@ -43,20 +43,18 @@ def lineseg_dist(p, a, b):
 
     return np.hypot(h, np.linalg.norm(c))
 
-all_folders = ["./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_random_angle180/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_maxvel_angle180/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_kinematic_angle180/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle180/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle135/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle90/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle45/"]
+all_folders = ["./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_random_angle180/",
+               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_maxvel_angle180/",
+               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_kinematic_angle180/",
+               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_score_angle180/",
+               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_score_angle90/"]
 
 system_types = ["constant",
                 "waypoint"]
 
 for stype in system_types:
     for folder in all_folders:
-
+        #MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_kinematic_angle180
         file_location = folder
         file_names = glob.glob(file_location + "maps/map*/performance_" + stype + ".txt")
         print(file_location + "maps/map*/performance_" + stype + ".txt")
@@ -307,7 +305,7 @@ for stype in system_types:
             ax.scatter(w_pos[:, 0], w_pos[:, 1], w_pos[:, 2], c='red', label='Waypoints')
             ax.set_xlim([0, 30])
             ax.set_ylim([0, -30])
-            ax.set_zlim([0, 15])
+            ax.set_zlim([0, 30])
             ax.set_xlabel('X-axis')
             ax.set_ylabel('Y-axis')
             ax.set_zlabel('Z-axis')

@@ -144,7 +144,7 @@ class RankingSystem:
         return valid_paths
 
     # Save the paths to a directory
-    def save_trajectories_according_to_score(self, paths, folder):
+    def save_trajectories_according_to_score(self, paths, folder, path_number=0):
         # Create the converter class's
         unity_converter = UnityConverter(save_directory=folder)
         mavlink_converter = MavlinkConverter(save_directory=folder)
@@ -161,7 +161,7 @@ class RankingSystem:
         # Create the Figure manager
         fig_manager = FigureManager(folder)
 
-        path_counter = 0
+        path_counter = path_number
         for index in score_indicies:
             path_counter += 1
             waypoints = []

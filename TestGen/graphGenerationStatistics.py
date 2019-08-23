@@ -4,36 +4,36 @@ import numpy as np
 from processResultsUtils import get_numbers_after_string
 import math
 
-all_files = ["./Results/CompleteTestRun3/mit_details_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_random_angle180.txt",
-             "./Results/CompleteTestRun3/mit_details_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_maxvel_angle180.txt",
-             "./Results/CompleteTestRun3/mit_details_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_kinematic_angle180.txt",
-             "./Results/CompleteTestRun3/mit_details_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle180.txt",
-             "./Results/CompleteTestRun3/mit_details_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle135.txt",
-             "./Results/CompleteTestRun3/mit_details_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle90.txt",
-             "./Results/CompleteTestRun3/mit_details_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle45.txt"]
+all_files = ["./Results/CompleteRunLoop2/mit_details_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_random_angle180.txt",
+             "./Results/CompleteRunLoop2/mit_details_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_maxvel_angle180.txt",
+             "./Results/CompleteRunLoop2/mit_details_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_kinematic_angle180.txt",
+             "./Results/CompleteRunLoop2/mit_details_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_score_angle180.txt",
+             "./Results/CompleteRunLoop2/mit_details_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_score_angle90.txt"]
 
 save_names = ["Random Search",
               "Random + Max Velocity",
               "Random + Kinematic",
               "Score + Kinematic 180",
-              "Score + Kinematic 135",
-              "Score + Kinematic 90",
-              "Score + Kinematic 45"]
+              "Score + Kinematic 90"]
 
 tick_names = ["Random Search",
               "Random + Max Velocity",
               "Random + Kinematic",
               "Score + Kinematic 180",
-              "Score + Kinematic 135",
-              "Score + Kinematic 90",
-              "Score + Kinematic 45"]
-
-scale_down = 10000
+              "Score + Kinematic 90"]
 
 # Used to save the results for each of the files
 all_total_paths = []
 all_valid_paths = []
 all_processed_paths = []
+
+bottom_cut = 500
+top_cut = 150
+largest_point = 7000
+top_increments = 1000
+
+
+d = .015
 
 for f in all_files:
     # Get the total number of paths found
@@ -50,10 +50,15 @@ for f in all_files:
         all_valid_paths.append(-1)
         all_processed_paths.append(-1)
     else:
-        processed_paths = max(processed_paths)
-        all_total_paths.append(total_paths[0][0])
-        all_valid_paths.append(valid_paths[0][0])
-        all_processed_paths.append(processed_paths[0])
+        #processed_paths = max(processed_paths)
+        if len(total_paths) == 0:
+            all_total_paths.append(0)
+        else:
+            all_total_paths.append(total_paths[0][0])
+        if len(valid_paths) == 0:
+            all_valid_paths.append(0)
+        else:
+            all_valid_paths.append(valid_paths[0][0])
 
 # Create the indices
 ind = np.arange(0, len(all_valid_paths), 1)
@@ -61,31 +66,77 @@ ind = np.arange(0, len(all_valid_paths), 1)
 # Convert the arrays to numpy arrays
 all_total_paths = np.array(all_total_paths)
 all_valid_paths = np.array(all_valid_paths)
-all_processed_paths = np.array(all_processed_paths)
-
-
+#all_processed_paths = np.array(all_processed_paths)
 
 # Plot the data
-fig = plt.figure(1, figsize=(10, 8))
-scaled_all_processed_paths = all_processed_paths / scale_down
-plt.bar(ind, scaled_all_processed_paths - (all_total_paths - all_valid_paths), color='C3', width=0.02, label='Explored Paths', bottom=all_total_paths - all_valid_paths, alpha=1, fill=False, edgecolor="C3",linestyle="--")
-plt.bar(ind, all_total_paths - all_valid_paths, color='C1', width=0.6, label='Completed Paths', bottom=all_valid_paths)
-plt.bar(ind, all_valid_paths, color='C0', width=0.6, label='Valid Paths')
-plt.xticks(ind, tick_names, fontsize=7, rotation=25)
-plt.ylabel("Number Found")
-plt.xlabel("Techniques")
-plt.legend()
+fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=(6,6))
 
-# zip joins x and y coordinates in pairs
-for x_pos, y_pos, lab in zip(ind, scaled_all_processed_paths, all_processed_paths):
-    label = "{:.2f} million".format(lab/ 1000000.0)
-    plt.annotate(label, # this is the text
-                 (x_pos, y_pos),# this is the point to label
-                 textcoords="offset points",# how to position the text
-                 xytext=(0, 10),# distance from text to points (x,y)
-                 ha='center') # horizontal alignment can be left, right or center
+ax1.spines['bottom'].set_visible(False)
+ax1.tick_params(axis='x', which='both', bottom=False)
+ax2.spines['top'].set_visible(False)
+
+ax2.set_ylim(0, top_cut)
+ax1.set_ylim(bottom_cut, largest_point)
+
+ax1.set_yticks(np.arange(bottom_cut, largest_point+1, top_increments))
+
+bars1 = ax1.bar(ind, all_total_paths - all_valid_paths, color='C1', width=0.6, label='Completed Paths', bottom=all_valid_paths)
+bars2 = ax1.bar(ind, all_valid_paths, color='C0', width=0.6, label='Valid Paths')
+
+bars3 = ax2.bar(ind, all_total_paths - all_valid_paths, color='C1', width=0.6, label='Completed Paths', bottom=all_valid_paths)
+bars4 = ax2.bar(ind, all_valid_paths, color='C0', width=0.6, label='Valid Paths')
+
+for tick in ax2.get_xticklabels():
+    tick.set_rotation(0)
 
 
-plt.ylim([0, 70])
+kwargs = dict(transform=ax1.transAxes, color='k', clip_on=False)
+ax1.plot((-d, +d), (-d, +d), **kwargs)
+ax1.plot((1 - d, 1 + d), (-d, +d), **kwargs)
+kwargs.update(transform=ax2.transAxes)
+ax2.plot((-d, +d), (1 - d, 1 + d), **kwargs)
+ax2.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)
+
+for tick in ax2.get_xticklabels():
+    tick.set_rotation(0)
+
+d = .015
+kwargs = dict(transform=ax1.transAxes, color='k', clip_on=False)
+ax1.plot((-d, +d), (-d, +d), **kwargs)
+ax1.plot((1 - d, 1 + d), (-d, +d), **kwargs)
+kwargs.update(transform=ax2.transAxes)
+ax2.plot((-d, +d), (1 - d, 1 + d), **kwargs)
+ax2.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)
+
+plt.xticks(ind, tick_names, fontsize=9, rotation=15)
+
+# plt.ylabel("Number Found")
+# ax2.ylabel.set_label_coords(1.05, -0.025)
+# plt.xlabel("Techniques")
+
+ax2.set_xlabel('Number Found')
+ax2.set_ylabel('Techniques')
+ax2.yaxis.set_label_coords(0.05, 0.5, transform=fig.transFigure)
+
+for b1, b2 in zip(bars1, bars3):
+    posx = b2.get_x() + b2.get_width()/2.
+    if b2.get_height() > top_cut:
+        ax2.plot((posx-5*d, posx+5*d), (1 - d, 1 + d), color='k', clip_on=False,
+                 transform=ax2.get_xaxis_transform())
+    if b1.get_height() > bottom_cut:
+        ax1.plot((posx-5*d, posx+5*d), (- d, + d), color='k', clip_on=False,
+                 transform=ax1.get_xaxis_transform())
+
+for b1, b2 in zip(bars2, bars4):
+    posx = b2.get_x() + b2.get_width()/2.
+    if b2.get_height() > top_cut:
+        ax2.plot((posx-5*d, posx+5*d), (1 - d, 1 + d), color='k', clip_on=False,
+                 transform=ax2.get_xaxis_transform())
+    if b1.get_height() > bottom_cut:
+        ax1.plot((posx-5*d, posx+5*d), (- d, + d), color='k', clip_on=False,
+                 transform=ax1.get_xaxis_transform())
+
+ax1.legend()
+
 plt.tight_layout()
 plt.show()
