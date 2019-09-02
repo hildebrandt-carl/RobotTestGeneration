@@ -4,23 +4,25 @@ import numpy as np
 from processResultsUtils import get_numbers_after_string
 import math
 
-all_files = ["./Results/CompleteRunLoop2/mit_details_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_random_angle180.txt",
-             "./Results/CompleteRunLoop2/mit_details_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_maxvel_angle180.txt",
-             "./Results/CompleteRunLoop2/mit_details_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_kinematic_angle180.txt",
-             "./Results/CompleteRunLoop2/mit_details_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_score_angle180.txt",
-             "./Results/CompleteRunLoop2/mit_details_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_score_angle90.txt"]
+all_files = ["./Results/AngleTest250/mit_details_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_random_angle180.txt",
+             "./Results/AngleTest250/mit_details_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_maxvel_angle180.txt",
+             "./Results/AngleTest250/mit_details_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_kinematic_angle180.txt",
+             "./Results/AngleTest250/mit_details_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle30.txt",
+             "./Results/AngleTest250/mit_details_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle60.txt",
+             "./Results/AngleTest250/mit_details_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle90.txt",
+             "./Results/AngleTest250/mit_details_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle120.txt",
+             "./Results/AngleTest250/mit_details_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle150.txt",
+             "./Results/AngleTest250/mit_details_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle180.txt"]
 
-save_names = ["Random Search",
-              "Random + Max Velocity",
-              "Random + Kinematic",
-              "Score + Kinematic 180",
-              "Score + Kinematic 90"]
+save_names = ["R", "M", "K", "30", "60", "90", "120", "150", "180"]
 
-tick_names = ["Random Search",
-              "Random + Max Velocity",
-              "Random + Kinematic",
-              "Score + Kinematic 180",
-              "Score + Kinematic 90"]
+tick_names = ["R", "M", "K", "30", "60", "90", "120", "150", "180"]
+
+# tick_names = ["Random Search",
+#               "Random + Max Velocity",
+#               "Random + Kinematic",
+#               "Score + Kinematic 180",
+#               "Score + Kinematic 90"]
 
 # Used to save the results for each of the files
 all_total_paths = []
@@ -29,8 +31,8 @@ all_processed_paths = []
 
 bottom_cut = 500
 top_cut = 150
-largest_point = 7000
-top_increments = 1000
+largest_point = 2000
+top_increments = 500
 
 
 d = .015
@@ -108,7 +110,7 @@ kwargs.update(transform=ax2.transAxes)
 ax2.plot((-d, +d), (1 - d, 1 + d), **kwargs)
 ax2.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)
 
-plt.xticks(ind, tick_names, fontsize=9, rotation=15)
+plt.xticks(ind, tick_names, fontsize=7, rotation=15)
 
 # plt.ylabel("Number Found")
 # ax2.ylabel.set_label_coords(1.05, -0.025)
@@ -135,6 +137,11 @@ for b1, b2 in zip(bars2, bars4):
     if b1.get_height() > bottom_cut:
         ax1.plot((posx-5*d, posx+5*d), (- d, + d), color='k', clip_on=False,
                  transform=ax1.get_xaxis_transform())
+
+
+# va = [0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0]
+# for t, y in zip(ax2.get_xticklabels(), va):
+#     t.set_y(y)
 
 ax1.legend()
 

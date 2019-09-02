@@ -492,3 +492,165 @@ class FigureManager:
 		ax.legend()
 
 		return plt
+
+	def plot_single_trajectory_top(self, path, figure_size=(10, 10)):
+		# Create a plot
+		fig = plt.figure(figsize=figure_size)
+
+		# Create a list of standard nodes
+		x_vals = []
+		y_vals = []
+
+		# Create a list of source and sink nodes
+		source_x = []
+		source_y = []
+		sink_x = []
+		sink_y = []
+
+		# Create the lines
+		xline = []
+		yline = []
+
+		# For each node
+		for i in range(0, len(path)):
+
+			# Check if this is a source
+			if i == 0:
+				# Save the position of the source node
+				source_x.append(path[i][0])
+				source_y.append(path[i][1])
+			# Check if this is a source
+			elif i == len(path) - 1:
+				# Save the position of the source node
+				sink_x.append(path[i][0])
+				sink_y.append(path[i][1])
+			else:
+				# Save the positions or random nodes
+				x_vals.append(path[i][0])
+				y_vals.append(path[i][1])
+
+			xline.append(path[i][0])
+			yline.append(path[i][1])
+
+		plt.scatter(x_vals, y_vals, c='b', label='Waypoints')
+		plt.scatter(source_x, source_y, c='g', label='Starting Position')
+		plt.scatter(sink_x, sink_y, c='r', label='Ending Position')
+		plt.plot(xline, yline, color='green', linestyle=":", linewidth=0.75)
+
+		plt.xlabel('X-axis')
+		plt.ylabel('Y-axis')
+
+		plt.xlim(FigureManager.x_range["lower"], FigureManager.x_range["upper"])
+		plt.ylim(FigureManager.y_range["lower"], FigureManager.y_range["upper"])
+
+		plt.legend()
+
+		return plt
+
+	def plot_single_trajectory_XZ(self, path, figure_size=(10, 10)):
+		# Create a plot
+		fig = plt.figure(figsize=figure_size)
+
+		# Create a list of standard nodes
+		x_vals = []
+		z_vals = []
+
+		# Create a list of source and sink nodes
+		source_x = []
+		source_z = []
+		sink_x = []
+		sink_z = []
+
+		# Create the lines
+		xline = []
+		zline = []
+
+		# For each node
+		for i in range(0, len(path)):
+
+			# Check if this is a source
+			if i == 0:
+				# Save the position of the source node
+				source_x.append(path[i][0])
+				source_z.append(path[i][2])
+			# Check if this is a source
+			elif i == len(path) - 1:
+				# Save the position of the source node
+				sink_x.append(path[i][0])
+				sink_z.append(path[i][2])
+			else:
+				# Save the positions or random nodes
+				x_vals.append(path[i][0])
+				z_vals.append(path[i][2])
+
+			xline.append(path[i][0])
+			zline.append(path[i][2])
+
+		plt.scatter(x_vals, z_vals, c='b', label='Waypoints')
+		plt.scatter(source_x, source_z, c='g', label='Starting Position')
+		plt.scatter(sink_x, sink_z, c='r', label='Ending Position')
+		plt.plot(xline, zline, color='green', linestyle=":", linewidth=0.75)
+
+		plt.xlabel('X-axis')
+		plt.ylabel('Z-axis')
+
+		plt.xlim(FigureManager.x_range["lower"], FigureManager.x_range["upper"])
+		plt.ylim(FigureManager.z_range["lower"], FigureManager.z_range["upper"])
+
+		plt.legend()
+
+		return plt
+
+	def plot_single_trajectory_YZ(self, path, figure_size=(10, 10)):
+		# Create a plot
+		fig = plt.figure(figsize=figure_size)
+
+		# Create a list of standard nodes
+		y_vals = []
+		z_vals = []
+
+		# Create a list of source and sink nodes
+		source_y = []
+		source_z = []
+		sink_y = []
+		sink_z = []
+
+		# Create the lines
+		yline = []
+		zline = []
+
+		# For each node
+		for i in range(0, len(path)):
+
+			# Check if this is a source
+			if i == 0:
+				# Save the position of the source node
+				source_y.append(path[i][1])
+				source_z.append(path[i][2])
+			# Check if this is a source
+			elif i == len(path) - 1:
+				# Save the position of the source node
+				sink_y.append(path[i][1])
+				sink_z.append(path[i][2])
+			else:
+				# Save the positions or random nodes
+				y_vals.append(path[i][1])
+				z_vals.append(path[i][2])
+
+			yline.append(path[i][1])
+			zline.append(path[i][2])
+
+		plt.scatter(y_vals, z_vals, c='b', label='Waypoints')
+		plt.scatter(source_y, source_z, c='g', label='Starting Position')
+		plt.scatter(sink_y, sink_z, c='r', label='Ending Position')
+		plt.plot(yline, zline, color='green', linestyle=":", linewidth=0.75)
+
+		plt.xlabel('Y-axis')
+		plt.ylabel('Z-axis')
+
+		plt.xlim(FigureManager.y_range["lower"], FigureManager.y_range["upper"])
+		plt.ylim(FigureManager.z_range["lower"], FigureManager.z_range["upper"])
+
+		plt.legend()
+
+		return plt

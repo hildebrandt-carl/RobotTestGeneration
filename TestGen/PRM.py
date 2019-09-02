@@ -1139,8 +1139,8 @@ class PRM:
                 scores, _, _ = ranking_obj.calculate_scores(paths=frontier, best_angle=best_angle)
 
                 # Sort the frontier based on path score
-                # Save them from smallest to largest as we take the item from the back of the queue
-                sorted_zipped_list = sorted(zip(scores, frontier))
+                # Save them from smallest to largest as we take the item from the back of the queue only by score
+                sorted_zipped_list = sorted(zip(scores, frontier), key=lambda key: key[0])
 
                 # Unzip the sorted list
                 [scores, frontier] = list(zip(*sorted_zipped_list))

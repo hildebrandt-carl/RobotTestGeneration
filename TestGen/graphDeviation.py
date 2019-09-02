@@ -6,27 +6,35 @@ from processResultsUtils import get_numbers_after_string
 
 plot_first = 100
 
-all_folders = ["./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_random_angle180/",
-               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_maxvel_angle180/",
-               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_kinematic_angle180/",
-               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_score_angle180/",
-               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_score_angle90/"]
+all_folders = ["./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_random_angle180/",
+               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_maxvel_angle180/",
+               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_kinematic_angle180/",
+               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle30/",
+               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle60/",
+               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle90/",
+               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle120/",
+               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle150/",
+               "./Results/FlatTestgraphDeviation.py/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle180/"]
 
 beam_lengths = [10]
 depths = [10]
 res_numbers = [4]
 
-save_names = ["Random Search",
-              "Random + Max Velocity",
-              "Random + Kinematic",
-              "Score + Kinematic 180",
-              "Score + Kinematic 90"]
+# save_names = ["Random Search",
+#               "Random + Max Velocity",
+#               "Random + Kinematic",
+#               "Score + Kinematic 180",
+#               "Score + Kinematic 90"]
+#
+# tick_names = ["Random Search",
+#               "Random + Max Velocity",
+#               "Random + Kinematic",
+#               "Score + Kinematic 180",
+#               "Score + Kinematic 90"]
 
-tick_names = ["Random Search",
-              "Random + Max Velocity",
-              "Random + Kinematic",
-              "Score + Kinematic 180",
-              "Score + Kinematic 90"]
+save_names = ["R", "M", "K", "30", "60", "90", "120", "150", "180"]
+
+tick_names = ["R", "M", "K", "30", "60", "90", "120", "150", "180"]
 
 systems = ["waypoint",
            "constant"]
@@ -110,6 +118,9 @@ for system in systems:
                     if optimal_distance_heuristic > 2.5:
                         print("Optimal distance heuristic over 2.2 (" + str(optimal_distance_heuristic) + "): " + str(file_name))
 
+                    if tot_time[0][0] > 40:
+                        print("Total time over 40 (" + str(tot_time[0][0]) + "): " + str(file_name))
+
                     # Save the data
                     average_deviation.append(avg_dev[0][0])
                     total_deviation.append(tot_dev[0][0])
@@ -137,11 +148,12 @@ def set_box_color(bp, color):
     # plt.setp(bp['whiskers'], color=color)
     # plt.setp(bp['caps'], color=color)
     # plt.setp(bp['medians'], color=color)
+    # plt.setp(bp['fliers'], color=color)
+    # plt.setp(bp['means'], color=color)
 
 
 
-
-plt.figure(1)
+fig, ax1 = plt.subplots(1, 1, figsize=(6,6))
 bpl = plt.boxplot(system_constant_distance, positions=np.array(range(len(system_constant_distance)))*2.0-0.4, widths=0.6)
 bpr = plt.boxplot(system_waypoint_distance, positions=np.array(range(len(system_waypoint_distance)))*2.0+0.4, widths=0.6)
 set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
@@ -156,9 +168,14 @@ plt.xlim(-2, len(tick_names)*2)
 plt.tight_layout()
 plt.ylabel("Total Deviation")
 plt.xlabel("Test Generation Technique")
+plt.ylim([0, 500])
+
+# va = [0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0]
+# for t, y in zip(ax1.get_xticklabels(), va):
+#     t.set_y(y)
 
 
-plt.figure(2)
+fig1, ax2 = plt.subplots(1, 1, figsize=(6,6))
 bpl = plt.boxplot(system_constant_time, positions=np.array(range(len(system_constant_time)))*2.0-0.4, widths=0.6)
 bpr = plt.boxplot(system_waypoint_time, positions=np.array(range(len(system_waypoint_time)))*2.0+0.4, widths=0.6)
 set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
@@ -173,5 +190,40 @@ plt.xlim(-2, len(tick_names)*2)
 plt.tight_layout()
 plt.ylabel("Total Time")
 plt.xlabel("Test Generation Technique")
+
+# va = [0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0]
+# for t, y in zip(ax2.get_xticklabels(), va):
+#     t.set_y(y)
+    
+    
+#
+# fig3, ax3 = plt.subplots(1, 1, figsize=(6,6))
+# toplot = [2, 3, 4, 8, 9, 13, 14, 18, 19]
+# label_counter = 0
+# scatter_labels = ["TL K", "TL S90", "TL S180", "TLG S90", "TLG S180", "TE S90", "TE S180", "TEG S90", "TEG S180"]
+# for i in toplot:
+#     test = system_constant_distance[i]
+#     plt.scatter(np.arange(0, len(test)), test, label=scatter_labels[label_counter])
+#     label_counter += 1
+# # draw temporary red and blue lines and use them to create a legend
+# plt.legend()
+# plt.ylabel("Total Deviation")
+# plt.xlabel("Test Number")
+# plt.title("Constant Controller")
+#
+# fig4, ax4 = plt.subplots(1, 1, figsize=(6,6))
+# toplot = [2, 3, 4, 8, 9, 13, 14, 18, 19]
+# label_counter = 0
+# scatter_labels = ["TL K", "TL S90", "TL S180", "TLG S90", "TLG S180", "TE S90", "TE S180", "TEG S90", "TEG S180"]
+# for i in toplot:
+#     test = system_waypoint_distance[i]
+#     plt.scatter(np.arange(0, len(test)), test, label=scatter_labels[label_counter])
+#     label_counter += 1
+# # draw temporary red and blue lines and use them to create a legend
+# plt.legend()
+# plt.ylabel("Total Deviation")
+# plt.xlabel("Test Number")
+# plt.title("Waypoint Controller")
+# plt.ylim([0, 550])
 
 plt.show()

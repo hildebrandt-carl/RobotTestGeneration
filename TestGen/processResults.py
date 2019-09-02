@@ -43,11 +43,7 @@ def lineseg_dist(p, a, b):
 
     return np.hypot(h, np.linalg.norm(c))
 
-all_folders = ["./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_random_angle180/",
-               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_maxvel_angle180/",
-               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_kinematic_angle180/",
-               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_score_angle180/",
-               "./Results/CompleteRunLoop2/MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_score_angle90/"]
+all_folders = ["./Results/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_kinematic_angle180/"]
 
 system_types = ["constant",
                 "waypoint"]
@@ -96,6 +92,7 @@ for stype in system_types:
             current_waypoint_position = []
             current_waypoint_time = []
             current_deviation = []
+            deviation_per_waypoint = []
             current_total_time = -1
             total_distance_travelled = 0
             trajectory_distance = 0
@@ -179,6 +176,8 @@ for stype in system_types:
             file.close()
 
             # Make sure that the drone_position_waypoints is the same length as the current drone position
+            print(len(current_drone_position))
+            print(len(current_waypoint_position))
             assert(len(current_drone_position) == len(current_waypoint_position))
 
             # Make sure that each of the arrays are the same length
@@ -228,6 +227,9 @@ for stype in system_types:
                 distance = sqrt(pow(p1[0] - p2[0], 2) + pow(p1[1] - p2[1], 2) + pow(p1[2] - p2[2], 2))
                 trajectory_distance += distance
 
+            # Keeps track of how many recordings per waypoint there are
+            recordings_per_waypoint = 0
+
             # Get the average distance from the optimal trajectory
             for cur_pos, cur_goal in zip(current_drone_position, current_waypoint_position):
                 # There is no previous waypoint before we hit the first waypoint
@@ -245,11 +247,28 @@ for stype in system_types:
 
                     # Calculate the distance from current position to the line created by the goal
                     d = lineseg_dist(p=np.asarray(cur_pos),
-                                        a=np.asarray(cur_goal),
-                                        b=np.asarray(prev_goal))
+                                     a=np.asarray(cur_goal),
+                                     b=np.asarray(prev_goal))
 
+                # Save the deviation per waypoint
+                if len(deviation_per_waypoint) <= index:
+                    # Get the average for the previous waypoint
+                    if len(deviation_per_waypoint) > 0:
+                        deviation_per_waypoint[index - 1] = deviation_per_waypoint[index - 1] / float(recordings_per_waypoint)
+
+                    # Start the new deviation tracker
+                    deviation_per_waypoint.append(d)
+                    recordings_per_waypoint = 1
+                else:
+                    deviation_per_waypoint[index] += d
+                    recordings_per_waypoint += 1
                 # Save the smallest distance to the deviation from optimal array
                 current_deviation.append(d)
+
+            # Average the last deviation
+            deviation_per_waypoint[index] = deviation_per_waypoint[index] / float(recordings_per_waypoint)
+            # Remove the first which was just 0
+            deviation_per_waypoint = deviation_per_waypoint[1:]
 
             # Calculate the average deviation from optimal trajectory
             average_current_deviation = sum(current_deviation) / len(current_deviation)
@@ -277,6 +296,7 @@ for stype in system_types:
             file.write("Maximum deviation from optimal trajectory: " + str(max(current_deviation)) + "\n")
             file.write("Total distance travelled: " + str(total_distance_travelled)  + "\n")
             file.write("Trajectory length: " + str(trajectory_distance) + "\n")
+            file.write("Average deviation between waypoints: " + str(deviation_per_waypoint) + "\n")
             file.close()
 
             print("Path Score: " + str(path_score))
@@ -312,6 +332,20 @@ for stype in system_types:
             plt.title("Optimal vs. true trajectory")
             ax.legend()
             plt.savefig(folder_name + "flight_comparison_" + stype + ".png")
+            plt.close()
+
+            # Create a 3D plot of the trajectory and actual path
+            fig = plt.figure()
+            plt.plot(d_pos[:, 0], d_pos[:, 1], color='green', linestyle=":", linewidth=0.75, label='Drone Position')
+            plt.plot(w_pos[:, 0], w_pos[:, 1], color='red', linestyle=":", linewidth=0.75, label='Ideal Trajectory')
+            plt.scatter(w_pos[:, 0], w_pos[:, 1], c='red', label='Waypoints')
+            plt.xlim([0, 30])
+            plt.ylim([0, -30])
+            plt.xlabel('X-axis')
+            plt.ylabel('Y-axis')
+            plt.title("Optimal vs. true trajectory")
+            plt.legend()
+            plt.savefig(folder_name + "flight_comparison_top_" + stype + ".png")
             plt.close()
 
             # Plot the trajectory deviation

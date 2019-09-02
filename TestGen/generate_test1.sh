@@ -1,13 +1,13 @@
 #!/bin/zsh
 
 seed=10
-searchtype='random'
+searchtype='kinematic'
 drone='mit'
-searchtime=1850
+searchtime=1200
 angle=180
 for res in 4
 do
-  for nodes in 1000
+  for nodes in 250
   do
     for beamwidth in 10
     do

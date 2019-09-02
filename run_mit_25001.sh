@@ -23,95 +23,99 @@ sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
 depthcounter=10
 
-for nodescounter in 1000
+for mainfolder in '' 
 do
-	for rescounter in 4
+	for nodescounter in 250
 	do
-		for angle in 180
+		for rescounter in 4
 		do
-			for beamcounter in 10
+			for angle in 180
 			do
-				for simtype in 'kinematic'
+				for beamcounter in 10
 				do
-					for searchtime in 36000
+					for simtype in 'kinematic'
 					do
-							# Get the folder
-							folder=/TestGen/Results/CompleteRunLoop2/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype\_angle$angle
+						for searchtime in 1200
+						do
+								# Get the folder
+								folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype\_angle$angle
 
-							# Get the total number of tests to run 
-							mapcounter=70
-							totaltests=$(ls ..$folder/maps | wc -l)
+								# Get the total number of tests to run
+								mapcounter=24
+								totaltests=$(ls ..$folder/maps | wc -l)
 
-							echo "--------------------------------------------------------"
-							echo "Processing: $folder"
-							echo "Total tests found: $totaltests"
-							echo "--------------------------------------------------------"
+								echo "--------------------------------------------------------"
+								echo "Processing: $folder"
+								echo "Total tests found: $totaltests"
+								echo "--------------------------------------------------------"
 
-							while [ $mapcounter -le 390 ]
-							do
-								echo "Processing: $folder/maps/map$mapcounter"
-								echo " "
-
-								for speed in -1 10
+								while [ $mapcounter -le 24 ]
 								do
+									echo "Processing: $folder/maps/map$mapcounter"
+									echo " "
 
-									# Get the current test
-									cp ..$folder/maps/map$mapcounter/test.txt test.txt
+									for speed in 10
+									do
 
-									# Run the simulator
-									./WorldEngine.x86_64 &
+										# Get the current test
+										cp ..$folder/maps/map$mapcounter/test.txt test.txt
 
-									# Get the PID so that I can kill it later
-									unity_PID=$!
+										# Run the simulator
+										./WorldEngine.x86_64 &
 
-									# Wait 30 seconds for unity to start
-									sleep 30
+										# Get the PID so that I can kill it later
+										unity_PID=$!
 
-									# Launch the ros file
-									roslaunch flightcontroller fly.launch port:="$port" test_location:="$current_dir" save_location:="$current_dir" speed:="$speed" &
+										# Wait 30 seconds for unity to start
+										sleep 30
 
-									# Get the PID so that I can kill it later
-									roslaunch_PID=$!
+										# Launch the ros file
+										roslaunch flightcontroller fly.launch port:="$port" test_location:="$current_dir" save_location:="$current_dir" speed:="$speed" &
 
-									# Each test is given 30 seconds
-									sleep 75
+										# Get the PID so that I can kill it later
+										roslaunch_PID=$!
 
-									# Kill the code
-									kill -INT $unity_PID
-									kill -INT $roslaunch_PID
+										# Each test is given 30 seconds
+										sleep 75
 
-									# Remove the temporary test
-									rm test.txt
+										# Kill the code
+										kill -INT $unity_PID
+										kill -INT $roslaunch_PID
+
+										# Remove the temporary test
+										rm test.txt
+										
+										# Save the test to the appropriate file
+										if [ $speed -eq -1 ]
+										then
+											mv performance.txt ..$folder/maps/map$mapcounter/performance_waypoint.txt
+										else
+											mv performance.txt ..$folder/maps/map$mapcounter/performance_constant.txt
+										fi
+
+										# Allow 30 seconds for gezbo to clean up
+										sleep 30
 									
-									# Save the test to the appropriate file
-									if [ $speed -eq -1 ]
-									then
-										mv performance.txt ..$folder/maps/map$mapcounter/performance_waypoint.txt
-									else
-										mv performance.txt ..$folder/maps/map$mapcounter/performance_constant.txt
-									fi
+									# End speed
+									done
 
-									# Allow 30 seconds for gezbo to clean up
-									sleep 30
-								
-								# End speed
+									# Increment the mapcounter
+									((mapcounter++))
+								# End mapcounter
 								done
-
-								# Increment the mapcounter
-								((mapcounter++))
-							# End mapcounter
-							done
-					# End searchtime
+						# End searchtime
+						done
+					# End simtype
 					done
-				# End simtype
+				# End beamcounter
 				done
-			# End beamcounter
+			# End depthcounter
 			done
-		# End depthcounter
+		# End rescounter
 		done
-	# End rescounter
+	# End nodescounter
 	done
-# End nodescounter
+# End mainfolder
 done
 
 # Go back to the original dir
