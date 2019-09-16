@@ -43,10 +43,10 @@ def lineseg_dist(p, a, b):
 
     return np.hypot(h, np.linalg.norm(c))
 
-all_folders = ["./Results/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_kinematic_angle180/"]
+all_folders = ["./Results/VariationTestSingleClock/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_kinematic_angle180/"]
 
-system_types = ["constant",
-                "waypoint"]
+system_types = ["waypoint",
+                "constant"]
 
 for stype in system_types:
     for folder in all_folders:
@@ -93,6 +93,9 @@ for stype in system_types:
             current_waypoint_time = []
             current_deviation = []
             deviation_per_waypoint = []
+            max_deviation_per_waypoint = []
+            deviation_squared_per_waypoint = []
+            goal_switch_indicies = []
             current_total_time = -1
             total_distance_travelled = 0
             trajectory_distance = 0
@@ -176,8 +179,6 @@ for stype in system_types:
             file.close()
 
             # Make sure that the drone_position_waypoints is the same length as the current drone position
-            print(len(current_drone_position))
-            print(len(current_waypoint_position))
             assert(len(current_drone_position) == len(current_waypoint_position))
 
             # Make sure that each of the arrays are the same length
@@ -255,20 +256,33 @@ for stype in system_types:
                     # Get the average for the previous waypoint
                     if len(deviation_per_waypoint) > 0:
                         deviation_per_waypoint[index - 1] = deviation_per_waypoint[index - 1] / float(recordings_per_waypoint)
+                        deviation_squared_per_waypoint[index - 1] = deviation_squared_per_waypoint[index - 1] / float(recordings_per_waypoint)
 
                     # Start the new deviation tracker
-                    deviation_per_waypoint.append(d)
+                    deviation_per_waypoint.append(abs(d))
+                    deviation_squared_per_waypoint.append(abs(d) ** 2)
+                    max_deviation_per_waypoint.append(abs(d))
                     recordings_per_waypoint = 1
+
+                    # Save the index as this is when a switch between waypoints happened
+                    goal_switch_indicies.append(len(current_deviation))
                 else:
-                    deviation_per_waypoint[index] += d
+                    deviation_per_waypoint[index] += abs(d)
+                    deviation_squared_per_waypoint[index] += (abs(d) ** 2)
+                    max_deviation_per_waypoint[index] = max( max_deviation_per_waypoint[index], abs(d) )
                     recordings_per_waypoint += 1
+
                 # Save the smallest distance to the deviation from optimal array
-                current_deviation.append(d)
+                current_deviation.append(abs(d))
 
             # Average the last deviation
             deviation_per_waypoint[index] = deviation_per_waypoint[index] / float(recordings_per_waypoint)
+            deviation_squared_per_waypoint[index] = deviation_squared_per_waypoint[index] / float(recordings_per_waypoint)
+
             # Remove the first which was just 0
             deviation_per_waypoint = deviation_per_waypoint[1:]
+            deviation_squared_per_waypoint = deviation_squared_per_waypoint[1:]
+            max_deviation_per_waypoint = max_deviation_per_waypoint[1:]
 
             # Calculate the average deviation from optimal trajectory
             average_current_deviation = sum(current_deviation) / len(current_deviation)
@@ -285,7 +299,7 @@ for stype in system_types:
             # Save the details of that test into the correct folder
             file = open(folder_name + "analysis_" + str(stype) + ".txt", "w")
             file.write("Path Score: " + str(path_score) + "\n")
-            file.write("Time between waypoints: " + str(current_waypoint_time) + "\n")
+            file.write("Time between waypoints: " + str(list(current_waypoint_time)) + "\n")
             file.write("Average time between waypoints: " + str(average_time_between_waypoints) + "\n")
             file.write("Total waypoints: " + str(len(current_waypoint_time)) + "\n")
             file.write("Total time between waypoints: " + str(sum(current_waypoint_time)) + "\n")
@@ -294,9 +308,11 @@ for stype in system_types:
             file.write("Average deviation from optimal trajectory: " + str(average_current_deviation) + "\n")
             file.write("Total deviation from optimal trajectory: " + str(sum(current_deviation)) + "\n")
             file.write("Maximum deviation from optimal trajectory: " + str(max(current_deviation)) + "\n")
-            file.write("Total distance travelled: " + str(total_distance_travelled)  + "\n")
+            file.write("Total distance travelled: " + str(total_distance_travelled) + "\n")
             file.write("Trajectory length: " + str(trajectory_distance) + "\n")
             file.write("Average deviation between waypoints: " + str(deviation_per_waypoint) + "\n")
+            file.write("Average squared deviation between waypoints: " + str(deviation_squared_per_waypoint) + "\n")
+            file.write("Maximum deviation between waypoints: " + str(max_deviation_per_waypoint) + "\n")
             file.close()
 
             print("Path Score: " + str(path_score))
@@ -321,7 +337,7 @@ for stype in system_types:
             fig = plt.figure()
             ax = Axes3D(fig)
             ax.plot3D(d_pos[:, 0], d_pos[:, 1], d_pos[:, 2], color='green', linestyle=":", linewidth=0.75, label='Drone Position')
-            ax.plot(w_pos[:, 0], w_pos[:, 1], w_pos[:, 2], color='red', linestyle=":", linewidth=0.75, label='Ideal Trajectory')
+            ax.plot(w_pos[:, 0], w_pos[:, 1], w_pos[:, 2], color='red', linestyle="-", linewidth=0.55, label='Ideal Trajectory')
             ax.scatter(w_pos[:, 0], w_pos[:, 1], w_pos[:, 2], c='red', label='Waypoints')
             ax.set_xlim([0, 30])
             ax.set_ylim([0, -30])
@@ -337,7 +353,7 @@ for stype in system_types:
             # Create a 3D plot of the trajectory and actual path
             fig = plt.figure()
             plt.plot(d_pos[:, 0], d_pos[:, 1], color='green', linestyle=":", linewidth=0.75, label='Drone Position')
-            plt.plot(w_pos[:, 0], w_pos[:, 1], color='red', linestyle=":", linewidth=0.75, label='Ideal Trajectory')
+            plt.plot(w_pos[:, 0], w_pos[:, 1], color='red', linestyle="-", linewidth=0.75, label='Ideal Trajectory')
             plt.scatter(w_pos[:, 0], w_pos[:, 1], c='red', label='Waypoints')
             plt.xlim([0, 30])
             plt.ylim([0, -30])
@@ -351,6 +367,8 @@ for stype in system_types:
             # Plot the trajectory deviation
             fig = plt.figure()
             plt.plot(current_elapsed_time, current_deviation)
+            for vert_line in goal_switch_indicies:
+                plt.axvline(current_elapsed_time[vert_line], color='red', linestyle=":", linewidth=0.75)
             plt.ylim([0, 10])
             plt.xlabel("Time")
             plt.ylabel("Deviation")

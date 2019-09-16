@@ -6,6 +6,7 @@ import time
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
+from rosgraph_msgs.msg import Clock
 
 
 class PerformanceTester():
@@ -20,6 +21,7 @@ class PerformanceTester():
     self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
     self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
     self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
+    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
 
     # Variable to set the rate
     self.rate = 5
@@ -52,6 +54,11 @@ class PerformanceTester():
     self.goal_position = Vector3(0, 0, 0)
     self.goal_counter = 0
 
+    # Used to save the clock
+    self.current_time = rospy.Time()
+    self.prev_time_check = rospy.Time()
+    self.process_loop = False
+
     # Used to record the time between goals:
     self.start_time = time.time()
     
@@ -65,7 +72,7 @@ class PerformanceTester():
   # This is the main loop of this class
   def ProcessLoop(self):
     # Set the rate
-    rate = rospy.Rate(self.rate)
+    rate = rospy.Rate(100)
 
     # Calculate the time between intervals
     dt = 1.0/self.rate
@@ -82,6 +89,7 @@ class PerformanceTester():
         self.filehandler.write("Current Goal Position: " + str(self.goal_position.x) + ", " + str(self.goal_position.y) + ", " + str(self.goal_position.z) + "\n")
         self.filehandler.write("Distance to Goal: " + str(self.goal_counter) + ": " + str(distance) + "\n")
         self.filehandler.write("Elapsed Time: " + str(time.time() - self.test_start_time) + "\n")
+        print(str(rospy.get_name()) + " " + str(self.current_time))
         self.filehandler.write("-------------------------------\n")
       else:
         rospy.loginfo(str(rospy.get_name()) + ": Waiting for test to begin")
@@ -89,9 +97,21 @@ class PerformanceTester():
         self.start_time = time.time()
         self.test_start_time = time.time()
 
-      # Sleep any excess time
-      rate.sleep()
+      while self.process_loop == False:
+        # Sleep any excess time
+        rate.sleep()
 
+      self.process_loop = False
+
+  # Used to save the time
+  def clock_callback(self, clock_msg):
+    self.current_time = clock_msg.clock
+    # If we should rerun the control loop
+    if self.current_time.to_sec() - self.prev_time_check.to_sec() > self.rate:
+      # Reset the previous time
+      self.prev_time_check = self.current_time
+      # Run a process loop
+      self.process_loop = True
 
   # Call back to get the gps data
   def get_gps(self, msg):

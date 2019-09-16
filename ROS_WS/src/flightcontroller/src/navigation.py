@@ -7,6 +7,7 @@ import re
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
+from rosgraph_msgs.msg import Clock
 
 
 class GoalTester():
@@ -21,6 +22,7 @@ class GoalTester():
     self.col_sub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
     self.complete_pub = rospy.Publisher('/test/completed', Empty, queue_size=1)
     self.navigation_start = rospy.Publisher('/test/started', Empty, queue_size=1)
+    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
 
     # Variable to set the rate
     self.rate = 2
@@ -51,6 +53,11 @@ class GoalTester():
 
     # Load the goal positions
     self.LoadGoalPositions(file_location)
+
+    # Used to save the clock
+    self.current_time = rospy.Time()
+    self.prev_time_check = rospy.Time()
+    self.process_loop = False
 
     # Sleep to make sure the robot is ready to go
     time.sleep(5)
@@ -90,7 +97,7 @@ class GoalTester():
   # This is the main loop of this class
   def ControlLoop(self):
     # Set the rate
-    rate = rospy.Rate(self.rate)
+    rate = rospy.Rate(100)
 
     # Calculate the time between intervals
     dt = 1.0/self.rate
@@ -106,6 +113,8 @@ class GoalTester():
         # Publish the goal
         current_goal = self.goal_positions[self.goal_number]
         self.goal_pub.publish(current_goal)
+
+        print(str(rospy.get_name()) + " " + str(self.current_time))
 
         # Calculated the distance to the goal
         distance_to_goal = self.distance(current_goal, self.drone_pos)
@@ -126,9 +135,21 @@ class GoalTester():
         # Shutdown as there is nothing left to do
         rospy.signal_shutdown("Navigation Complete")
         
-      # Sleep any excess time
-      rate.sleep()
+      while self.process_loop == False:
+        # Sleep any excess time
+        rate.sleep()
 
+      self.process_loop = False
+
+  # Used to save the time
+  def clock_callback(self, clock_msg):
+    self.current_time = clock_msg.clock
+    # If we should rerun the control loop
+    if self.current_time.to_sec() - self.prev_time_check.to_sec() > self.rate:
+      # Reset the previous time
+      self.prev_time_check = self.current_time
+      # Run a process loop
+      self.process_loop = True
 
   # Call back to get the gps data
   def get_gps(self, msg):

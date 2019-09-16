@@ -5,6 +5,7 @@ from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
 from pid_class import PID
+from rosgraph_msgs.msg import Clock
 
 
 class PositionController():
@@ -20,6 +21,7 @@ class PositionController():
     self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
     self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
     self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
+    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
 
     # Variable to set the rate
     self.rate = 5.0
@@ -56,6 +58,11 @@ class PositionController():
     self.y_pos = 0
     self.z_pos = 0
 
+    # Used to save the clock
+    self.current_time = rospy.Time()
+    self.prev_time_check = rospy.Time()
+    self.process_loop = False
+
     # Checks to see if the simulation has started
     self.started = False
 
@@ -66,7 +73,7 @@ class PositionController():
   # This is the main loop of this class
   def ControlLoop(self):
     # Set the rate
-    rate = rospy.Rate(self.rate)
+    rate = rospy.Rate(100)
 
     # Calculate the time between intervals
     dt = 1.0/self.rate
@@ -75,6 +82,8 @@ class PositionController():
     while not rospy.is_shutdown():
 
       if self.started:
+
+        print(str(rospy.get_name()) + " " + str(self.current_time.to_sec()))
 
         # Use a PID to calculate the velocity you want
         x_proportion = self.pos_x_PID.get_output(self.x_setpoint, self.x_pos)
@@ -113,16 +122,27 @@ class PositionController():
         velocity = Vector3(x_vel, -1* y_vel, z_vel)
         self.vel_set_sub.publish(velocity)
 
-      # Sleep any excess time
-      rate.sleep()
+      while self.process_loop == False:
+        # Sleep any excess time
+        rate.sleep()
 
+      self.process_loop = False
+
+  # Used to save the time
+  def clock_callback(self, clock_msg):
+    self.current_time = clock_msg.clock
+    # If we should rerun the control loop
+    if self.current_time.to_sec() - self.prev_time_check.to_sec() > self.rate:
+      # Reset the previous time
+      self.prev_time_check = self.current_time
+      # Run a process loop
+      self.process_loop = True
 
   # Call back to get the gps data
   def get_gps(self, msg):
     self.x_pos = msg.position.x
     self.y_pos = msg.position.y
     self.z_pos = msg.position.z
-
 
   # Call back to get the position setpoints
   def set_pos(self, msg):

@@ -23,7 +23,7 @@ sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
 depthcounter=10
 
-for mainfolder in '' 
+for mainfolder in 'testing'
 do
 	for nodescounter in 250
 	do
@@ -41,7 +41,7 @@ do
 								folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype\_angle$angle
 
 								# Get the total number of tests to run
-								mapcounter=24
+								mapcounter=1
 								totaltests=$(ls ..$folder/maps | wc -l)
 
 								echo "--------------------------------------------------------"
@@ -49,12 +49,17 @@ do
 								echo "Total tests found: $totaltests"
 								echo "--------------------------------------------------------"
 
-								while [ $mapcounter -le 24 ]
+								if [ "$mainfolder" = "VariationTestReal" ]
+								then
+									totaltests=10
+								fi
+
+								while [ $mapcounter -le $totaltests ]
 								do
 									echo "Processing: $folder/maps/map$mapcounter"
 									echo " "
 
-									for speed in 10
+									for speed in -1
 									do
 
 										# Get the current test

@@ -6,6 +6,7 @@ from mav_msgs.msg import RateThrust
 from std_msgs.msg import Float64
 from std_msgs.msg import Empty
 from pid_class import PID
+from rosgraph_msgs.msg import Clock
 
 
 class AngleController():
@@ -23,6 +24,7 @@ class AngleController():
     self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
     self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
     self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
+    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
 
     # Getting the PID parameters
     gains = rospy.get_param('/angle_controller_node/gains', {'p': 0.1, 'i': 0, 'd': 0})
@@ -57,6 +59,11 @@ class AngleController():
     # Checks to see if the simulation has started
     self.started = False
 
+    # Used to save the clock
+    self.current_time = rospy.Time()
+    self.prev_time_check = rospy.Time()
+    self.process_loop = False
+
     # Run the communication node
     self.ControlLoop()
 
@@ -64,7 +71,7 @@ class AngleController():
   # This is the main loop of this class
   def ControlLoop(self):
     # Set the rate
-    rate = rospy.Rate(self.rate)
+    rate = rospy.Rate(100)
 
     # Calculate the time between intervals
     dt = 1.0/self.rate
@@ -82,15 +89,28 @@ class AngleController():
       msg = RateThrust()
       msg.header.stamp = rospy.get_rostime()
       if self.started:
+        print(str(rospy.get_name()) + " " + str(self.current_time))
         msg.thrust = Vector3(0,0,self.thrust_setpoint)
       else:
         msg.thrust = Vector3(0,0,0)
       msg.angular_rates = Vector3(roll_output,pitch_output,0)
       self.rate_pub.publish(msg)
 
+      while self.process_loop == False:
+        # Sleep any excess time
+        rate.sleep()
 
-      # Sleep any excess time
-      rate.sleep()
+      self.process_loop = False
+
+  # Used to save the time
+  def clock_callback(self, clock_msg):
+    self.current_time = clock_msg.clock
+    # If we should rerun the control loop
+    if self.current_time.to_sec() - self.prev_time_check.to_sec() > self.rate:
+      # Reset the previous time
+      self.prev_time_check = self.current_time
+      # Run a process loop
+      self.process_loop = True
 
   # Called when the navigation is completed
   def completed_callback(self, msg):

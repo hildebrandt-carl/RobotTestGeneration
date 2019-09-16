@@ -10,6 +10,7 @@ project(flightcontroller)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
+  rosgraph_msgs
 )
 
 ## System dependencies are found with CMake's conventions

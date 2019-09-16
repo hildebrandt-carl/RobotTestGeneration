@@ -4,6 +4,7 @@ from geometry_msgs.msg import Vector3
 from std_msgs.msg import Float64
 from std_msgs.msg import Empty
 from pid_class import PID
+from rosgraph_msgs.msg import Clock
 
 
 class VelocityController():
@@ -20,6 +21,7 @@ class VelocityController():
     self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
     self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
     self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
+    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
 
     # Variable to set the rate
     self.rate = 10.0
@@ -57,6 +59,11 @@ class VelocityController():
     # Checks to see if the simulation has started
     self.started = False
 
+    # Used to save the clock
+    self.current_time = rospy.Time()
+    self.prev_time_check = rospy.Time()
+    self.process_loop = False
+
     # Run the communication node
     self.ControlLoop()
 
@@ -64,7 +71,7 @@ class VelocityController():
   # This is the main loop of this class
   def ControlLoop(self):
     # Set the rate
-    rate = rospy.Rate(self.rate)
+    rate = rospy.Rate(100)
 
     # Calculate the time between intervals
     dt = 1.0/self.rate
@@ -78,6 +85,8 @@ class VelocityController():
 
       if self.started:
 
+        print(str(rospy.get_name()) + " " + str(self.current_time.to_sec()))
+
         print("Requested Velocity Error: X:" + str(self.x_setpoint- self.x_vel) + "\t\t Y:" + str(self.y_setpoint- self.y_vel) + "\t\t Z:" + str(self.z_setpoint- self.z_vel))
 
         # Use a PID to calculate the angle you want to hold and thrust you want
@@ -90,9 +99,21 @@ class VelocityController():
         self.att_pub.publish(attitude) 
         self.thrust_pub.publish(z_output) 
 
-      # Sleep any excess time
-      rate.sleep()
+      while self.process_loop == False:
+        # Sleep any excess time
+        rate.sleep()
 
+      self.process_loop = False
+      
+  # Used to save the time
+  def clock_callback(self, clock_msg):
+    self.current_time = clock_msg.clock
+    # If we should rerun the control loop
+    if self.current_time.to_sec() - self.prev_time_check.to_sec() > self.rate:
+      # Reset the previous time
+      self.prev_time_check = self.current_time
+      # Run a process loop
+      self.process_loop = True
 
   # Call back to get the velocity data
   def get_vel(self, vel_msg):
