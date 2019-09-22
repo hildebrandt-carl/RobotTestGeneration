@@ -43,7 +43,7 @@ def lineseg_dist(p, a, b):
 
     return np.hypot(h, np.linalg.norm(c))
 
-all_folders = ["./Results/VariationTestSingleClock/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_kinematic_angle180/"]
+all_folders = ["./Results/SimulatedClock/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_kinematic_angle180/"]
 
 system_types = ["waypoint",
                 "constant"]

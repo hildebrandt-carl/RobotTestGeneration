@@ -1,16 +1,21 @@
 <?xml version="1.0"?>
 <launch>
 
+  <arg name="save_name" default="velocity_log.txt"/>
+  <arg name="save_location" default="/home/autosoftlab/Desktop/RobotTestGeneration"/>
+
   <node pkg="flightcontroller" type="velocity_calculator.py" name="velocity_calculator_node" output="screen">
   </node>
 
   <node pkg="flightcontroller" type="velocity_controller.py" name="velocity_controller_node" output="screen">
-    <param name="gains/p_xy" type="double" value="0.15" />
-    <param name="gains/i_xy" type="double" value="0.01" />
-    <param name="gains/d_xy" type="double" value="0.05" />
-    <param name="gains/p_z" type="double" value="1.5" />
-    <param name="gains/i_z" type="double" value="0.3" />
-    <param name="gains/d_z" type="double" value="0.3" />
+    <param name="gains/p_xy" type="double" value="0.3" />
+    <param name="gains/i_xy" type="double" value="0.003" />
+    <param name="gains/d_xy" type="double" value="0.01" />
+    <param name="gains/p_z" type="double" value="0.75" />
+    <param name="gains/i_z" type="double" value="0.06" />
+    <param name="gains/d_z" type="double" value="0.06" />
+    <param name="save_location" type="string" value="$(arg save_location)" />
+    <param name="save_name" type="string" value="$(arg save_name)" />
   </node>
 
 </launch>

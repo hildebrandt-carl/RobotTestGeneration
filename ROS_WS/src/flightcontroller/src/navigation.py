@@ -8,6 +8,7 @@ from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
 from rosgraph_msgs.msg import Clock
+from std_msgs.msg import String
 
 
 class GoalTester():
@@ -16,16 +17,9 @@ class GoalTester():
     # When this node shutsdown
     rospy.on_shutdown(self.shutdown_sequence)
 
-    # Create the subscribers and publishers
-    self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
-    self.goal_pub = rospy.Publisher("uav/input/position", Vector3, queue_size=1)
-    self.col_sub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
-    self.complete_pub = rospy.Publisher('/test/completed', Empty, queue_size=1)
-    self.navigation_start = rospy.Publisher('/test/started', Empty, queue_size=1)
-    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
-
-    # Variable to set the rate
-    self.rate = 2
+    # Set the rate
+    self.rate = 100.0
+    self.dt = 1.0 / self.rate
 
     # Getting the load file parameters
     test_location = rospy.get_param("goal_tester_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build")
@@ -49,7 +43,7 @@ class GoalTester():
     self.goal_positions = []
 
     # The distance which a goal is accepted
-    self.acceptance_distance = 2
+    self.acceptance_distance = 1
 
     # Load the goal positions
     self.LoadGoalPositions(file_location)
@@ -57,10 +51,15 @@ class GoalTester():
     # Used to save the clock
     self.current_time = rospy.Time()
     self.prev_time_check = rospy.Time()
-    self.process_loop = False
 
-    # Sleep to make sure the robot is ready to go
-    time.sleep(5)
+    # Create the subscribers and publishers
+    self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
+    self.goal_pub = rospy.Publisher("uav/input/position", Vector3, queue_size=1)
+    self.col_sub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
+    self.complete_pub = rospy.Publisher('/test/completed', Empty, queue_size=1)
+    self.navigation_start = rospy.Publisher('/test/started', Empty, queue_size=1)
+    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
+    self.order_pub = rospy.Publisher('/order', String, queue_size=10)
 
     # Run the communication node
     self.ControlLoop()
@@ -97,10 +96,15 @@ class GoalTester():
   # This is the main loop of this class
   def ControlLoop(self):
     # Set the rate
-    rate = rospy.Rate(100)
+    rate = rospy.Rate(1000)
 
-    # Calculate the time between intervals
-    dt = 1.0/self.rate
+    # Sleep to make sure the robot is ready to go
+    while(self.current_time.to_sec() < 5):
+      # Sleep any excess time
+      rate.sleep()
+      # Check if ROS has shut down
+      if rospy.is_shutdown():
+        break
 
     # Start the test
     self.navigation_start.publish(Empty())
@@ -113,15 +117,15 @@ class GoalTester():
         # Publish the goal
         current_goal = self.goal_positions[self.goal_number]
         self.goal_pub.publish(current_goal)
-
-        print(str(rospy.get_name()) + " " + str(self.current_time))
+        order_string = "Navigation node: %s" % rospy.get_time()
+        self.order_pub.publish(order_string)
 
         # Calculated the distance to the goal
         distance_to_goal = self.distance(current_goal, self.drone_pos)
-        rospy.loginfo(str(rospy.get_name()) + ": Current Goal: x-" + str(current_goal.x) + "  y-" + str(current_goal.y) + "  z-" + str(current_goal.z))
-        rospy.loginfo(str(rospy.get_name()) + ": Current Pos : x-" + str(self.drone_pos.x) + "  y-" + str(self.drone_pos.y) + "  z-" + str(self.drone_pos.z))
-        rospy.loginfo(str(rospy.get_name()) + ": Distance: " + str(distance_to_goal))
-        rospy.loginfo(str(rospy.get_name()) + "----------------------------")
+        # rospy.loginfo(str(rospy.get_name()) + ": Current Goal: x-" + str(current_goal.x) + "  y-" + str(current_goal.y) + "  z-" + str(current_goal.z))
+        # rospy.loginfo(str(rospy.get_name()) + ": Current Pos : x-" + str(self.drone_pos.x) + "  y-" + str(self.drone_pos.y) + "  z-" + str(self.drone_pos.z))
+        # rospy.loginfo(str(rospy.get_name()) + ": Distance: " + str(distance_to_goal))
+        # rospy.loginfo(str(rospy.get_name()) + "----------------------------")
       
         if distance_to_goal < self.acceptance_distance:
           self.goal_number += 1
@@ -135,21 +139,21 @@ class GoalTester():
         # Shutdown as there is nothing left to do
         rospy.signal_shutdown("Navigation Complete")
         
-      while self.process_loop == False:
+      # While we are waiting for our rate
+      while self.current_time.to_sec() - self.prev_time_check.to_sec() < self.dt:
         # Sleep any excess time
         rate.sleep()
+        # Check if ROS has shut down
+        if rospy.is_shutdown():
+          break
 
-      self.process_loop = False
+      # Save the start of the new loop
+      self.prev_time_check = self.current_time
+
 
   # Used to save the time
   def clock_callback(self, clock_msg):
     self.current_time = clock_msg.clock
-    # If we should rerun the control loop
-    if self.current_time.to_sec() - self.prev_time_check.to_sec() > self.rate:
-      # Reset the previous time
-      self.prev_time_check = self.current_time
-      # Run a process loop
-      self.process_loop = True
 
   # Call back to get the gps data
   def get_gps(self, msg):

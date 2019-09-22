@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 import rospy
 import time
+
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
 from pid_class import PID
 from rosgraph_msgs.msg import Clock
+from std_msgs.msg import String
 
 
 class PositionController():
@@ -14,21 +16,17 @@ class PositionController():
     # When this node shutsdown
     rospy.on_shutdown(self.shutdown_sequence)
 
-    # Create the subscribers and publishers
-    self.vel_set_sub = rospy.Publisher('/uav/input/velocity', Vector3, queue_size=1)
-    self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
-    self.pos_set_sub = rospy.Subscriber("uav/input/position", Vector3, self.set_pos)
-    self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
-    self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
-    self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
-    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
-
-    # Variable to set the rate
-    self.rate = 5.0
+    # Set the rate
+    self.rate = 100.0
+    self.dt = 1.0 / self.rate
 
     # Getting the PID parameters
     gains = rospy.get_param('/position_controller_node/gains', {'p': 1, 'i': 0.0, 'd': 0.0})
     Kp, Ki, Kd = gains['p'], gains['i'], gains['d']
+
+    # Getting the save file parameters
+    save_location = rospy.get_param("/position_controller_node/save_location")
+    save_name = rospy.get_param("/position_controller_node/save_name")
 
     # Getting the requested speed
     self.speed = rospy.get_param('/position_controller_node/speed')
@@ -39,9 +37,15 @@ class PositionController():
     rospy.loginfo(str(rospy.get_name()) + ": i - " + str(Ki))
     rospy.loginfo(str(rospy.get_name()) + ": d - " + str(Kd))
     rospy.loginfo(str(rospy.get_name()) + ": rate - " + str(self.rate))
-
-    # Display the requested speed
     rospy.loginfo(str(rospy.get_name()) + ": speed - " + str(self.speed))
+    rospy.loginfo(str(rospy.get_name()) + ": save_location - " + str(save_location))
+    rospy.loginfo(str(rospy.get_name()) + ": save_name - " + str(save_name))
+
+    # File location of the goals
+    file_location = save_location + "/" + save_name
+
+    # Open a file writer to save the information
+    self.filehandler = open(file_location, "w") 
 
     # Creating the PID's
     self.pos_x_PID = PID(Kp, Ki, Kd, self.rate)
@@ -61,10 +65,19 @@ class PositionController():
     # Used to save the clock
     self.current_time = rospy.Time()
     self.prev_time_check = rospy.Time()
-    self.process_loop = False
 
     # Checks to see if the simulation has started
     self.started = False
+
+    # Create the subscribers and publishers
+    self.vel_set_sub = rospy.Publisher('/uav/input/velocity', Vector3, queue_size=1)
+    self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
+    self.pos_set_sub = rospy.Subscriber("uav/input/position", Vector3, self.set_pos)
+    self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
+    self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
+    self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
+    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
+    self.order_pub = rospy.Publisher('/order', String, queue_size=10)
 
     # Run the communication node
     self.ControlLoop()
@@ -73,17 +86,15 @@ class PositionController():
   # This is the main loop of this class
   def ControlLoop(self):
     # Set the rate
-    rate = rospy.Rate(100)
+    rate = rospy.Rate(1000)
 
-    # Calculate the time between intervals
-    dt = 1.0/self.rate
+    # Keep track how many loops have happend
+    loop_counter = 0
 
     # While running
     while not rospy.is_shutdown():
 
       if self.started:
-
-        print(str(rospy.get_name()) + " " + str(self.current_time.to_sec()))
 
         # Use a PID to calculate the velocity you want
         x_proportion = self.pos_x_PID.get_output(self.x_setpoint, self.x_pos)
@@ -121,22 +132,36 @@ class PositionController():
         # Create and publish the data
         velocity = Vector3(x_vel, -1* y_vel, z_vel)
         self.vel_set_sub.publish(velocity)
+        order_string = "position controller: %s" % rospy.get_time()
+        self.order_pub.publish(order_string)
 
-      while self.process_loop == False:
+        # Logging
+        self.filehandler.write("-----------------------\n")
+        self.filehandler.write("Loop Counter: " + str(loop_counter) + "\n")
+        self.filehandler.write("Publishing Time: " + str(self.current_time.to_sec()) + "\n")
+        self.filehandler.write("Velocity X: " + str(velocity.x) + "\n")
+        self.filehandler.write("Velocity Y: " + str(velocity.y) + "\n")
+        self.filehandler.write("Velocity Z: " + str(velocity.z) + "\n")
+
+      # While we are waiting for our rate
+      while self.current_time.to_sec() - self.prev_time_check.to_sec() < self.dt:
         # Sleep any excess time
         rate.sleep()
+        # Check if ROS has shut down
+        if rospy.is_shutdown():
+          break
 
-      self.process_loop = False
+      # Save the start of the new loop
+      self.prev_time_check = self.current_time
+      loop_counter += 1
+
+    # Close the file
+    time.sleep(1)
+    self.filehandler.close()
 
   # Used to save the time
   def clock_callback(self, clock_msg):
     self.current_time = clock_msg.clock
-    # If we should rerun the control loop
-    if self.current_time.to_sec() - self.prev_time_check.to_sec() > self.rate:
-      # Reset the previous time
-      self.prev_time_check = self.current_time
-      # Run a process loop
-      self.process_loop = True
 
   # Call back to get the gps data
   def get_gps(self, msg):
@@ -167,6 +192,7 @@ class PositionController():
     # Shutdown as there is nothing left to do
     rospy.signal_shutdown("Navigation Complete")
 
+	# Called on ROS shutdown
   def shutdown_sequence(self):
     rospy.loginfo(str(rospy.get_name()) + ": Shutting Down")
 

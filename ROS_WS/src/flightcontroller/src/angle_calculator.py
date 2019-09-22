@@ -13,15 +13,9 @@ class AngleCalculator():
     # When this node shutsdown
     rospy.on_shutdown(self.shutdown_sequence)
 
-    # Create the subscribers and publishers
-    self.att_pub = rospy.Publisher('/uav/sensors/attitude', Vector3, queue_size=1)
-    self.imu_sub = rospy.Subscriber("/uav/sensors/filtered_imu", Imu, self.imu_callback)
-    self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
-    self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
-    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
-
     # Set the rate
-    self.rate = 10
+    self.rate = 100.0
+    self.dt = 1.0 / self.rate
 
     # Checks to see if the simulation has started
     self.started = False
@@ -29,7 +23,13 @@ class AngleCalculator():
     # Used to save the clock
     self.current_time = rospy.Time()
     self.prev_time_check = rospy.Time()
-    self.process_loop = False
+
+    # Create the subscribers and publishers
+    self.att_pub = rospy.Publisher('/uav/sensors/attitude', Vector3, queue_size=1)
+    self.imu_sub = rospy.Subscriber("/uav/sensors/filtered_imu", Imu, self.imu_callback)
+    self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
+    self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
+    self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
 
     # Run the node
     self.Run()
@@ -38,7 +38,7 @@ class AngleCalculator():
   # This is the main loop of this class
   def Run(self):
      # Set the rate
-    rate = rospy.Rate(100)
+    rate = rospy.Rate(1000)
 
     # While running
     while not rospy.is_shutdown():
@@ -46,24 +46,21 @@ class AngleCalculator():
       # If the test has started
       if self.started:
         pass
-        print(str(rospy.get_name()) + " " + str(self.current_time))
 
-      while self.process_loop == False:
+      # While we are waiting for our rate
+      while self.current_time.to_sec() - self.prev_time_check.to_sec() < self.dt:
         # Sleep any excess time
         rate.sleep()
+        # Check if ROS has shut down
+        if rospy.is_shutdown():
+          break
 
-      self.process_loop = False
-      
+      # Save the start of the new loop
+      self.prev_time_check = self.current_time
 
   # Used to save the time
   def clock_callback(self, clock_msg):
     self.current_time = clock_msg.clock
-    # If we should rerun the control loop
-    if self.current_time.to_sec() - self.prev_time_check.to_sec() > self.rate:
-      # Reset the previous time
-      self.prev_time_check = self.current_time
-      # Run a process loop
-      self.process_loop = True
 
   # Call back to get the GPS data
   def imu_callback(self, gps_msg):

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 import rospy
+import numpy as np
+from scipy.ndimage.interpolation import shift
+
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import Vector3
 from std_msgs.msg import Empty
@@ -11,6 +14,29 @@ class VelocityCalculator():
     # When this node shutsdown
     rospy.on_shutdown(self.shutdown_sequence)
 
+    # Set the rate
+    self.rate = 100.0
+    self.dt = 1.0 / self.rate
+
+    # Save the GPS Messages
+    self.x_prev = 0
+    self.y_prev = 0
+    self.z_prev = 0
+    self.previous_time = rospy.Time()
+
+    # Checks to see if the simulation has started
+    self.started = False
+
+    # Moving average
+    self.window_size = 50
+    self.windowx = np.zeros(self.window_size)
+    self.windowy = np.zeros(self.window_size)
+    self.windowz = np.zeros(self.window_size)
+
+    # Used to save the clock
+    self.current_time = rospy.Time()
+    self.prev_time_check = rospy.Time()
+
     # Create the subscribers and publishers
     self.vel_pub = rospy.Publisher('/uav/sensors/velocity', Vector3, queue_size=1)
     self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
@@ -19,77 +45,89 @@ class VelocityCalculator():
     self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)
     self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
 
-    # Set the rate
-    self.rate = 10
-
-    # Save the GPS Messages
-    self.x = 0
-    self.y = 0
-    self.z = 0
-    self.x_prev = 0
-    self.y_prev = 0
-    self.z_prev = 0
-
-    # Checks to see if the simulation has started
-    self.started = False
-
-    # Used to save the clock
-    self.current_time = rospy.Time()
-    self.prev_time_check = rospy.Time()
-    self.process_loop = False
-
     # Run the communication node
     self.Process()
 
   # This is the main loop of this class
   def Process(self):
     # Set the rate
-    rate = rospy.Rate(100)
-    dt = 1.0/self.rate
+    rate = rospy.Rate(1000)
 
     # While running
     while not rospy.is_shutdown():
 
       if self.started:
+        pass
 
-        print(str(rospy.get_name()) + " " + str(self.current_time.to_sec()))
-
-        # Calculate the current velocity
-        xvel = (self.x - self.x_prev)/dt
-        yvel = (self.y - self.y_prev)/dt
-        zvel = (self.z - self.z_prev)/dt
-
-        # Save the previous values
-        self.x_prev = self.x
-        self.y_prev = self.y
-        self.z_prev = self.z
-
-        # Publish the velocity (Y axis is inverted)
-        veldata = Vector3(xvel, -1 * yvel, zvel)
-        self.vel_pub.publish(veldata)
-
-      while self.process_loop == False:
+      # While we are waiting for our rate
+      while self.current_time.to_sec() - self.prev_time_check.to_sec() < self.dt:
         # Sleep any excess time
         rate.sleep()
+        # Check if ROS has shut down
+        if rospy.is_shutdown():
+          break
+        
+      # Save the start of the new loop
+      self.prev_time_check = self.current_time
 
-      self.process_loop = False
 
   # Used to save the time
   def clock_callback(self, clock_msg):
     self.current_time = clock_msg.clock
-    # If we should rerun the control loop
-    if self.current_time.to_sec() - self.prev_time_check.to_sec() > self.rate:
-      # Reset the previous time
-      self.prev_time_check = self.current_time
-      # Run a process loop
-      self.process_loop = True
+
+  # Reject any outliers greater than 2 standard deviations away
+  def reject_outliers(self, data, m=2):
+    return data[abs(data - np.mean(data)) <= m * np.std(data)]
 
   # Call back to get the GPS data
   def get_gps(self, gps_msg):
     # Get the GPS data
-    self.x = gps_msg.position.x
-    self.y = gps_msg.position.y
-    self.z = gps_msg.position.z
+    x = gps_msg.position.x
+    y = gps_msg.position.y
+    z = gps_msg.position.z
+
+    # Calculate dt
+    dt = self.current_time.to_sec() - self.previous_time.to_sec()
+    
+    # Calculate the current velocity
+    if dt != 0:
+      xvel = (x - self.x_prev)/dt
+      yvel = (y - self.y_prev)/dt
+      zvel = (z - self.z_prev)/dt
+
+      # Push the velocity into the moving window
+      self.windowx = shift(self.windowx, -1, cval=xvel)
+      self.windowy = shift(self.windowy, -1, cval=yvel)
+      self.windowz = shift(self.windowz, -1, cval=zvel)
+      print(self.windowx)
+      print(xvel)
+
+      # Publish the velocity (Y axis is inverted)
+      veldata = Vector3(np.mean(self.reject_outliers(self.windowx)),-1 * np.mean(self.reject_outliers(self.windowy)),np.mean(self.reject_outliers(self.windowz)))
+      print(veldata)
+      self.vel_pub.publish(veldata)
+
+      # print("------------------------")
+      # print("xvel: " + str(xvel))
+      # print("yvel: " + str(yvel))
+      # print("zvel: " + str(zvel))
+      # print("x: " + str(x))
+      # print("y: " + str(y))
+      # print("z: " + str(z))
+      # print("prev x: " + str(self.x_prev))
+      # print("prev y: " + str(self.y_prev))
+      # print("prev z: " + str(self.z_prev))
+      # print("time: " + str(self.current_time.to_sec()))
+      # print("prev time: " + str(self.previous_time.to_sec()))
+
+    # Save the previous values
+    self.x_prev = x
+    self.y_prev = y
+    self.z_prev = z
+    self.previous_time = self.current_time
+
+
+    
 
   # Called when the navigation is started
   def start_callback(self, msg):

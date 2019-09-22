@@ -4,10 +4,11 @@ import numpy as np
 from processResultsUtils import get_numbers_after_string
 from sklearn.linear_model import LinearRegression
 from mpl_toolkits.mplot3d import Axes3D
+import copy
 
 plot_first = 100
 
-all_folders = ["./Results/VariationTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_kinematic_angle180/"]
+all_folders = ["./Results/SimulatedClock/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_kinematic_angle180/"]
 
 beam_lengths = [10]
 depths = [10]
@@ -29,6 +30,7 @@ system_constant_zvel = []
 system_constant_delta_xvel = []
 system_constant_delta_yvel = []
 system_constant_delta_zvel = []
+system_constant_2d = []
 
 system_waypoint_dev = []
 system_waypoint_time = []
@@ -43,6 +45,7 @@ system_waypoint_zvel = []
 system_waypoint_delta_xvel = []
 system_waypoint_delta_yvel = []
 system_waypoint_delta_zvel = []
+system_waypoint_2d = []
 
 for system in systems:
 
@@ -59,6 +62,7 @@ for system in systems:
         file_counter = 0
 
         # Used to save all the data
+        waypoint_dev = []
         all_dev_per_waypoint = []
         all_time_per_waypoint = []
         all_flight_angles = []
@@ -136,6 +140,12 @@ for system in systems:
                     print("Large Deviation Detected!")
                     print(flight_log_file)
 
+            # Create the deviation per waypoint 2D array
+            if len(waypoint_dev) == 0:
+                waypoint_dev = dev_per_waypoint[0]
+            else:
+                waypoint_dev = np.vstack((waypoint_dev, dev_per_waypoint[0]))
+
             all_dev_per_waypoint.extend(dev_per_waypoint[0])
             all_time_per_waypoint.extend(time_per_waypoint[0])
             all_flight_angles.extend(flight_angles[0])
@@ -162,6 +172,7 @@ for system in systems:
 
         # Save the data into each respective system
         if system == "constant":
+            system_constant_2d = copy.deepcopy(waypoint_dev)
             system_constant_dev.extend(all_dev_per_waypoint)
             system_constant_time.extend(all_time_per_waypoint)
             system_constant_angles.extend(all_flight_angles)
@@ -176,6 +187,7 @@ for system in systems:
             system_constant_delta_yvel.extend(all_flight_delta_yvel)
             system_constant_delta_zvel.extend(all_flight_delta_zvel)
         elif system == "waypoint":
+            system_waypoint_2d = copy.deepcopy(waypoint_dev)
             system_waypoint_dev.extend(all_dev_per_waypoint)
             system_waypoint_time.extend(all_time_per_waypoint)
             system_waypoint_angles.extend(all_flight_angles)
@@ -324,8 +336,8 @@ ax1.plot(system_constant_xangles, model1.predict(system_constant_xangles), c='r'
 ax1.set_xlabel("X Angle")
 ax1.set_ylabel("Deviation")
 ax1.set_title("Constant Velocity Controller")
-# ax1.set_xlim([0, 180])
-# ax1.set_ylim([0, 7])
+ax1.set_xlim([0, 180])
+ax1.set_ylim([0, 7])
 
 ax2.scatter(system_constant_yangles, system_constant_dev, s=10)
 model2 = LinearRegression()
@@ -334,8 +346,8 @@ ax2.plot(system_constant_yangles, model2.predict(system_constant_yangles), c='r'
 ax2.set_xlabel("Y Angle")
 ax2.set_ylabel("Deviation")
 ax2.set_title("Constant Velocity Controller")
-# ax2.set_xlim([0, 180])
-# ax2.set_ylim([0, 7])
+ax2.set_xlim([0, 180])
+ax2.set_ylim([0, 7])
 
 ax3.scatter(system_constant_zangles, system_constant_dev, s=10)
 model3 = LinearRegression()
@@ -344,8 +356,8 @@ ax3.plot(system_constant_zangles, model3.predict(system_constant_zangles), c='r'
 ax3.set_xlabel("Z Angle")
 ax3.set_ylabel("Deviation")
 ax3.set_title("Constant Velocity Controller")
-# ax3.set_xlim([0, 180])
-# ax3.set_ylim([0, 7])
+ax3.set_xlim([0, 180])
+ax3.set_ylim([0, 7])
 plt.show()
 
 
@@ -361,8 +373,8 @@ ax1.plot(system_waypoint_xangles, model1.predict(system_waypoint_xangles), c='r'
 ax1.set_xlabel("X Angle")
 ax1.set_ylabel("Deviation")
 ax1.set_title("Waypoint Controller")
-# ax1.set_xlim([0, 180])
-# ax1.set_ylim([0, 7])
+ax1.set_xlim([0, 180])
+ax1.set_ylim([0, 7])
 
 
 ax2.scatter(system_waypoint_yangles, system_waypoint_dev, s=10)
@@ -372,8 +384,8 @@ ax2.plot(system_waypoint_yangles, model2.predict(system_waypoint_yangles), c='r'
 ax2.set_xlabel("Y Angle")
 ax2.set_ylabel("Deviation")
 ax2.set_title("Waypoint Controller")
-# ax2.set_xlim([0, 180])
-# ax2.set_ylim([0, 7])
+ax2.set_xlim([0, 180])
+ax2.set_ylim([0, 7])
 
 
 ax3.scatter(system_waypoint_zangles, system_waypoint_dev, s=10)
@@ -383,8 +395,8 @@ ax3.plot(system_waypoint_zangles, model3.predict(system_waypoint_zangles), c='r'
 ax3.set_xlabel("Z Angle")
 ax3.set_ylabel("Deviation")
 ax3.set_title("Waypoint Controller")
-# ax3.set_xlim([0, 180])
-# ax3.set_ylim([0, 7])
+ax3.set_xlim([0, 180])
+ax3.set_ylim([0, 7])
 plt.show()
 
 
@@ -401,8 +413,8 @@ ax1.plot(system_constant_xvel, model1.predict(system_constant_xvel), c='r')
 ax1.set_xlabel("X Velocity")
 ax1.set_ylabel("Deviation")
 ax1.set_title("Constant Velocity Controller")
-# ax1.set_xlim([0, 20])
-# ax1.set_ylim([0, 7])
+ax1.set_xlim([0, 20])
+ax1.set_ylim([0, 7])
 
 
 ax2.scatter(system_constant_yvel, system_constant_dev, s=10)
@@ -412,8 +424,8 @@ ax2.plot(system_constant_yvel, model2.predict(system_constant_yvel), c='r')
 ax2.set_xlabel("Y Velocity")
 ax2.set_ylabel("Deviation")
 ax2.set_title("Constant Velocity Controller")
-# ax2.set_xlim([0, 20])
-# ax2.set_ylim([0, 7])
+ax2.set_xlim([0, 20])
+ax2.set_ylim([0, 7])
 
 
 ax3.scatter(system_constant_zvel, system_constant_dev, s=10)
@@ -423,8 +435,8 @@ ax3.plot(system_constant_zvel, model3.predict(system_constant_zvel), c='r')
 ax3.set_xlabel("Z Velocity")
 ax3.set_ylabel("Deviation")
 ax3.set_title("Constant Velocity Controller")
-# ax3.set_xlim([0, 20])
-# ax3.set_ylim([0, 7])
+ax3.set_xlim([0, 20])
+ax3.set_ylim([0, 7])
 
 plt.show()
 
@@ -441,8 +453,8 @@ ax1.plot(system_waypoint_xvel, model1.predict(system_waypoint_xvel), c='r')
 ax1.set_xlabel("X Velocity")
 ax1.set_ylabel("Deviation")
 ax1.set_title("Waypoint Controller")
-# ax1.set_xlim([0, 20])
-# ax1.set_ylim([0, 7])
+ax1.set_xlim([0, 20])
+ax1.set_ylim([0, 7])
 
 ax2.scatter(system_waypoint_yvel, system_waypoint_dev, s=10)
 model2 = LinearRegression()
@@ -451,8 +463,8 @@ ax2.plot(system_waypoint_yvel, model2.predict(system_waypoint_yvel), c='r')
 ax2.set_xlabel("Y Velocity")
 ax2.set_ylabel("Deviation")
 ax2.set_title("Waypoint Controller")
-# ax2.set_xlim([0, 20])
-# ax2.set_ylim([0, 7])
+ax2.set_xlim([0, 20])
+ax2.set_ylim([0, 7])
 
 ax3.scatter(system_waypoint_zvel, system_waypoint_dev, s=10)
 model3 = LinearRegression()
@@ -461,8 +473,8 @@ ax3.plot(system_waypoint_zvel, model3.predict(system_waypoint_zvel), c='r')
 ax3.set_xlabel("Z Velocity")
 ax3.set_ylabel("Deviation")
 ax3.set_title("Waypoint Controller")
-# ax3.set_xlim([0, 20])
-# ax3.set_ylim([0, 7])
+ax3.set_xlim([0, 20])
+ax3.set_ylim([0, 7])
 plt.show()
 
 
@@ -781,6 +793,62 @@ ax2.set_xlabel("Time")
 ax2.set_ylabel("Deviation")
 ax2.set_title("Constant Controller")
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Plot the data
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
+ax1.scatter(np.arange(system_waypoint_2d.shape[1]), np.var(system_waypoint_2d, axis=0), s=10)
+ax1.set_xlabel("Waypoint Index")
+ax1.set_ylabel("Variance per waypoint")
+ax1.set_title("Waypoint Controller")
+ax1.set_ylim([0, 0.07])
+
+ax2.scatter(np.arange(system_constant_2d.shape[1]), np.var(system_constant_2d, axis=0), s=10)
+ax2.set_xlabel("Waypoint Index")
+ax2.set_ylabel("Variance per waypoint")
+ax2.set_title("Constant Controller")
+ax2.set_ylim([0, 0.6])
+plt.show()
+
+
+
+# Plot the data
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
+for plotter in np.arange(system_waypoint_2d.shape[0]):
+    ax1.scatter(np.arange(system_waypoint_2d.shape[1]), system_waypoint_2d[plotter, :], s=10)
+ax1.set_xlabel("Waypoint Index")
+ax1.set_ylabel("Deviation")
+ax1.set_title("Waypoint Controller")
+ax1.set_ylim([0, 4])
+
+for plotter in np.arange(system_constant_2d.shape[0]):
+    ax2.scatter(np.arange(system_constant_2d.shape[1]), system_constant_2d[plotter, :], s=10)
+ax2.set_xlabel("Waypoint Index")
+ax2.set_ylabel("Deviation")
+ax2.set_title("Constant Controller")
+ax2.set_ylim([0, 4])
+plt.show()
+
+
+
+
+
+
 
 
 

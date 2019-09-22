@@ -23,7 +23,7 @@ sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
 depthcounter=10
 
-for mainfolder in 'testing'
+for mainfolder in 'FullTest'
 do
 	for nodescounter in 250
 	do
@@ -49,17 +49,12 @@ do
 								echo "Total tests found: $totaltests"
 								echo "--------------------------------------------------------"
 
-								if [ "$mainfolder" = "VariationTestReal" ]
-								then
-									totaltests=10
-								fi
-
-								while [ $mapcounter -le $totaltests ]
+								while [ $mapcounter -le 45 ]
 								do
 									echo "Processing: $folder/maps/map$mapcounter"
 									echo " "
 
-									for speed in -1
+									for speed in -1 5
 									do
 
 										# Get the current test
@@ -72,7 +67,7 @@ do
 										unity_PID=$!
 
 										# Wait 30 seconds for unity to start
-										sleep 30
+										sleep 20
 
 										# Launch the ros file
 										roslaunch flightcontroller fly.launch port:="$port" test_location:="$current_dir" save_location:="$current_dir" speed:="$speed" &
@@ -81,7 +76,7 @@ do
 										roslaunch_PID=$!
 
 										# Each test is given 30 seconds
-										sleep 75
+										sleep 90
 
 										# Kill the code
 										kill -INT $unity_PID
@@ -94,8 +89,14 @@ do
 										if [ $speed -eq -1 ]
 										then
 											mv performance.txt ..$folder/maps/map$mapcounter/performance_waypoint.txt
+											mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_waypoint.txt
+											mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_waypoint.txt
+											mv position_log.txt ..$folder/maps/map$mapcounter/position_log_waypoint.txt
 										else
 											mv performance.txt ..$folder/maps/map$mapcounter/performance_constant.txt
+											mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_constant.txt
+											mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_constant.txt
+											mv position_log.txt ..$folder/maps/map$mapcounter/position_log_constant.txt
 										fi
 
 										# Allow 30 seconds for gezbo to clean up

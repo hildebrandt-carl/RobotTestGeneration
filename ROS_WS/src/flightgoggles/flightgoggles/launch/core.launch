@@ -20,7 +20,7 @@
       <param name="ignore_collisions" type="bool" value="$(arg ignore_collisions)" />
       <param name="angular_process_noise" type="double" value="0.0" />
       <param name="linear_process_noise" type="double" value="0.0" />
-      <param name="clockscale" type="double" value="1.0"/>
+      <param name="clockscale" type="double" value="1"/>
     </node>
 
     <!-- Run RVIZ for visualization
