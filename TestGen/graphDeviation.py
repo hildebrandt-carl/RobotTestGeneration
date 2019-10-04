@@ -4,17 +4,18 @@ import numpy as np
 from processResultsUtils import get_numbers_after_string
 
 
-plot_first = 100
+# This has the run when all tests are considered
+# all_folders = ["./Results/FullRun/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/",
+#                 "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
+#                 "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/"]
 
-all_folders = ["./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_random_angle180/",
-               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_maxvel_angle180/",
-               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_kinematic_angle180/",
-               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle30/",
-               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle60/",
-               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle90/",
-               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle120/",
-               "./Results/FlatTest/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle150/",
-               "./Results/FlatTestgraphDeviation.py/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime1200_score_angle180/"]
+
+# This has the tests when only the first 87 are considered
+all_folders = ["./Results/SameNumber/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/",
+                "./Results/SameNumber/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
+                "./Results/SameNumber/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/"]
+
+
 
 beam_lengths = [10]
 depths = [10]
@@ -32,9 +33,9 @@ res_numbers = [4]
 #               "Score + Kinematic 180",
 #               "Score + Kinematic 90"]
 
-save_names = ["R", "M", "K", "30", "60", "90", "120", "150", "180"]
+save_names = ["Random", "Waypoint", "Constant"]
 
-tick_names = ["R", "M", "K", "30", "60", "90", "120", "150", "180"]
+tick_names = ["Random", "Waypoint", "Constant"]
 
 systems = ["waypoint",
            "constant"]
@@ -74,10 +75,6 @@ for system in systems:
                 total_files = len(analysis_file_names)
                 file_counter = 0
 
-                # Check if you have requested too many files
-                if total_files > plot_first:
-                    total_files = plot_first
-
                 for file_counter in range(1, total_files + 1):
 
                     # Create the file name
@@ -109,17 +106,21 @@ for system in systems:
                     # Get the trajectory length
 
                     # Check for any anomalies
-                    if tot_dev[0][0] > 450:
-                        print("Total Deviation over 450m (" + str(tot_dev[0][0]) + "m): " + str(file_name))
+                    if max_dev[0][0] > 5 and system == "constant":
+                        print("Maximum Deviation over 6.2m (" + str(max_dev[0][0]) + "m): " + str(file_name))
 
-                    if avg_time[0][0] > 20:
-                        print("Average time over 20 seconds (" + str(avg_time[0][0]) + "s): " + str(file_name))
-
-                    if optimal_distance_heuristic > 2.5:
-                        print("Optimal distance heuristic over 2.2 (" + str(optimal_distance_heuristic) + "): " + str(file_name))
-
-                    if tot_time[0][0] > 40:
-                        print("Total time over 40 (" + str(tot_time[0][0]) + "): " + str(file_name))
+                    # # Check for any anomalies
+                    # if tot_dev[0][0] > 450:
+                    #     print("Total Deviation over 450m (" + str(tot_dev[0][0]) + "m): " + str(file_name))
+                    #
+                    # if avg_time[0][0] > 20:
+                    #     print("Average time over 20 seconds (" + str(avg_time[0][0]) + "s): " + str(file_name))
+                    #
+                    # if optimal_distance_heuristic > 2.5:
+                    #     print("Optimal distance heuristic over 2.2 (" + str(optimal_distance_heuristic) + "): " + str(file_name))
+                    #
+                    # if tot_time[0][0] > 40:
+                    #     print("Total time over 40 (" + str(tot_time[0][0]) + "): " + str(file_name))
 
                     # Save the data
                     average_deviation.append(avg_dev[0][0])
@@ -154,8 +155,8 @@ def set_box_color(bp, color):
 
 
 fig, ax1 = plt.subplots(1, 1, figsize=(6,6))
-bpl = plt.boxplot(system_constant_distance, positions=np.array(range(len(system_constant_distance)))*2.0-0.4, widths=0.6)
-bpr = plt.boxplot(system_waypoint_distance, positions=np.array(range(len(system_waypoint_distance)))*2.0+0.4, widths=0.6)
+bpl = plt.boxplot(system_constant_maximum_deviation, positions=np.array(range(len(system_constant_maximum_deviation)))*2.0-0.4, widths=0.6, showmeans=True)
+bpr = plt.boxplot(system_waypoint_maximum_deviation, positions=np.array(range(len(system_waypoint_maximum_deviation)))*2.0+0.4, widths=0.6, showmeans=True)
 set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
 set_box_color(bpr, '#2C7BB6')
 
@@ -166,9 +167,54 @@ plt.legend()
 plt.xticks(range(0, len(tick_names) * 2, 2), tick_names, fontsize=7, rotation=15)
 plt.xlim(-2, len(tick_names)*2)
 plt.tight_layout()
-plt.ylabel("Total Deviation")
-plt.xlabel("Test Generation Technique")
-plt.ylim([0, 500])
+plt.ylabel("Maximum Deviation")
+plt.xlabel("Test Generation Test Set")
+
+print("----------------------------------------------------------")
+print("Maximum Deviation Statistics")
+print("Random Test Set:")
+print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_maximum_deviation[0])))
+print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_maximum_deviation[0])))
+print("Waypoint Test Set:")
+print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_maximum_deviation[1])))
+print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_maximum_deviation[1])))
+print("Constant Test Set:")
+print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_maximum_deviation[2])))
+print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_maximum_deviation[2])))
+print("----------------------------------------------------------")
+
+
+
+
+fig, ax1 = plt.subplots(1, 1, figsize=(6,6))
+bpl = plt.boxplot(system_constant_distance, positions=np.array(range(len(system_constant_distance)))*2.0-0.4, widths=0.6, showmeans=True)
+bpr = plt.boxplot(system_waypoint_distance, positions=np.array(range(len(system_waypoint_distance)))*2.0+0.4, widths=0.6, showmeans=True)
+set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
+set_box_color(bpr, '#2C7BB6')
+
+# draw temporary red and blue lines and use them to create a legend
+plt.plot([], c='#D7191C', label='Constant Velocity')
+plt.plot([], c='#2C7BB6', label='Waypoint Controller')
+plt.legend()
+plt.xticks(range(0, len(tick_names) * 2, 2), tick_names, fontsize=7, rotation=15)
+plt.xlim(-2, len(tick_names)*2)
+plt.tight_layout()
+plt.ylabel("Accumulated Deviation")
+plt.xlabel("Test Generation Test Set")
+
+
+print("----------------------------------------------------------")
+print("Accumulated Deviation Statistics")
+print("Random Test Set:")
+print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_distance[0])))
+print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_distance[0])))
+print("Waypoint Test Set:")
+print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_distance[1])))
+print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_distance[1])))
+print("Constant Test Set:")
+print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_distance[2])))
+print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_distance[2])))
+print("----------------------------------------------------------")
 
 # va = [0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0]
 # for t, y in zip(ax1.get_xticklabels(), va):
@@ -176,8 +222,8 @@ plt.ylim([0, 500])
 
 
 fig1, ax2 = plt.subplots(1, 1, figsize=(6,6))
-bpl = plt.boxplot(system_constant_time, positions=np.array(range(len(system_constant_time)))*2.0-0.4, widths=0.6)
-bpr = plt.boxplot(system_waypoint_time, positions=np.array(range(len(system_waypoint_time)))*2.0+0.4, widths=0.6)
+bpl = plt.boxplot(system_constant_time, positions=np.array(range(len(system_constant_time)))*2.0-0.4, widths=0.6, showmeans=True)
+bpr = plt.boxplot(system_waypoint_time, positions=np.array(range(len(system_waypoint_time)))*2.0+0.4, widths=0.6, showmeans=True)
 set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
 set_box_color(bpr, '#2C7BB6')
 
@@ -189,41 +235,7 @@ plt.xticks(range(0, len(tick_names) * 2, 2), tick_names, fontsize=7, rotation=15
 plt.xlim(-2, len(tick_names)*2)
 plt.tight_layout()
 plt.ylabel("Total Time")
-plt.xlabel("Test Generation Technique")
+plt.xlabel("Test Generation Test Set")
 
-# va = [0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0]
-# for t, y in zip(ax2.get_xticklabels(), va):
-#     t.set_y(y)
-    
-    
-#
-# fig3, ax3 = plt.subplots(1, 1, figsize=(6,6))
-# toplot = [2, 3, 4, 8, 9, 13, 14, 18, 19]
-# label_counter = 0
-# scatter_labels = ["TL K", "TL S90", "TL S180", "TLG S90", "TLG S180", "TE S90", "TE S180", "TEG S90", "TEG S180"]
-# for i in toplot:
-#     test = system_constant_distance[i]
-#     plt.scatter(np.arange(0, len(test)), test, label=scatter_labels[label_counter])
-#     label_counter += 1
-# # draw temporary red and blue lines and use them to create a legend
-# plt.legend()
-# plt.ylabel("Total Deviation")
-# plt.xlabel("Test Number")
-# plt.title("Constant Controller")
-#
-# fig4, ax4 = plt.subplots(1, 1, figsize=(6,6))
-# toplot = [2, 3, 4, 8, 9, 13, 14, 18, 19]
-# label_counter = 0
-# scatter_labels = ["TL K", "TL S90", "TL S180", "TLG S90", "TLG S180", "TE S90", "TE S180", "TEG S90", "TEG S180"]
-# for i in toplot:
-#     test = system_waypoint_distance[i]
-#     plt.scatter(np.arange(0, len(test)), test, label=scatter_labels[label_counter])
-#     label_counter += 1
-# # draw temporary red and blue lines and use them to create a legend
-# plt.legend()
-# plt.ylabel("Total Deviation")
-# plt.xlabel("Test Number")
-# plt.title("Waypoint Controller")
-# plt.ylim([0, 550])
 
 plt.show()

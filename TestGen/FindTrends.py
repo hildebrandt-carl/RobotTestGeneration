@@ -1,18 +1,15 @@
 import glob
-import matplotlib.pyplot as plt
+import copy
 import numpy as np
+import matplotlib.pyplot as plt
 from processResultsUtils import get_numbers_after_string
 from sklearn.linear_model import LinearRegression
-from mpl_toolkits.mplot3d import Axes3D
-import copy
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
 
-plot_first = 100
 
-all_folders = ["./Results/FullRun/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/"]
-
-beam_lengths = [10]
-depths = [10]
-res_numbers = [4]
+all_folders = ["./Results/PolyRun/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime3600_score_waypoint/"]
 
 systems = ["waypoint",
            "constant"]
@@ -379,255 +376,170 @@ system_waypoint_delta_yvel = system_waypoint_delta_yvel.reshape(-1, 1)
 system_waypoint_delta_zvel = system_waypoint_delta_zvel.reshape(-1, 1)
 
 
-# Plot the data
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 7))
-ax1.scatter(system_constant_xangles, system_constant_dev, s=10)
-model1 = LinearRegression()
-model1.fit(system_constant_xangles, system_constant_dev)
-print("Constant X Angle Gradient: " + str(model1.coef_))
-print("Constant X Angle Intercept: " + str(model1.intercept_))
-ax1.plot(system_constant_xangles, model1.predict(system_constant_xangles), c='r')
-ax1.set_xlabel("X Angle")
-ax1.set_ylabel("Deviation")
-ax1.set_title("Constant Velocity Controller")
-ax1.set_xlim([0, 180])
-ax1.set_ylim([0, 6])
 
-ax2.scatter(system_constant_yangles, system_constant_dev, s=10)
-model2 = LinearRegression()
-model2.fit(system_constant_yangles, system_constant_dev)
-print("Constant Y Angle Gradient: " + str(model2.coef_))
-print("Constant Y Angle Intercept: " + str(model2.intercept_))
-ax2.plot(system_constant_yangles, model2.predict(system_constant_yangles), c='r')
-ax2.set_xlabel("Y Angle")
-ax2.set_ylabel("Deviation")
-ax2.set_title("Constant Velocity Controller")
-ax2.set_xlim([0, 180])
-ax2.set_ylim([0, 6])
 
-ax3.scatter(system_constant_zangles, system_constant_dev, s=10)
-model3 = LinearRegression()
-model3.fit(system_constant_zangles, system_constant_dev)
-print("Constant Z Angle Gradient: " + str(model3.coef_))
-print("Constant Z Angle Intercept: " + str(model3.intercept_))
-ax3.plot(system_constant_zangles, model3.predict(system_constant_zangles), c='r')
-ax3.set_xlabel("Z Angle")
-ax3.set_ylabel("Deviation")
-ax3.set_title("Constant Velocity Controller")
-ax3.set_xlim([0, 180])
-ax3.set_ylim([0, 6])
+print("")
+print("")
+print("Fitting the following to a multi linear regression problem")
+print("Training data consists of:")
+print("X Angle")
+print("Y Angle")
+print("Z Angle")
+print("X Velocity Out")
+print("Y Velocity Out")
+print("Z Velocity Out")
+print("X Velocity In")
+print("Y Velocity In")
+print("Z Velocity In")
+print("The label is the absolute deviation")
+
+
+x_way = []
+y_way = []
+x_con = []
+y_con = []
+
+# Build the training data
+for i in range(0, len(system_waypoint_dev)):
+    # Create the training point
+    train = [system_waypoint_xangles[i][0], system_waypoint_yangles[i][0], system_waypoint_zangles[i][0],
+             system_waypoint_xvel_out[i][0], system_waypoint_yvel_out[i][0], system_waypoint_zvel_out[i][0],
+             system_waypoint_xvel_in[i][0], system_waypoint_yvel_in[i][0], system_waypoint_zvel_in[i][0]]
+
+    # Save the data
+    x_way.append(train)
+    y_way.append(system_waypoint_dev[i])
+
+# Build the training data
+for i in range(0, len(system_waypoint_dev)):
+    # Create the training point
+    train = [system_constant_xangles[i][0], system_constant_yangles[i][0], system_constant_zangles[i][0],
+             system_constant_xvel_out[i][0], system_constant_yvel_out[i][0], system_constant_zvel_out[i][0],
+             system_constant_xvel_in[i][0], system_constant_yvel_in[i][0], system_constant_zvel_in[i][0]]
+
+    # Save the data
+    x_con.append(train)
+    y_con.append(system_constant_dev[i])
+
+
+
+
+print("Linear Regression")
+print("")
+print("")
+print("Waypoint Controller")
+print("Coe: XAng, YAng, ZAng, XVel Out, YVel Out, ZVel Out, XVel In, YVel In, ZVel In")
+x_way, y_way = np.array(x_way), np.array(y_way)
+model = LinearRegression().fit(x_way, y_way)
+r_sq = model.score(x_way, y_way)
+print('coefficient of determination:', r_sq)
+print('intercept:', model.intercept_)
+print('slope:', model.coef_)
+y_pred = model.predict(x_way)
+
+print("")
+print("")
+print("Constant Controller")
+print("Coe: XAng, YAng, ZAng, XVel Out, YVel Out, ZVel Out, XVel In, YVel In, ZVel In")
+x_con, y_con = np.array(x_con), np.array(y_con)
+model = LinearRegression().fit(x_con, y_con)
+r_sq = model.score(x_con, y_con)
+print('coefficient of determination:', r_sq)
+print('intercept:', model.intercept_)
+print('slope:', model.coef_)
+
+
+
+print("Polynomial Regression")
+print("Finding the best degree")
+
+
+x_train, x_test, y_train, y_test = train_test_split(x_way, y_way, test_size=0.3)
+
+rmses = []
+degrees = np.arange(1, 6)
+min_rmse, min_deg_way = 1e10, 0
+
+for deg in degrees:
+
+    # Train features
+    poly_features = PolynomialFeatures(degree=deg, include_bias=False)
+    x_poly_train = poly_features.fit_transform(x_train)
+
+    # Linear regression
+    poly_reg = LinearRegression()
+    poly_reg.fit(x_poly_train, y_train)
+
+    # Compare with test data
+    x_poly_test = poly_features.fit_transform(x_test)
+    poly_predict = poly_reg.predict(x_poly_test)
+    poly_mse = mean_squared_error(y_test, poly_predict)
+    poly_rmse = np.sqrt(poly_mse)
+    rmses.append(poly_rmse)
+
+    # Cross-validation of degree
+    if min_rmse > poly_rmse:
+        min_rmse = poly_rmse
+        min_deg_way = deg
+
+# Plot and present results
+print('Best degree {} with RMSE {}'.format(min_deg_way, min_rmse))
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(degrees, rmses)
+ax.set_yscale('log')
+ax.set_xlabel('Degree')
+ax.set_ylabel('RMSE')
+plt.title("Best degree for waypoint controller")
 plt.show()
 
 
 
 
 
-# Plot the data
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 7))
-ax1.scatter(system_waypoint_xangles, system_waypoint_dev, s=10)
-model1 = LinearRegression()
-model1.fit(system_waypoint_xangles, system_waypoint_dev)
-print("Waypoint X Angle Gradient: " + str(model1.coef_))
-print("Waypoint X Angle Intercept: " + str(model1.intercept_))
-ax1.plot(system_waypoint_xangles, model1.predict(system_waypoint_xangles), c='r')
-ax1.set_xlabel("X Angle")
-ax1.set_ylabel("Deviation")
-ax1.set_title("Waypoint Controller")
-ax1.set_xlim([0, 180])
-ax1.set_ylim([0, 6])
-
-
-ax2.scatter(system_waypoint_yangles, system_waypoint_dev, s=10)
-model2 = LinearRegression()
-model2.fit(system_waypoint_yangles, system_waypoint_dev)
-print("Waypoint Y Angle Gradient: " + str(model2.coef_))
-print("Waypoint Y Angle Intercept: " + str(model2.intercept_))
-ax2.plot(system_waypoint_yangles, model2.predict(system_waypoint_yangles), c='r')
-ax2.set_xlabel("Y Angle")
-ax2.set_ylabel("Deviation")
-ax2.set_title("Waypoint Controller")
-ax2.set_xlim([0, 180])
-ax2.set_ylim([0, 6])
-
-
-ax3.scatter(system_waypoint_zangles, system_waypoint_dev, s=10)
-model3 = LinearRegression()
-model3.fit(system_waypoint_zangles, system_waypoint_dev)
-print("Waypoint Z Angle Gradient: " + str(model3.coef_))
-print("Waypoint Z Angle Intercept: " + str(model3.intercept_))
-ax3.plot(system_waypoint_zangles, model3.predict(system_waypoint_zangles), c='r')
-ax3.set_xlabel("Z Angle")
-ax3.set_ylabel("Deviation")
-ax3.set_title("Waypoint Controller")
-ax3.set_xlim([0, 180])
-ax3.set_ylim([0, 6])
-plt.show()
 
 
 
 
+x_train, x_test, y_train, y_test = train_test_split(x_con, y_con, test_size=0.3)
 
+rmses = []
+degrees = np.arange(1, 6)
+min_rmse, min_deg_con = 1e10, 0
 
-# Plot the data
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 7))
-ax1.scatter(system_constant_xvel_in, system_constant_dev, s=10)
-model1 = LinearRegression()
-model1.fit(system_constant_xvel_in, system_constant_dev)
-print("Constant X Velocity Gradient: " + str(model1.coef_))
-print("Constant X Velocity Intercept: " + str(model1.intercept_))
-ax1.plot(system_constant_xvel_in, model1.predict(system_constant_xvel_in), c='r')
-ax1.set_xlabel("X Velocity In")
-ax1.set_ylabel("Deviation")
-ax1.set_title("Constant Velocity Controller")
-ax1.set_ylim([0, 6])
+for deg in degrees:
 
+    # Train features
+    poly_features = PolynomialFeatures(degree=deg, include_bias=False)
+    x_poly_train = poly_features.fit_transform(x_train)
 
-ax2.scatter(system_constant_yvel_in, system_constant_dev, s=10)
-model2 = LinearRegression()
-model2.fit(system_constant_yvel_in, system_constant_dev)
-print("Constant Y Velocity Gradient: " + str(model2.coef_))
-print("Constant Y Velocity Intercept: " + str(model2.intercept_))
-ax2.plot(system_constant_yvel_in, model2.predict(system_constant_yvel_in), c='r')
-ax2.set_xlabel("Y Velocity In")
-ax2.set_ylabel("Deviation")
-ax2.set_title("Constant Velocity Controller")
-ax2.set_ylim([0, 6])
+    # Linear regression
+    poly_reg = LinearRegression()
+    poly_reg.fit(x_poly_train, y_train)
 
+    # Compare with test data
+    x_poly_test = poly_features.fit_transform(x_test)
+    poly_predict = poly_reg.predict(x_poly_test)
+    poly_mse = mean_squared_error(y_test, poly_predict)
+    poly_rmse = np.sqrt(poly_mse)
+    rmses.append(poly_rmse)
 
-ax3.scatter(system_constant_zvel_in, system_constant_dev, s=10)
-model3 = LinearRegression()
-model3.fit(system_constant_zvel_in, system_constant_dev)
-print("Constant Z Velocity Gradient: " + str(model3.coef_))
-print("Constant Z Velocity Intercept: " + str(model3.intercept_))
-ax3.plot(system_constant_zvel_in, model3.predict(system_constant_zvel_in), c='r')
-ax3.set_xlabel("Z Velocity In")
-ax3.set_ylabel("Deviation")
-ax3.set_title("Constant Velocity Controller")
-ax3.set_ylim([0, 6])
+    # Cross-validation of degree
+    if min_rmse > poly_rmse:
+        min_rmse = poly_rmse
+        min_deg_con = deg
 
-plt.show()
+# Plot and present results
+print('Best degree {} with RMSE {}'.format(min_deg_con, min_rmse))
 
-
-
-
-
-# Plot the data
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 7))
-ax1.scatter(system_waypoint_xvel_in, system_waypoint_dev, s=10)
-model1 = LinearRegression()
-model1.fit(system_waypoint_xvel_in, system_waypoint_dev)
-print("Waypoint X Velocity Gradient: " + str(model1.coef_))
-print("Waypoint X Velocity Intercept: " + str(model1.intercept_))
-ax1.plot(system_waypoint_xvel_in, model1.predict(system_waypoint_xvel_in), c='r')
-ax1.set_xlabel("X Velocity In")
-ax1.set_ylabel("Deviation")
-ax1.set_title("Waypoint Controller")
-ax1.set_ylim([0, 6])
-
-ax2.scatter(system_waypoint_yvel_in, system_waypoint_dev, s=10)
-model2 = LinearRegression()
-model2.fit(system_waypoint_yvel_in, system_waypoint_dev)
-print("Waypoint Y Velocity Gradient: " + str(model2.coef_))
-print("Waypoint Y Velocity Intercept: " + str(model2.intercept_))
-ax2.plot(system_waypoint_yvel_in, model2.predict(system_waypoint_yvel_in), c='r')
-ax2.set_xlabel("Y Velocity In")
-ax2.set_ylabel("Deviation")
-ax2.set_title("Waypoint Controller")
-ax2.set_ylim([0, 6])
-
-ax3.scatter(system_waypoint_zvel_in, system_waypoint_dev, s=10)
-model3 = LinearRegression()
-model3.fit(system_waypoint_zvel_in, system_waypoint_dev)
-print("Waypoint Z Velocity Gradient: " + str(model3.coef_))
-print("Waypoint Z Velocity Intercept: " + str(model3.intercept_))
-ax3.plot(system_waypoint_zvel_in, model3.predict(system_waypoint_zvel_in), c='r')
-ax3.set_xlabel("Z Velocity In")
-ax3.set_ylabel("Deviation")
-ax3.set_title("Waypoint Controller")
-ax3.set_ylim([0, 6])
-plt.show()
-
-
-
-
-
-# Plot the data
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 7))
-ax1.scatter(system_constant_xvel_out, system_constant_dev, s=10)
-model1 = LinearRegression()
-model1.fit(system_constant_xvel_out, system_constant_dev)
-print("Constant X Velocity Gradient: " + str(model1.coef_))
-print("Constant X Velocity Intercept: " + str(model1.intercept_))
-ax1.plot(system_constant_xvel_out, model1.predict(system_constant_xvel_out), c='r')
-ax1.set_xlabel("X Velocity Out")
-ax1.set_ylabel("Deviation")
-ax1.set_title("Constant Velocity Controller")
-ax1.set_ylim([0, 6])
-
-
-ax2.scatter(system_constant_yvel_out, system_constant_dev, s=10)
-model2 = LinearRegression()
-model2.fit(system_constant_yvel_out, system_constant_dev)
-print("Constant Y Velocity Gradient: " + str(model2.coef_))
-print("Constant Y Velocity Intercept: " + str(model2.intercept_))
-ax2.plot(system_constant_yvel_out, model2.predict(system_constant_yvel_out), c='r')
-ax2.set_xlabel("Y Velocity Out")
-ax2.set_ylabel("Deviation")
-ax2.set_title("Constant Velocity Controller")
-ax2.set_ylim([0, 6])
-
-
-ax3.scatter(system_constant_zvel_out, system_constant_dev, s=10)
-model3 = LinearRegression()
-model3.fit(system_constant_zvel_out, system_constant_dev)
-print("Constant Z Velocity Gradient: " + str(model3.coef_))
-print("Constant Z Velocity Intercept: " + str(model3.intercept_))
-ax3.plot(system_constant_zvel_out, model3.predict(system_constant_zvel_out), c='r')
-ax3.set_xlabel("Z Velocity Out")
-ax3.set_ylabel("Deviation")
-ax3.set_title("Constant Velocity Controller")
-ax3.set_ylim([0, 6])
-
-plt.show()
-
-
-
-
-
-# Plot the data
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 7))
-ax1.scatter(system_waypoint_xvel_out, system_waypoint_dev, s=10)
-model1 = LinearRegression()
-model1.fit(system_waypoint_xvel_out, system_waypoint_dev)
-print("Waypoint X Velocity Gradient: " + str(model1.coef_))
-print("Waypoint X Velocity Intercept: " + str(model1.intercept_))
-ax1.plot(system_waypoint_xvel_out, model1.predict(system_waypoint_xvel_out), c='r')
-ax1.set_xlabel("X Velocity Out")
-ax1.set_ylabel("Deviation")
-ax1.set_title("Waypoint Controller")
-ax1.set_ylim([0, 6])
-
-ax2.scatter(system_waypoint_yvel_out, system_waypoint_dev, s=10)
-model2 = LinearRegression()
-model2.fit(system_waypoint_yvel_out, system_waypoint_dev)
-print("Waypoint Y Velocity Gradient: " + str(model2.coef_))
-print("Waypoint Y Velocity Intercept: " + str(model2.intercept_))
-ax2.plot(system_waypoint_yvel_out, model2.predict(system_waypoint_yvel_out), c='r')
-ax2.set_xlabel("Y Velocity Out")
-ax2.set_ylabel("Deviation")
-ax2.set_title("Waypoint Controller")
-ax2.set_ylim([0, 6])
-
-ax3.scatter(system_waypoint_zvel_out, system_waypoint_dev, s=10)
-model3 = LinearRegression()
-model3.fit(system_waypoint_zvel_out, system_waypoint_dev)
-print("Waypoint Z Velocity Gradient: " + str(model3.coef_))
-print("Waypoint Z Velocity Intercept: " + str(model3.intercept_))
-ax3.plot(system_waypoint_zvel_out, model3.predict(system_waypoint_zvel_out), c='r')
-ax3.set_xlabel("Z Velocity Out")
-ax3.set_ylabel("Deviation")
-ax3.set_title("Waypoint Controller")
-ax3.set_ylim([0, 6])
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(degrees, rmses)
+ax.set_yscale('log')
+ax.set_xlabel('Degree')
+ax.set_ylabel('RMSE')
+plt.title("Best degree for constant controller")
 plt.show()
 
 
@@ -642,200 +554,38 @@ plt.show()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Plot the data
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
-ax1.scatter(system_waypoint_magnitudes, system_waypoint_dev, s=10)
-model1 = LinearRegression()
-model1.fit(system_waypoint_magnitudes, system_waypoint_dev)
-ax1.plot(system_waypoint_magnitudes, model1.predict(system_waypoint_magnitudes), c='r')
-ax1.set_xlabel("Velocity")
-ax1.set_ylabel("Deviation")
-ax1.set_title("Waypoint Controller")
-ax1.set_ylim([0, 6])
-
-ax2.scatter(system_constant_magnitudes, system_constant_dev, s=10)
-model2 = LinearRegression()
-model2.fit(system_constant_magnitudes, system_constant_dev)
-ax2.plot(system_constant_magnitudes, model2.predict(system_constant_magnitudes), c='r')
-ax2.set_xlabel("Velocity")
-ax2.set_ylabel("Deviation")
-ax2.set_title("Constant Controller")
-ax2.set_ylim([0, 6])
-plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Plot the data
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
-ax1.scatter(system_waypoint_angles, system_waypoint_dev, s=10)
-model3 = LinearRegression()
-model3.fit(system_waypoint_angles, system_waypoint_dev)
-ax1.plot(system_waypoint_angles, model3.predict(system_waypoint_angles), c='r')
-ax1.set_xlabel("Angle")
-ax1.set_ylabel("Deviation")
-ax1.set_title("Waypoint Controller")
-ax1.set_xlim([0, 180])
-ax1.set_ylim([0, 6])
-
-ax2.scatter(system_constant_angles, system_constant_dev, s=10)
-model4 = LinearRegression()
-model4.fit(system_constant_angles, system_constant_dev)
-ax2.plot(system_constant_angles, model4.predict(system_constant_angles), c='r')
-ax2.set_xlabel("Angle")
-ax2.set_ylabel("Deviation")
-ax2.set_title("Constant Controller")
-ax2.set_xlim([0, 180])
-ax2.set_ylim([0, 6])
-plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Plot the data
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
-ax1.scatter(system_waypoint_time, system_waypoint_dev, s=10)
-model1 = LinearRegression()
-model1.fit(system_waypoint_time, system_waypoint_dev)
-ax1.plot(system_waypoint_time, model1.predict(system_waypoint_time), c='r')
-ax1.set_xlabel("Time")
-ax1.set_ylabel("Deviation")
-ax1.set_title("Waypoint Controller")
-
-ax2.scatter(system_constant_time, system_constant_dev, s=10)
-model2 = LinearRegression()
-model2.fit(system_constant_time, system_constant_dev)
-ax2.plot(system_constant_time, model2.predict(system_constant_time), c='r')
-ax2.set_xlabel("Time")
-ax2.set_ylabel("Deviation")
-ax2.set_title("Constant Controller")
-plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Plot the data
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
-ax1.scatter(np.arange(system_waypoint_2d.shape[1]), np.var(system_waypoint_2d, axis=0), s=10)
-ax1.set_xlabel("Waypoint Index")
-ax1.set_ylabel("Variance per waypoint")
-ax1.set_title("Waypoint Controller")
-ax1.set_ylim([0, 0.07])
-
-ax2.scatter(np.arange(system_constant_2d.shape[1]), np.var(system_constant_2d, axis=0), s=10)
-ax2.set_xlabel("Waypoint Index")
-ax2.set_ylabel("Variance per waypoint")
-ax2.set_title("Constant Controller")
-ax2.set_ylim([0, 0.6])
-plt.show()
-
-
-
-# Plot the data
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 7))
-for plotter in np.arange(system_waypoint_2d.shape[0]):
-    ax1.scatter(np.arange(system_waypoint_2d.shape[1]), system_waypoint_2d[plotter, :], s=10)
-ax1.set_xlabel("Waypoint Index")
-ax1.set_ylabel("Deviation")
-ax1.set_title("Waypoint Controller")
-ax1.set_ylim([0, 4])
-
-for plotter in np.arange(system_constant_2d.shape[0]):
-    ax2.scatter(np.arange(system_constant_2d.shape[1]), system_constant_2d[plotter, :], s=10)
-ax2.set_xlabel("Waypoint Index")
-ax2.set_ylabel("Deviation")
-ax2.set_title("Constant Controller")
-ax2.set_ylim([0, 4])
-plt.show()
-
-
-
+print("Training the data")
+
+# Train features
+poly_features = PolynomialFeatures(degree=min_deg_way, include_bias=False)
+x_poly_train = poly_features.fit_transform(x_way)
+
+# Linear regression
+poly_reg = LinearRegression()
+model = poly_reg.fit(x_poly_train, y_way)
+r_sq = model.score(x_poly_train, y_way)
+print("Waypoint Controller")
+print('coefficient of determination:', r_sq)
+print("Degree: " + str(min_deg_way))
+print("Coefficients shape: " + str(np.shape(poly_reg.coef_)))
+print("Intercepts: " + str(poly_reg.intercept_))
+print("Saving the intercept and the coefficients")
+np.save("Models/waypoint_poly_features", poly_features)
+np.save("Models/waypoint_regression_model", poly_reg)
+
+# Train features
+poly_features = PolynomialFeatures(degree=min_deg_con, include_bias=False)
+x_poly_train = poly_features.fit_transform(x_con)
+
+# Linear regression
+poly_reg = LinearRegression()
+model = poly_reg.fit(x_poly_train, y_con)
+r_sq = model.score(x_poly_train, y_con)
+print("Constant Controller")
+print('coefficient of determination:', r_sq)
+print("Degree: " + str(min_deg_con))
+print("Coefficients shape: " + str(np.shape(poly_reg.coef_)))
+print("Intercepts: " + str(poly_reg.intercept_))
+print("Saving the intercept and the coefficients")
+np.save("Models/constant_poly_features", poly_features)
+np.save("Models/constant_regression_model", poly_reg)

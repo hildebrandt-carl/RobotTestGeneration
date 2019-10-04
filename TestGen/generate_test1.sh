@@ -1,10 +1,10 @@
 #!/bin/zsh
 
 seed=10
-searchtype='kinematic'
+searchtype='random'
 drone='mit'
-searchtime=1200
-angle=180
+searchtime=3600
+gentype="waypoint"
 for res in 4
 do
   for nodes in 250
@@ -13,8 +13,8 @@ do
     do
         for depth in 10
         do
-            echo Starting Depth $depth Beamwidth $beamwidth Nodes $nodes Resolution $res SearchTime $searchtime Type $searchtype Angle $angle
-            python3 -u resmonitor.py -M 8g -T 43200 python3 -u main.py --drone $drone --type $searchtype --depth $depth --beamwidth $beamwidth --nodes $nodes --resolution $res --seed $seed --plotting --searchtime $searchtime --scoreangle $angle 2>&1 | tee Results/$drone\_details\_seed$seed\_depth$depth\_nodes$nodes\_res$res\_beamwidth$beamwidth\_searchtime$searchtime\_$searchtype\_angle$angle.txt
+            echo Starting Depth $depth Beamwidth $beamwidth Nodes $nodes Resolution $res SearchTime $searchtime Type $searchtype GenerationType $gentype
+            python3 -u resmonitor.py -M 8g -T 43200 python3 -u main.py --drone $drone --type $searchtype --depth $depth --beamwidth $beamwidth --nodes $nodes --resolution $res --seed $seed --plotting --searchtime $searchtime --gentype $gentype 2>&1 | tee Results/$drone\_details\_seed$seed\_depth$depth\_nodes$nodes\_res$res\_beamwidth$beamwidth\_searchtime$searchtime\_$searchtype\_$gentype.txt
             echo Complete
             echo -----------------------------------------------------------------------------------
         done

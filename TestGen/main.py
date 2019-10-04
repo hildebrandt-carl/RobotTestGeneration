@@ -15,7 +15,6 @@ import argparse
 import time
 
 
-
 class DroneType(Enum):
     BEBOP = 1
     HECTOR = 2
@@ -52,7 +51,7 @@ parser.add_argument('-r', '--resolution',
 parser.add_argument('-p', '--plotting',
                     action='store_true',
                     help='Save the tests as 3D figures')
-parser.add_argument('-g', '--debug',
+parser.add_argument('-u', '--debug',
                     action='store_true',
                     help='Displays each stage during the selection phase')
 parser.add_argument('-s', '--seed',
@@ -63,27 +62,30 @@ parser.add_argument('-i', '--searchtime',
                     default=15,
                     type=int,
                     help='The amount of time allowed for path searching in seconds')
-parser.add_argument('-l', '--scoreangle',
-                    default=1,
-                    type=int,
-                    help='The angle you assume to be the best')
+parser.add_argument('-g', '--gentype',
+                    default="waypoint",
+                    type=str,
+                    help='Are you generating tests for waypoint or constant velocity controller')
 args = parser.parse_args()
 
 drone = None
 save_path = None
 
+# Make sure the correct term is given
+assert(args.gentype == "waypoint" or args.gentype == "constant")
+
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_angle" + str(args.scoreangle) +"/"
+    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
-    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_angle" + str(args.scoreangle) +"/"
+    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
 elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
-    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_angle" + str(args.scoreangle) +"/"
+    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
 
 # Do you want to plot the figures or not
 plotting = False
@@ -247,7 +249,7 @@ while time.time() - start_time < args.searchtime:
                                            total_waypoints=traj_search_conditions["search_depth"],
                                            beam_width=traj_search_conditions["beam_width"],
                                            search_time=current_search_time,
-                                           best_angle=args.scoreangle)
+                                           gen_type=args.gentype)
     else:
         print("ERROR: Search type not recognized")
         exit()
@@ -314,7 +316,7 @@ while time.time() - start_time < args.searchtime:
 if len(all_valid_paths) > 0:
     ranking_obj.save_trajectories_according_to_score(paths=all_valid_paths,
                                                      folder=save_path,
-                                                     best_angle=args.scoreangle)
+                                                     gen_type=args.gentype)
 
 print("")
 print("-----------------------------------")

@@ -4,9 +4,11 @@ from MavlinkConverter import MavlinkConverter
 from DroneReachabilitySet import DroneReachabilitySet
 from DroneKinematic import DroneKinematic
 from math import sqrt, radians, degrees, acos
+from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
 import os
 import random
+import warnings
 
 class RankingSystem:
 
@@ -15,7 +17,20 @@ class RankingSystem:
         pass
 
     # Calculate the scores
-    def calculate_scores(self, paths, best_angle=90, all_points=False):
+    def calculate_scores(self, paths, gen_type="waypoint", all_points=False):
+
+        poly_features = []
+        poly_reg = []
+
+        # Used to calculate the scores
+        if gen_type == "waypoint":
+            poly_features = np.load("Models/waypoint_poly_features.npy", allow_pickle=True).item()
+            poly_reg = np.load("Models/waypoint_regression_model.npy", allow_pickle=True).item()
+        elif gen_type == "constant":
+            poly_features = np.load("Models/constant_poly_features.npy", allow_pickle=True).item()
+            poly_reg = np.load("Models/constant_regression_model.npy", allow_pickle=True).item()
+        else:
+            exit()
 
         # Used to save the scores of each path
         scores = []
@@ -99,28 +114,33 @@ class RankingSystem:
                         # Get the largest magnitude at that waypoint
                         prev_largest_mag = maximum_vel_magnitude[score_counter - 1]
 
-                    # Calculate linear score
-                    out_vec_magnitude = self.get_magnitude_vector(out_vec)
-                    largest_mag = maximum_vel_magnitude[score_counter]
-                    linear_score = out_vec_magnitude / float(largest_mag)
-                    linear_path_score.append(linear_score)
+                    # Calculate the angle
+                    euler_angles = self.euler_angles_between_vectors(in_vec, out_vec)
 
-                    # Do we want to make our function exponential
-                    exponent = 1
-                    # Do we want all values greater than best angle to be 1
-                    larger_than_best_is_one = False
+                    # Used to create our sample input
+                    vel_x_out = out_vec[0]
+                    vel_y_out = out_vec[1]
+                    vel_z_out = out_vec[2]
+                    vel_x_in = in_vec[0]
+                    vel_y_in = in_vec[1]
+                    vel_z_in = in_vec[2]
+                    ang_x = euler_angles[0]
+                    ang_y = euler_angles[1]
+                    ang_z = euler_angles[2]
 
-                    # Score is calculated around a certain point
-                    angle = self.angle_between_vectors(in_vec, out_vec)
-                    angular_vel_score = self.calculate_angular_score(current_angle=degrees(angle),
-                                                                     best_angle=best_angle,
-                                                                     larger=larger_than_best_is_one)
-                    angular_vel_score = angular_vel_score ** exponent
-                    angular_path_score.append(angular_vel_score)
+                    # Create the sample data
+                    sample_data = np.array([ang_x, ang_y, ang_z, vel_x_out, vel_y_out, vel_z_out, vel_x_in, vel_y_in, vel_z_in]).reshape(1, -1)
+                    sample_data_poly = poly_features.fit_transform(sample_data)
 
-                    # Calculate the point score
-                    final_score = linear_score * angular_vel_score
-                    point_path_score.append(final_score)
+                    poly_predict = poly_reg.predict(sample_data_poly)
+
+
+                    # Angular and linear score not used anymore
+                    linear_path_score.append(-1)
+                    angular_path_score.append(-1)
+
+                    # Save the final score
+                    point_path_score.append(poly_predict.item())
 
                 # Save the scores for each point in the path
                 linear_score_points.append(linear_path_score)
@@ -144,12 +164,11 @@ class RankingSystem:
         else:
             return scores, linear_scores, angular_scores
 
-    def calculate_path_details(self, paths, best_angle=90):
+    def calculate_path_details(self, paths):
 
         # Used to save the scores of each path
         final_maximum_out_mag_array = []
         final_out_mag_array = []
-        final_best_angle_array = []
         final_angle_array = []
         final_euler_angle_array = []
 
@@ -162,7 +181,6 @@ class RankingSystem:
             # Used to save the scores of each path
             maximum_out_mag_array = []
             out_mag_array = []
-            best_angle_array = []
             angle_array = []
             euler_angle_array = []
 
@@ -208,19 +226,17 @@ class RankingSystem:
                 euler_angle = self.euler_angles_between_vectors(in_vec, out_vec)
 
                 # Save components used in the angular score
-                best_angle_array.append(best_angle)
                 angle_array.append(degrees(angle))
                 euler_angle_array.append(euler_angle)
 
             # Save the path details
             final_maximum_out_mag_array.append(maximum_out_mag_array)
             final_out_mag_array.append(out_mag_array)
-            final_best_angle_array.append(best_angle_array)
             final_angle_array.append(angle_array)
             final_euler_angle_array.append(euler_angle_array)
 
         # Return details about the path
-        return final_out_mag_array, final_maximum_out_mag_array, final_angle_array, final_best_angle_array, final_euler_angle_array
+        return final_out_mag_array, final_maximum_out_mag_array, final_angle_array, final_euler_angle_array
 
     def validate_paths(self, paths, robot_kinematic_model, kinematic_sample_resolution):
 
@@ -277,20 +293,19 @@ class RankingSystem:
         return valid_paths
 
     # Save the paths to a directory
-    def save_trajectories_according_to_score(self, paths, folder, best_angle=180):
+    def save_trajectories_according_to_score(self, paths, folder, gen_type="waypoint"):
         # Create the converter class's
         unity_converter = UnityConverter(save_directory=folder)
         mavlink_converter = MavlinkConverter(save_directory=folder)
 
         # Get the scores
         scores, lin_score, ang_score = self.calculate_scores(paths=paths,
-                                                             best_angle=best_angle)
+                                                             gen_type=gen_type)
         scores_all, lin_score_all, ang_score_all = self.calculate_scores(paths=paths,
-                                                                         best_angle=best_angle,
+                                                                         gen_type=gen_type,
                                                                          all_points=True)
 
-        out_mag, largest_out_mag, waypoint_angles, waypoint_desired_angles, euler_angles = self.calculate_path_details(paths=paths,
-                                                                                                                       best_angle=best_angle)
+        out_mag, largest_out_mag, waypoint_angles, euler_angles = self.calculate_path_details(paths=paths)
 
         # Sort the scores and get the new indices
         score_indicies = list(np.argsort(scores))
@@ -344,7 +359,6 @@ class RankingSystem:
             file.write("Out Vector Magnitude: " + str(out_mag[index]) + '\n')
             file.write("largest Out Vector Magnitude: " + str(largest_out_mag[index]) + '\n')
             file.write("Angles: " + str(waypoint_angles[index]) + '\n')
-            file.write("Desired Angles: " + str(waypoint_desired_angles[index]) + '\n')
             file.write("Euler Angles: " + str(euler_angles[index]) + '\n')
             file.close()
 
@@ -411,8 +425,18 @@ class RankingSystem:
         byz = np.array([b[1], b[2]])
         axz = np.array([a[0], a[2]])
         bxz = np.array([b[0], b[2]])
-        xangle = acos(np.dot(ayz, byz) / (np.linalg.norm(ayz) * np.linalg.norm(byz)))
-        yangle = acos(np.dot(axz, bxz) / (np.linalg.norm(axz) * np.linalg.norm(bxz)))
-        zangle = acos(np.dot(axy, bxy) / (np.linalg.norm(axy) * np.linalg.norm(bxy)))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            xangle = acos(np.dot(ayz, byz) / (np.linalg.norm(ayz) * np.linalg.norm(byz)))
+            yangle = acos(np.dot(axz, bxz) / (np.linalg.norm(axz) * np.linalg.norm(bxz)))
+            zangle = acos(np.dot(axy, bxy) / (np.linalg.norm(axy) * np.linalg.norm(bxy)))
+
+        # Check if any of the angles is NaN. This happens when you have a 0 vector
+        if np.isnan((xangle)):
+            xangle = 0
+        if np.isnan((yangle)):
+            yangle = 0
+        if np.isnan((zangle)):
+            zangle = 0
 
         return [degrees(xangle), degrees(yangle), degrees(zangle)]
