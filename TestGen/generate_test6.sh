@@ -5,7 +5,7 @@ searchtype='score'
 drone='mit'
 totaltime=28800
 simulationtime=90
-gentype="speed-1"
+gentype="speed5"
 for res in 4
 do
   for nodes in 250

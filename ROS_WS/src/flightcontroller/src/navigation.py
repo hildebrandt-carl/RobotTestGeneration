@@ -9,6 +9,7 @@ from geometry_msgs.msg import Pose
 from std_msgs.msg import Empty
 from rosgraph_msgs.msg import Clock
 from std_msgs.msg import String
+from std_msgs.msg import Float64
 
 
 class GoalTester():
@@ -18,7 +19,7 @@ class GoalTester():
     rospy.on_shutdown(self.shutdown_sequence)
 
     # Set the rate
-    self.rate = 100.0
+    self.rate = 1000.0
     self.dt = 1.0 / self.rate
 
     # Getting the load file parameters
@@ -60,6 +61,8 @@ class GoalTester():
     self.navigation_start = rospy.Publisher('/test/started', Empty, queue_size=1)
     self.clock_sub = rospy.Subscriber('/clock', Clock, self.clock_callback)
     self.order_pub = rospy.Publisher('/order', String, queue_size=10)
+    self.distance_pub = rospy.Publisher('/distance_to_goal', Float64, queue_size=1)
+    
 
     # Run the communication node
     self.ControlLoop()
@@ -96,7 +99,10 @@ class GoalTester():
   # This is the main loop of this class
   def ControlLoop(self):
     # Set the rate
-    rate = rospy.Rate(1000)
+    rate = rospy.Rate(self.rate)
+
+    # Used to slow the printing down
+    print_counter = self.rate / 10
 
     # Sleep to make sure the robot is ready to go
     while(self.current_time.to_sec() < 5):
@@ -108,6 +114,10 @@ class GoalTester():
 
     # Start the test
     self.navigation_start.publish(Empty())
+
+    # Used to publish distance to goal
+    dis = Float64()
+    dis.data = 0
 
     # While running
     while not rospy.is_shutdown():
@@ -122,10 +132,21 @@ class GoalTester():
 
         # Calculated the distance to the goal
         distance_to_goal = self.distance(current_goal, self.drone_pos)
-        # rospy.loginfo(str(rospy.get_name()) + ": Current Goal: x-" + str(current_goal.x) + "  y-" + str(current_goal.y) + "  z-" + str(current_goal.z))
-        # rospy.loginfo(str(rospy.get_name()) + ": Current Pos : x-" + str(self.drone_pos.x) + "  y-" + str(self.drone_pos.y) + "  z-" + str(self.drone_pos.z))
-        # rospy.loginfo(str(rospy.get_name()) + ": Distance: " + str(distance_to_goal))
-        # rospy.loginfo(str(rospy.get_name()) + "----------------------------")
+
+        # Decrement the counter 
+        print_counter -= 1
+
+
+        # Display the distance to goal
+        dis.data = distance_to_goal
+        self.distance_pub.publish(dis)
+
+        if print_counter < 0:
+          rospy.loginfo(str(rospy.get_name()) + ": Current Goal: x-" + str(round(current_goal.x, 2)) + "  y-" + str(round(current_goal.y, 2)) + "  z-" + str(round(current_goal.z, 2)))
+          rospy.loginfo(str(rospy.get_name()) + ": Current Pos : x-" + str(round(self.drone_pos.x, 2)) + "  y-" + str(round(self.drone_pos.y, 2)) + "  z-" + str(round(self.drone_pos.z, 2)))
+          rospy.loginfo(str(rospy.get_name()) + ": Distance: " + str(distance_to_goal))
+          rospy.loginfo(str(rospy.get_name()) + "----------------------------")
+          print_counter = self.rate / 10
       
         if distance_to_goal < self.acceptance_distance:
           self.goal_number += 1

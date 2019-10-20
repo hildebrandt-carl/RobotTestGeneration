@@ -1,10 +1,11 @@
 import numpy as np
 import math
 
+
 def get_numbers_from_string(string_var):
     # Split by space
     space_list = string_var.split(" ")
-    
+
     # Saves numbers
     final_numbers = []
 
@@ -21,6 +22,7 @@ def get_numbers_from_string(string_var):
             pass
 
     return final_numbers
+
 
 def lineseg_dist(p, a, b):
     # normalized tangent vector

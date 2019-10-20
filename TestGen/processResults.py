@@ -4,50 +4,28 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import glob
 from math import sqrt, pow
+from processResultsUtils import get_numbers_from_string
+from processResultsUtils import lineseg_dist
 
-# https://stackoverflow.com/questions/56463412/distance-from-a-point-to-a-line-segment-in-3d-python
-def get_numbers_from_string(string_var):
-    # Split by space
-    space_list = string_var.split(" ")
+# all_folders = ["./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
+#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/",
+#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/"]
 
-    # Saves numbers
-    final_numbers = []
+all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
+               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
 
-    # Try convert each word to a number
-    for s in space_list:
-        # Remove comma
-        s = s.strip(",")
-        try:
-            number = float(s)
-            final_numbers.append(number)
-        except:
-            pass
+all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
 
-    return final_numbers
-
-
-def lineseg_dist(p, a, b):
-
-    # normalized tangent vector
-    d = np.divide(b - a, np.linalg.norm(b - a))
-
-    # signed parallel distance components
-    s = np.dot(a - p, d)
-    t = np.dot(p - b, d)
-
-    # clamped parallel distance
-    h = np.maximum.reduce([s, t, 0])
-
-    # perpendicular distance component
-    c = np.cross(p - a, d)
-
-    return np.hypot(h, np.linalg.norm(c))
-
-all_folders = ["./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
-               "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/"]
-
-system_types = ["waypoint",
-                "constant"]
+system_types = ["speed-2",
+                "speed-1",
+                "speed5",
+                "speed10"]
 
 for stype in system_types:
     for folder in all_folders:
@@ -356,13 +334,41 @@ for stype in system_types:
             plt.plot(d_pos[:, 0], d_pos[:, 1], color='green', linestyle=":", linewidth=0.75, label='Drone Position')
             plt.plot(w_pos[:, 0], w_pos[:, 1], color='red', linestyle="-", linewidth=0.75, label='Ideal Trajectory')
             plt.scatter(w_pos[:, 0], w_pos[:, 1], c='red', label='Waypoints')
-            plt.xlim([0, 30])
-            plt.ylim([0, -30])
+            plt.xlim([-5, 35])
+            plt.ylim([5, -35])
             plt.xlabel('X-axis')
             plt.ylabel('Y-axis')
             plt.title("Optimal vs. true trajectory")
             plt.legend()
             plt.savefig(folder_name + "flight_comparison_top_" + stype + ".png")
+            plt.close()
+
+            # Create a 3D plot of the trajectory and actual path
+            fig = plt.figure()
+            plt.plot(d_pos[:, 0], d_pos[:, 2], color='green', linestyle=":", linewidth=0.75, label='Drone Position')
+            plt.plot(w_pos[:, 0], w_pos[:, 2], color='red', linestyle="-", linewidth=0.75, label='Ideal Trajectory')
+            plt.scatter(w_pos[:, 0], w_pos[:, 2], c='red', label='Waypoints')
+            plt.xlim([-5, 35])
+            plt.ylim([-5, 25])
+            plt.xlabel('X-axis')
+            plt.ylabel('Z-axis')
+            plt.title("Optimal vs. true trajectory")
+            plt.legend()
+            plt.savefig(folder_name + "flight_comparison_sidexz_" + stype + ".png")
+            plt.close()
+
+            # Create a 3D plot of the trajectory and actual path
+            fig = plt.figure()
+            plt.plot(d_pos[:, 1], d_pos[:, 2], color='green', linestyle=":", linewidth=0.75, label='Drone Position')
+            plt.plot(w_pos[:, 1], w_pos[:, 2], color='red', linestyle="-", linewidth=0.75, label='Ideal Trajectory')
+            plt.scatter(w_pos[:, 1], w_pos[:, 2], c='red', label='Waypoints')
+            plt.xlim([5, -35])
+            plt.ylim([-5, 25])
+            plt.xlabel('Y-axis')
+            plt.ylabel('Z-axis')
+            plt.title("Optimal vs. true trajectory")
+            plt.legend()
+            plt.savefig(folder_name + "flight_comparison_sideyz_" + stype + ".png")
             plt.close()
 
             # Plot the trajectory deviation

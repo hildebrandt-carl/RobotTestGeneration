@@ -99,26 +99,10 @@ class VelocityCalculator():
       self.windowx = shift(self.windowx, -1, cval=xvel)
       self.windowy = shift(self.windowy, -1, cval=yvel)
       self.windowz = shift(self.windowz, -1, cval=zvel)
-      print(self.windowx)
-      print(xvel)
 
       # Publish the velocity (Y axis is inverted)
       veldata = Vector3(np.mean(self.reject_outliers(self.windowx)),-1 * np.mean(self.reject_outliers(self.windowy)),np.mean(self.reject_outliers(self.windowz)))
-      print(veldata)
       self.vel_pub.publish(veldata)
-
-      # print("------------------------")
-      # print("xvel: " + str(xvel))
-      # print("yvel: " + str(yvel))
-      # print("zvel: " + str(zvel))
-      # print("x: " + str(x))
-      # print("y: " + str(y))
-      # print("z: " + str(z))
-      # print("prev x: " + str(self.x_prev))
-      # print("prev y: " + str(self.y_prev))
-      # print("prev z: " + str(self.z_prev))
-      # print("time: " + str(self.current_time.to_sec()))
-      # print("prev time: " + str(self.previous_time.to_sec()))
 
     # Save the previous values
     self.x_prev = x

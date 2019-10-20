@@ -23,25 +23,27 @@ sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
 depthcounter=10
 
-for mainfolder in 'PolyRunFull'
+for mainfolder in 'PolySameTimeFull'
 do
 	for nodescounter in 250
 	do
 		for rescounter in 4
 		do
-			for gentype in 'constant'
+			for beamcounter in 10
 			do
-				for beamcounter in 10
+				for totaltime in 28800
 				do
-					for simtype in 'score'
+					for simtime in 90
 					do
-						for searchtime in 21600
+						for gentype in 'score'
 						do
+							for controllertype in 'speed5'
+							do
 								# Get the folder
-								folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype\_$gentype
-								
+								folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_totaltime$totaltime\_simtime$simtime\_$gentype\_$controllertype
+
 								# Get the total number of tests to run
-								mapcounter=59
+								mapcounter=85
 								totaltests=$(ls ..$folder/maps | wc -l)
 
 								echo "--------------------------------------------------------"
@@ -54,7 +56,7 @@ do
 									echo "Processing: $folder/maps/map$mapcounter"
 									echo " "
 
-									for speed in -1 5
+									for speed in 5
 									do
 
 										# Get the current test
@@ -86,42 +88,27 @@ do
 										rm test.txt
 										
 										# Save the test to the appropriate file
-										if [ $speed -eq -1 ]
-										then
-											mv performance.txt ..$folder/maps/map$mapcounter/performance_waypoint.txt
-											mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_waypoint.txt
-											mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_waypoint.txt
-											mv position_log.txt ..$folder/maps/map$mapcounter/position_log_waypoint.txt
-										else
-											mv performance.txt ..$folder/maps/map$mapcounter/performance_constant.txt
-											mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_constant.txt
-											mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_constant.txt
-											mv position_log.txt ..$folder/maps/map$mapcounter/position_log_constant.txt
-										fi
+										mv performance.txt ..$folder/maps/map$mapcounter/performance_speed$speed.txt
+										mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_speed$speed.txt
+										mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_speed$speed.txt
+										mv position_log.txt ..$folder/maps/map$mapcounter/position_log_speed$speed.txt
 
-										# Allow 30 seconds for gezbo to clean up
-										sleep 30
+										# Allow 5 seconds for clean up
+										sleep 5
 									
 									# End speed
 									done
 
 									# Increment the mapcounter
 									((mapcounter++))
-								# End mapcounter
 								done
-						# End searchtime
+							done
 						done
-					# End simtype
 					done
-				# End beamcounter
 				done
-			# End depthcounter
 			done
-		# End rescounter
 		done
-	# End nodescounter
 	done
-# End mainfolder
 done
 
 # Go back to the original dir
@@ -131,22 +118,6 @@ cd ..
 rm -r Build$port/
 
 echo Completed Script
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -184,25 +155,27 @@ sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
 depthcounter=10
 
-for mainfolder in 'PolyRunFull'
+for mainfolder in 'PolySameTimeFull'
 do
 	for nodescounter in 250
 	do
 		for rescounter in 4
 		do
-			for gentype in 'waypoint'
+			for beamcounter in 10
 			do
-				for beamcounter in 10
+				for totaltime in 28800
 				do
-					for simtype in 'score'
+					for simtime in 90
 					do
-						for searchtime in 21600
+						for gentype in 'score'
 						do
+							for controllertype in 'speed-2'
+							do
 								# Get the folder
-								folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype\_$gentype
-								
+								folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_totaltime$totaltime\_simtime$simtime\_$gentype\_$controllertype
+
 								# Get the total number of tests to run
-								mapcounter=92
+								mapcounter=85
 								totaltests=$(ls ..$folder/maps | wc -l)
 
 								echo "--------------------------------------------------------"
@@ -210,12 +183,12 @@ do
 								echo "Total tests found: $totaltests"
 								echo "--------------------------------------------------------"
 
-								while [ $mapcounter -le $totaltests ]
+								while [ $mapcounter -le 136 ]
 								do
 									echo "Processing: $folder/maps/map$mapcounter"
 									echo " "
 
-									for speed in -1 5
+									for speed in -2
 									do
 
 										# Get the current test
@@ -247,42 +220,27 @@ do
 										rm test.txt
 										
 										# Save the test to the appropriate file
-										if [ $speed -eq -1 ]
-										then
-											mv performance.txt ..$folder/maps/map$mapcounter/performance_waypoint.txt
-											mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_waypoint.txt
-											mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_waypoint.txt
-											mv position_log.txt ..$folder/maps/map$mapcounter/position_log_waypoint.txt
-										else
-											mv performance.txt ..$folder/maps/map$mapcounter/performance_constant.txt
-											mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_constant.txt
-											mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_constant.txt
-											mv position_log.txt ..$folder/maps/map$mapcounter/position_log_constant.txt
-										fi
+										mv performance.txt ..$folder/maps/map$mapcounter/performance_speed$speed.txt
+										mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_speed$speed.txt
+										mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_speed$speed.txt
+										mv position_log.txt ..$folder/maps/map$mapcounter/position_log_speed$speed.txt
 
-										# Allow 30 seconds for gezbo to clean up
-										sleep 30
+										# Allow 5 seconds for clean up
+										sleep 5
 									
 									# End speed
 									done
 
 									# Increment the mapcounter
 									((mapcounter++))
-								# End mapcounter
 								done
-						# End searchtime
+							done
 						done
-					# End simtype
 					done
-				# End beamcounter
 				done
-			# End depthcounter
 			done
-		# End rescounter
 		done
-	# End nodescounter
 	done
-# End mainfolder
 done
 
 # Go back to the original dir

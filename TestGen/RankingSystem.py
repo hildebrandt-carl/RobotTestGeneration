@@ -17,20 +17,15 @@ class RankingSystem:
         pass
 
     # Calculate the scores
-    def calculate_scores(self, paths, gen_type="waypoint", all_points=False):
+    def calculate_scores(self, paths, gen_type="", all_points=False):
 
         poly_features = []
         poly_reg = []
 
         # Used to calculate the scores
-        if gen_type == "waypoint":
-            poly_features = np.load("Models/waypoint_poly_features.npy", allow_pickle=True).item()
-            poly_reg = np.load("Models/waypoint_regression_model.npy", allow_pickle=True).item()
-        elif gen_type == "constant":
-            poly_features = np.load("Models/constant_poly_features.npy", allow_pickle=True).item()
-            poly_reg = np.load("Models/constant_regression_model.npy", allow_pickle=True).item()
-        else:
-            exit()
+        poly_features = np.load("Models/poly_features_" + str(gen_type) + ".npy", allow_pickle=True).item()
+        poly_reg = np.load("Models/regression_model_" + str(gen_type) + ".npy", allow_pickle=True).item()
+
 
         # Used to save the scores of each path
         scores = []

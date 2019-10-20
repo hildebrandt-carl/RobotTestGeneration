@@ -21,8 +21,11 @@ class PositionController():
     self.dt = 1.0 / self.rate
 
     # Getting the PID parameters
-    gains = rospy.get_param('/position_controller_node/gains', {'p': 1, 'i': 0.0, 'd': 0.0})
-    Kp, Ki, Kd = gains['p'], gains['i'], gains['d']
+    stable_gains = rospy.get_param('/position_controller_node/gains/stable/', {'p': 1, 'i': 0.0, 'd': 0.0})
+    Kp_s, Ki_s, Kd_s = stable_gains['p'], stable_gains['i'], stable_gains['d']
+
+    unstable_gains = rospy.get_param('/position_controller_node/gains/unstable/', {'p': 1, 'i': 0.0, 'd': 0.0})
+    Kp_u, Ki_u, Kd_u = unstable_gains['p'], unstable_gains['i'], unstable_gains['d']
 
     # Getting the save file parameters
     save_location = rospy.get_param("/position_controller_node/save_location")
@@ -30,6 +33,17 @@ class PositionController():
 
     # Getting the requested speed
     self.speed = rospy.get_param('/position_controller_node/speed')
+
+    # If the speed is set to unstable waypoint
+    Kp, Ki, Kd = 0, 0, 0
+    if self.speed == -2:
+      Kp = Kp_u
+      Ki = Ki_u
+      Kd = Kd_u 
+    else:
+      Kp = Kp_s
+      Ki = Ki_s
+      Kd = Kd_s
 
     # Display incoming parameters
     rospy.loginfo(str(rospy.get_name()) + ": Lauching with the following parameters:")
@@ -107,11 +121,11 @@ class PositionController():
         z_vel = 0
 
         # If we are in waypoint mode
-        if self.speed == -1:
+        if self.speed < 0:
           # Set the velocity based on distance
-          x_vel = self.pos_x_PID.get_output(self.x_setpoint, self.x_pos)
-          y_vel = self.pos_y_PID.get_output(self.y_setpoint, self.y_pos)
-          z_vel = self.pos_z_PID.get_output(self.z_setpoint, self.z_pos)
+          x_vel = x_proportion
+          y_vel = y_proportion
+          z_vel = z_proportion
 
         # If we are in constant speed mode
         else:
@@ -171,6 +185,12 @@ class PositionController():
 
   # Call back to get the position setpoints
   def set_pos(self, msg):
+    # If our set point changes reset the PID build up
+    if self.x_setpoint != msg.x:
+      self.pos_x_PID.remove_buildup()
+      self.pos_y_PID.remove_buildup()
+      self.pos_z_PID.remove_buildup()
+
     self.x_setpoint = msg.x
     self.y_setpoint = msg.y
     self.z_setpoint = msg.z

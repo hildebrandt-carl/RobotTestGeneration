@@ -51,10 +51,13 @@
     <param name="save_name" type="string" value="$(arg save_name)"/>
   </node>
 
-  <node pkg="rqt_plot" type="rqt_plot" name="angle_plot" args="/uav/input/attitude/x /uav/sensors/attitude/x /uav/input/attitude/y /uav/sensors/attitude/y /uav/input/attitude/z /uav/sensors/attitude/z">
+  <!--<node pkg="rqt_plot" type="rqt_plot" name="angle_plot" args="/uav/input/attitude/x /uav/sensors/attitude/x /uav/input/attitude/y /uav/sensors/attitude/y /uav/input/attitude/z /uav/sensors/attitude/z">
   </node>
 
   <node pkg="rqt_plot" type="rqt_plot" name="velocity_plot" args="/uav/input/velocity/x /uav/sensors/velocity/x /uav/input/velocity/y /uav/sensors/velocity/y /uav/input/velocity/z /uav/sensors/velocity/z">
+  </node>-->
+
+  <node pkg="rqt_plot" type="rqt_plot" name="distance_to_goal" args="/distance_to_goal">
   </node>
 
   

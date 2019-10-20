@@ -58,10 +58,14 @@ parser.add_argument('-s', '--seed',
                     default=10,
                     type=int,
                     help='Use to set a seed for the PRM construction phase. Set to 0 for to use time as seed')
-parser.add_argument('-i', '--searchtime',
-                    default=15,
+parser.add_argument('-i', '--totaltime',
+                    default=180,
                     type=int,
-                    help='The amount of time allowed for path searching in seconds')
+                    help='The total amount of time for both searching and running the tests')
+parser.add_argument('-m', '--simulationtime',
+                    default=90,
+                    type=int,
+                    help='The total amount of time for both searching and running the tests')
 parser.add_argument('-g', '--gentype',
                     default="waypoint",
                     type=str,
@@ -71,21 +75,18 @@ args = parser.parse_args()
 drone = None
 save_path = None
 
-# Make sure the correct term is given
-assert(args.gentype == "waypoint" or args.gentype == "constant")
-
 if args.drone == "bebop":
     drone = DroneType.BEBOP
     # Save locations
-    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
+    save_path = "Results/BEBOP_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_totaltime" + str(args.totaltime) + "_simtime" + str(args.simulationtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
 elif args.drone == "hector":
     drone = DroneType.HECTOR
     # Save locations
-    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
+    save_path = "Results/HECTOR_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_totaltime" + str(args.totaltime) + "_simtime" + str(args.simulationtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
 elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
-    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_searchtime" + str(args.searchtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
+    save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_totaltime" + str(args.totaltime) + "_simtime" + str(args.simulationtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
 
 # Do you want to plot the figures or not
 plotting = False
@@ -152,7 +153,7 @@ elif drone == DroneType.MIT:
     drone_kinematic["attitude"] = [0, 0, 0]
     drone_kinematic["velocity"] = [0, 0, 0]
     drone_kinematic["angular_velocity"] = [0, 0, 0]
-    drone_kinematic["maximum_velocity"] = 20 # This take horizontal and vertical into consideration
+    drone_kinematic["maximum_velocity"] = 20  # This take horizontal and vertical into consideration
 
 # Create the Figure manager
 fig_manager = FigureManager(save_path)
@@ -179,12 +180,13 @@ total_paths_considered = 0
 valid_paths_considered = 0
 all_valid_paths = []
 current_seed = args.seed
-current_search_time = args.searchtime
+generation_time_left = args.totaltime - (len(all_valid_paths) * args.simulationtime)
 
 # While we still have time
-while time.time() - start_time < args.searchtime:
+while time.time() - start_time < generation_time_left:
     # keep track of when this run started
-    run_start_time = time.time()
+    print("DATA: Starting Search at Time: " + str(time.time() - start_time))
+    print("DATA: Generation Time Left: " + str(generation_time_left))
 
     print("")
     print('New Run!')
@@ -194,6 +196,7 @@ while time.time() - start_time < args.searchtime:
     # Create the PRM object
     p = PRM(start_pos=initial_conditions["start_point"],
             end_pos=initial_conditions["end_point"],
+            start_time=start_time,
             map_x_bounds=initial_conditions["map_x_bounds"],
             map_y_bounds=initial_conditions["map_y_bounds"],
             map_z_bounds=initial_conditions["map_z_bounds"])
@@ -224,14 +227,14 @@ while time.time() - start_time < args.searchtime:
     if args.type == "random":
         all_paths = p.find_all_paths_random(total_waypoints=traj_search_conditions["search_depth"],
                                             beam_width=traj_search_conditions["beam_width"],
-                                            search_time=current_search_time)
+                                            search_time=generation_time_left)
 
     # Use random selection of nodes within max velocity
     elif args.type == "maxvel":
         all_paths = p.find_all_paths_maxvel(max_velocity=drone_kinematic["maximum_velocity"],
                                             total_waypoints=traj_search_conditions["search_depth"],
                                             beam_width=traj_search_conditions["beam_width"],
-                                            search_time=current_search_time)
+                                            search_time=generation_time_left)
 
 
     # Use random selection of nodes within reachable set
@@ -240,7 +243,7 @@ while time.time() - start_time < args.searchtime:
                                                kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
                                                total_waypoints=traj_search_conditions["search_depth"],
                                                beam_width=traj_search_conditions["beam_width"],
-                                               search_time=current_search_time)
+                                               search_time=generation_time_left)
 
     # Use scored selection of nodes within reachable set
     elif args.type == "score":
@@ -248,7 +251,7 @@ while time.time() - start_time < args.searchtime:
                                            kinematic_sample_resolution=human_specified_factors["kinematic_sampling_resolution"],
                                            total_waypoints=traj_search_conditions["search_depth"],
                                            beam_width=traj_search_conditions["beam_width"],
-                                           search_time=current_search_time,
+                                           search_time=generation_time_left,
                                            gen_type=args.gentype)
     else:
         print("ERROR: Search type not recognized")
@@ -298,19 +301,21 @@ while time.time() - start_time < args.searchtime:
         # Save append the valid paths
         all_valid_paths.extend(valid_paths)
 
-    # Print Completion
-    print("DATA: Time for that run: " + str(time.time() - run_start_time))
-
     # Keep track of the total
     total_paths_considered += len(all_paths)
     valid_paths_considered += len(valid_paths)
 
     # If we are going to loop again increment the seed and work out what our new search time is:
-    current_search_time = current_search_time - (time.time() - run_start_time)
+    generation_time_left = args.totaltime - (len(all_valid_paths) * args.simulationtime)
     current_seed += 1
 
-    # Print how much time we have left
-    print("DATA: Time left: " + str(current_search_time))
+    # Print Completion
+    print("DATA: Total Valid Paths: " + str(len(all_valid_paths)))
+    print("DATA: Estimated Simulation Time: " + str(len(all_valid_paths) * args.simulationtime))
+    print("DATA: Search Completed at Time: " + str(time.time() - start_time))
+    print("DATA: Generation Time: " + str(generation_time_left))
+    print("DATA: Time Left: " + str(generation_time_left - (time.time() - start_time)))
+    print("")
 
 # Save the scores
 if len(all_valid_paths) > 0:
@@ -320,7 +325,10 @@ if len(all_valid_paths) > 0:
 
 print("")
 print("-----------------------------------")
-print("DATA: Total time: " + str(time.time() - start_time))
-print("Total paths found: " + str(total_paths_considered))
-print("Valid paths found: " + str(valid_paths_considered))
+print("DATA: Total Search Time: " + str(time.time() - start_time))
+print("DATA: Estimated Simulation Time: " + str(len(all_valid_paths) * args.simulationtime))
+print("DATA: Total Overall Time: " + str(time.time() - start_time + (len(all_valid_paths) * args.simulationtime)))
+print("DATA: Given Time: " + str(args.totaltime))
+print("Total paths Found: " + str(total_paths_considered))
+print("Valid paths Found: " + str(valid_paths_considered))
 print("UPDATE: Completed")

@@ -118,8 +118,6 @@ class VelocityController():
         if z_output.data < 0:
           z_output.data = 0
         if z_output.data > 20:
-          print("HHHHHHHHHHHHHHHHEEEEEEEEEEEEEEERRRRRRRRRREEEEEEEEEEEEE")
-          print(z_output.data)
           z_output.data = 20
 
         # Logging

@@ -16,11 +16,14 @@ import time
 
 
 class PRM:
-    def __init__(self, start_pos, end_pos, map_x_bounds=[0, 1], map_y_bounds=[0, 1], map_z_bounds=[0, 1]):
+    def __init__(self, start_pos, end_pos, start_time, map_x_bounds=[0, 1], map_y_bounds=[0, 1], map_z_bounds=[0, 1]):
 
         # Create the list of vertices and edges
         self.V = []
         self.E = []
+
+        # Create the time it was started
+        self.start_time = start_time
 
         # Create an adjacency matrix for quick lookup of connected nodes
         self.AdjacencyMatrix = None
@@ -195,8 +198,6 @@ class PRM:
 
     # Finds paths from start vertex to end vertex using random search
     def find_all_paths_random(self, total_waypoints=5, beam_width=1, search_time=60):
-        # Record the start time
-        start_time = time.time()
 
         # Keeps track of the number of files processed
         total_process_paths = 0
@@ -328,7 +329,7 @@ class PRM:
                 # Add the finished paths to the finalized paths
                 finished_paths += paths_to_add
                 print("Finished Paths Found: " + str(len(finished_paths)))
-                print("Path found at time: " + str(time.time() - start_time))
+                print("Path found at time: " + str(time.time() - self.start_time ))
 
                 # Remove all nodes along the paths from the graph
                 for path in paths_to_add:
@@ -343,7 +344,10 @@ class PRM:
                 frontier = []
                 frontier.append([starting_state])
                 # Do not add the temp frontier and so continue back to the main loop
-                continue
+
+                # Reset the graph after a path has been found
+                break
+                #continue
 
             # Only add the frontier if there is one
             if len(temp_frontier) > 0:
@@ -369,7 +373,7 @@ class PRM:
 
             # Check if you have run out of time
             end_time = time.time()
-            if (end_time - start_time) > search_time:
+            if (end_time - self.start_time ) > search_time:
                 print("Search out of time")
                 break
 
@@ -411,7 +415,7 @@ class PRM:
             final_paths.append(kinematic_path)
 
         # Print the search time
-        print("Time taken for search: " + str(time.time() - start_time))
+        print("Time taken for search: " + str(time.time() - self.start_time ))
         print("Total paths processed: " + str(total_process_paths))
 
         # Return the finished paths
@@ -419,8 +423,6 @@ class PRM:
 
     # Finds paths from start vertex to end vertex which satisfy the maximum velocity of the drone
     def find_all_paths_maxvel(self, max_velocity=1, total_waypoints=5, beam_width=1, search_time=60):
-        # Record the start time
-        start_time = time.time()
 
         # Keeps track of the number of files processed
         total_process_paths = 0
@@ -570,7 +572,7 @@ class PRM:
                 # Add the finished paths to the finalized paths
                 finished_paths += paths_to_add
                 print("Finished Paths Found: " + str(len(finished_paths)))
-                print("Path found at time: " + str(time.time() - start_time))
+                print("Path found at time: " + str(time.time() - self.start_time ))
 
                 # Remove all nodes along the paths from the graph
                 for path in paths_to_add:
@@ -585,7 +587,10 @@ class PRM:
                 frontier = []
                 frontier.append([starting_state])
                 # Do not add the temp frontier and so continue back to the main loop
-                continue
+
+                # Reset the graph after a path has been found
+                break
+                #continue
 
             # Only add the frontier if there is one
             if len(temp_frontier) > 0:
@@ -611,7 +616,7 @@ class PRM:
 
             # Check if you have run out of time
             end_time = time.time()
-            if (end_time - start_time) > search_time:
+            if (end_time - self.start_time ) > search_time:
                 print("Search out of time")
                 break
 
@@ -653,7 +658,7 @@ class PRM:
             final_paths.append(kinematic_path)
 
         # Print the search time
-        print("Time taken for search: " + str(time.time() - start_time))
+        print("Time taken for search: " + str(time.time() - self.start_time ))
         print("Total paths processed: " + str(total_process_paths))
 
         # Return the finished paths
@@ -662,8 +667,6 @@ class PRM:
     # Finds paths from start vertex to end vertex which satisfy the kinematic model
     def find_all_paths_kinematic(self, robot_kinematic_model, kinematic_sample_resolution=5, total_waypoints=5,
                                  beam_width=1, search_time=60):
-        # Record the start time
-        start_time = time.time()
 
         # Keeps track of the number of files processed
         total_process_paths = 0
@@ -856,7 +859,7 @@ class PRM:
                 # Add the finished paths to the finilized paths
                 finished_paths += temp_finished_paths
                 print("Finished Paths Found: " + str(len(finished_paths)))
-                print("Path found at time: " + str(time.time() - start_time))
+                print("Path found at time: " + str(time.time() - self.start_time ))
 
                 # Remove all nodes along the paths from the graph
                 for path in finished_paths:
@@ -872,7 +875,10 @@ class PRM:
                 frontier = []
                 frontier.append([starting_state])
                 # Do not add the temp frontier and so continue back to the main loop
-                continue
+
+                # Reset the graph after a path has been found
+                break
+                #continue
 
             # Only add the frontier if there is one
             if len(temp_frontier) > 0:
@@ -898,7 +904,7 @@ class PRM:
 
             # Check if you have run out of time
             end_time = time.time()
-            if (end_time - start_time) > search_time:
+            if (end_time - self.start_time ) > search_time:
                 print("Search out of time")
                 break
 
@@ -906,7 +912,7 @@ class PRM:
         self.V = temp_v
 
         # Print the search time
-        print("Time taken for search: " + str(time.time() - start_time))
+        print("Time taken for search: " + str(time.time() - self.start_time ))
         print("Total paths processed: " + str(total_process_paths))
 
         # Return the finished paths
@@ -914,9 +920,10 @@ class PRM:
 
     # Finds paths from start vertex to end vertex which satisfy the kinematic model and scoring criteria
     def find_all_paths_score(self, robot_kinematic_model, kinematic_sample_resolution=5, total_waypoints=5,
-                             beam_width=1, search_time=60, gen_type="waypoint"):
-        # Record the start time
-        start_time = time.time()
+                             beam_width=1, search_time=60, gen_type=""):
+        # If no gen_type is added exit
+        if gen_type == "":
+            exit()
 
         # Keeps track of the number of files processed
         total_process_paths = 0
@@ -954,6 +961,7 @@ class PRM:
         counter = 0
         # While there are unfinished paths
         while len(frontier) > 0:
+            print("here")
 
             # Sort the current paths to be ordered based on score
             # You should have a temporary paths which is added after all nodes have been processed
@@ -1112,7 +1120,7 @@ class PRM:
                 # Add the finished paths to the finalized paths
                 finished_paths += temp_finished_paths
                 print("Finished Paths Found: " + str(len(finished_paths)))
-                print("Path found at time: " + str(time.time() - start_time))
+                print("Path found at time: " + str(time.time() - self.start_time ))
 
                 # Remove all nodes along the paths from the graph
                 for path in finished_paths:
@@ -1135,6 +1143,7 @@ class PRM:
 
             # Only add the frontier if there is one
             if len(temp_frontier) > 0:
+                
                 # Add the new frontier to the frontier
                 frontier += temp_frontier
 
@@ -1152,7 +1161,9 @@ class PRM:
 
             # Check if you have run out of time
             end_time = time.time()
-            if (end_time - start_time) > search_time:
+            print(end_time - self.start_time )
+            print(search_time)
+            if (end_time - self.start_time ) > search_time:
                 print("Search out of time")
                 break
 
@@ -1160,7 +1171,7 @@ class PRM:
         self.V = temp_v
 
         # Print the search time
-        print("Time taken for search: " + str(time.time() - start_time))
+        print("Time taken for search: " + str(time.time() - self.start_time ))
         print("Total paths processed: " + str(total_process_paths))
 
         # Return the finished paths
