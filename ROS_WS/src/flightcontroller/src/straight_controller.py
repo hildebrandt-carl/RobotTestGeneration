@@ -12,7 +12,7 @@ from std_msgs.msg import String
 from std_msgs.msg import Float64
 
 
-class GoalTester():
+class StraightController():
 
   def __init__(self):
     # When this node shutsdown
@@ -23,7 +23,7 @@ class GoalTester():
     self.dt = 1.0 / self.rate
 
     # Getting the load file parameters
-    test_location = rospy.get_param("goal_tester_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/Unity/Build")
+    test_location = rospy.get_param("goal_tester_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/")
     test_name = rospy.get_param("goal_tester_node/test_name", "test.txt")
 
     # Display incoming parameters
@@ -63,10 +63,8 @@ class GoalTester():
     self.order_pub = rospy.Publisher('/order', String, queue_size=10)
     self.distance_pub = rospy.Publisher('/distance_to_goal', Float64, queue_size=1)
     
-
     # Run the communication node
     self.ControlLoop()
-
 
   # This loads the goals positions from a file
   def LoadGoalPositions(self, filename):
@@ -213,9 +211,9 @@ class GoalTester():
 
 
 def main():
-  rospy.init_node('goal_tester_node')
+  rospy.init_node('straight_controller_node')
   try:
-    goaltester = GoalTester()
+    straight = StraightController()
   except rospy.ROSInterruptException:
     pass
 

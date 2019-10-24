@@ -1,8 +1,6 @@
 import math
 import numpy as np
 from scipy.linalg import block_diag
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 # Given a time T and waypoints w
 # Assign a time each waypoint should be met scaled by distance
@@ -35,16 +33,12 @@ def computeQ(n, r, t1, t2):
     return Q
 
 def minimum_snap_single_axis_close_form(wayp, ts, n_order, v0, a0, v1, a1):
-
     n_coef = n_order+1
     n_poly = len(wayp)-1
     polys = 0
     Q_all = np.array([])
     for i in range(0, n_poly):
         Q_all = block_diag(Q_all, computeQ(n_order, 3, ts[i], ts[i+1]))
-
-    # Remove the first row of the Q_all array
-    Q_all = Q_all[1:, :]
 
     # compute Tk
     tk = np.zeros((n_poly + 1, n_coef))
@@ -75,8 +69,8 @@ def minimum_snap_single_axis_close_form(wayp, ts, n_order, v0, a0, v1, a1):
     M = np.zeros((n_poly * 2 * n_continuous, n_continuous * (n_poly + 1)))
     for i in range(1, n_poly * 2 + 1):
         j = math.floor(i / 2) + 1
-        rbeg = n_continuous * (i - 1)
-        cbeg = n_continuous * (j - 1)
+        rbeg = int(n_continuous * (i - 1))
+        cbeg = int(n_continuous * (j - 1))
         M[rbeg:rbeg + n_continuous, cbeg:cbeg + n_continuous] = np.eye(n_continuous)
 
     # compute C
@@ -130,40 +124,3 @@ def polys_vals(polys, ts, tt, r):
             vals[i] = poly_val(polys[:, idx], t, r)
 
     return vals
-
-waypoints = np.array([[0, 0, 0],
-                     [5, 5, 2],
-                     [2, -1, 1],
-                     [4, 8, 2]]).T
-
-v0 = np.array([0, 0, 0])
-a0 = np.array([0, 0, 0])
-v1 = np.array([0, 0, 0])
-a1 = np.array([0, 0, 0])
-
-T = 5
-ts = arrangeT(waypoints, T)
-
-n_order = 5
-
-polys_x = minimum_snap_single_axis_close_form(waypoints[0, :], ts, n_order, v0[0], a0[0], v1[0], a1[0])
-polys_y = minimum_snap_single_axis_close_form(waypoints[1, :], ts, n_order, v0[1], a0[1], v1[1], a1[1])
-polys_z = minimum_snap_single_axis_close_form(waypoints[2, :], ts, n_order, v0[2], a0[2], v1[2], a1[2])
-
-# Build the trajectories
-xx = np.array([])
-yy = np.array([])
-zz = np.array([])
-for i in range(0, polys_x.shape[1]):
-    tt = np.arange(ts[i], ts[i+1], 0.01)
-    xx = np.concatenate([xx, polys_vals(polys_x, ts, tt, 0)])
-    yy = np.concatenate([yy, polys_vals(polys_y, ts, tt, 0)])
-    zz = np.concatenate([zz, polys_vals(polys_z, ts, tt, 0)])
-
-fig = plt.figure(1)
-ax = fig.gca(projection='3d')
-ax.scatter(waypoints[0, :], waypoints[1, :], waypoints[2, :], label='Waypoints')
-ax.plot(waypoints[0, :], waypoints[1, :], waypoints[2, :], linestyle='--', label='Original Line')
-ax.plot(xx, yy, zz, label='Minimum Snap Line')
-ax.legend()
-plt.show()

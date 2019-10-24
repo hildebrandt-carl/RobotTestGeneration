@@ -40,3 +40,8 @@
 
 # Ignore the test generation files
 **/TestGen/Results/*
+
+# Ignore the tempory files used for simulation
+Build25001/*
+Build25002/*
+Build25003/*

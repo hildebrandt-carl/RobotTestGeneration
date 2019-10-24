@@ -57,7 +57,7 @@ do
 									echo "Processing: $folder/maps/map$mapcounter"
 									echo " "
 
-									for speed in -2
+									for speed in 5
 									do
 
 										# Get the current test

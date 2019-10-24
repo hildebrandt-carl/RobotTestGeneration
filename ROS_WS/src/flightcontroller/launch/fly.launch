@@ -18,8 +18,18 @@
   <!-- Set the requested velocity, -1 is waypoint mode -->
   <arg name="speed" default="10" />
 
+  <group if="$(eval arg('minsnap') == 0)">
+    <node pkg="flightcontroller" type="straight_controller.py" name="straight_controller_node" output="screen">
+      <param name="test_location" type="string" value="$(arg test_location)"/>
+      <param name="test_name" type="string" value="$(arg test_name)"/>
+    </node>
+  </group>
+
   <group if="$(eval arg('minsnap') == 1)">
-    <include file="$(find flightcontroller)/launch/minsnap.launch"/>
+    <node pkg="flightcontroller" type="minsnap_controller.py" name="minsnap_controller_node" output="screen">
+      <param name="test_location" type="string" value="$(arg test_location)"/>
+      <param name="test_name" type="string" value="$(arg test_name)"/>
+    </node>
   </group>
 
   <include file="$(find flightcontroller)/launch/angle.launch">
@@ -46,12 +56,6 @@
     <arg name="port" value="$(arg port)"/>
   </include>
 
-
-  <node pkg="flightcontroller" type="navigation.py" name="goal_tester_node" output="screen">
-    <param name="test_location" type="string" value="$(arg test_location)"/>
-    <param name="test_name" type="string" value="$(arg test_name)"/>
-  </node>
-
   <node pkg="flightcontroller" type="performance_analyzer.py" name="performance_tester_node">
     <param name="save_location" type="string" value="$(arg save_location)"/>
     <param name="save_name" type="string" value="$(arg save_name)"/>
@@ -65,7 +69,5 @@
 
   <node pkg="rqt_plot" type="rqt_plot" name="distance_to_goal" args="/distance_to_goal">
   </node>
-
-  
 
 </launch>
