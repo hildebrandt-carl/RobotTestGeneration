@@ -22,8 +22,9 @@ current_dir="$PWD"
 sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
 depthcounter=10
+minsnap=1
 
-for mainfolder in 'PolySameTimeFull'
+for mainfolder in 'minsnaptest'
 do
 	for nodescounter in 250
 	do
@@ -56,7 +57,7 @@ do
 									echo "Processing: $folder/maps/map$mapcounter"
 									echo " "
 
-									for speed in 10
+									for speed in -2
 									do
 
 										# Get the current test
@@ -72,7 +73,7 @@ do
 										sleep 20
 
 										# Launch the ros file
-										roslaunch flightcontroller fly.launch port:="$port" test_location:="$current_dir" save_location:="$current_dir" speed:="$speed" &
+										roslaunch flightcontroller fly.launch port:="$port" test_location:="$current_dir" save_location:="$current_dir" speed:="$speed" minsnap:="$minsnap" &
 
 										# Get the PID so that I can kill it later
 										roslaunch_PID=$!
@@ -118,9 +119,3 @@ cd ..
 rm -r Build$port/
 
 echo Completed Script
-
-
-# Speed5 - 119 - 85->119 (34)3
-# Speed10 - 84 -> 1->84(84)1
-# Speed-1 - 171 -> 85->168 (84)2
-# Speed-2 - 162 -> 85->136 (50)3

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <node pkg="flightcontroller" type="minsnap_controler.py" name="minsnap_controller_node" output="screen">
+  </node>
+
+</launch>

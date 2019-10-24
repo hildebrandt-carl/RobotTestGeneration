@@ -37,13 +37,13 @@ do
 					do
 						for gentype in 'score'
 						do
-							for controllertype in 'speed5'
+							for controllertype in 'speed-2'
 							do
 								# Get the folder
 								folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_totaltime$totaltime\_simtime$simtime\_$gentype\_$controllertype
 
 								# Get the total number of tests to run
-								mapcounter=85
+								mapcounter=155
 								totaltests=$(ls ..$folder/maps | wc -l)
 
 								echo "--------------------------------------------------------"
@@ -56,7 +56,7 @@ do
 									echo "Processing: $folder/maps/map$mapcounter"
 									echo " "
 
-									for speed in 5
+									for speed in -2
 									do
 
 										# Get the current test
@@ -169,13 +169,13 @@ do
 					do
 						for gentype in 'score'
 						do
-							for controllertype in 'speed-2'
+							for controllertype in 'speed-1'
 							do
 								# Get the folder
 								folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_totaltime$totaltime\_simtime$simtime\_$gentype\_$controllertype
 
 								# Get the total number of tests to run
-								mapcounter=85
+								mapcounter=169
 								totaltests=$(ls ..$folder/maps | wc -l)
 
 								echo "--------------------------------------------------------"
@@ -183,12 +183,12 @@ do
 								echo "Total tests found: $totaltests"
 								echo "--------------------------------------------------------"
 
-								while [ $mapcounter -le 136 ]
+								while [ $mapcounter -le $totaltests ]
 								do
 									echo "Processing: $folder/maps/map$mapcounter"
 									echo " "
 
-									for speed in -2
+									for speed in -1
 									do
 
 										# Get the current test

@@ -13,8 +13,14 @@
   <arg name="ip" default="127.0.01" />
   <arg name="port" default="25001" />
 
+  <arg name="minsnap" default="0" />
+
   <!-- Set the requested velocity, -1 is waypoint mode -->
   <arg name="speed" default="10" />
+
+  <group if="$(eval arg('minsnap') == 1)">
+    <include file="$(find flightcontroller)/launch/minsnap.launch"/>
+  </group>
 
   <include file="$(find flightcontroller)/launch/angle.launch">
     <arg name="save_name" default="angle_log.txt"/>
