@@ -29,8 +29,9 @@ class MinimumSnapController():
     self.dt = 1.0 / self.rate
 
     # Getting the load file parameters
-    test_location = rospy.get_param("goal_tester_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/")
-    test_name = rospy.get_param("goal_tester_node/test_name", "test.txt")
+    test_location = rospy.get_param("minsnap_controller_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/")
+    test_name = rospy.get_param("minsnap_controller_node/test_name", "test.txt")
+    snap_type = rospy.get_param("minsnap_controller_node/min_snap", 1)
 
     # Display incoming parameters
     rospy.loginfo(str(rospy.get_name()) + ": Lauching with the following parameters:")
@@ -61,7 +62,8 @@ class MinimumSnapController():
 
     # Create the subscribers and publishers
     self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
-    self.goal_pub = rospy.Publisher("uav/input/position", Vector3, queue_size=1)
+    self.goal_pub = rospy.Publisher("uav/goal/position", Vector3, queue_size=1)
+    self.flyto_pub = rospy.Publisher("uav/input/position", Vector3, queue_size=1)
     self.col_sub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
     self.complete_pub = rospy.Publisher('/test/completed', Empty, queue_size=1)
     self.navigation_start = rospy.Publisher('/test/started', Empty, queue_size=1)
@@ -79,7 +81,7 @@ class MinimumSnapController():
     # Create a trajectory generator
     self.trajgen = MinSnapTrajGen(waypoints=waypoints, total_time=5)
 
-    # # Uncomment to view the expected trajectory
+    # Uncomment to view the expected trajectory
     # x,y,z = self.trajgen.get_all_points()
     # waypoints = waypoints.T
     # fig = plt.figure(1)
@@ -144,40 +146,57 @@ class MinimumSnapController():
     dis = Float64()
     dis.data = 0
 
-    next_point = self.trajgen.get_next_point()
+    # Used to keep track of whether we are at a waypoint or not
+    waypoint_index = False
+
+    next_point, waypoint_index = self.trajgen.get_next_point()
     current_goal = Vector3(x=float(next_point[0]), y=float(next_point[1]), z=float(next_point[2]))
 
     # While running
     while not rospy.is_shutdown():
       # Check we have not reached the final goal
-      # TODO: THIS PROBABLY NEEDS TO CHANGE BECAUSE SOME CASES WE VISIT THE FINAL GOAL TWICE
-      if current_goal != self.goal_positions[-1]:
+      if self.goal_number < len(self.goal_positions):
 
         # Publish the goal
-        self.goal_pub.publish(current_goal)   
+        self.flyto_pub.publish(current_goal)   
 
         # Publish update on ordering
         order_string = "Navigation node: %s" % rospy.get_time()
         self.order_pub.publish(order_string)
 
-        # Calculated the distance to the goal
+        # Calculated the distance to the current goal
         distance_to_goal = self.distance(current_goal, self.drone_pos)
 
-        if distance_to_goal < 5:
-          next_point = self.trajgen.get_next_point()
+        # If we are in an intermediate part of the trajectory make sure the goal stays ahead of the quadrotor
+        if distance_to_goal < 3 and waypoint_index == False:
+          next_point, waypoint_index = self.trajgen.get_next_point()
           current_goal = Vector3(x=float(next_point[0]), y=float(next_point[1]), z=float(next_point[2]))
 
         # Decrement the counter 
         print_counter -= 1
 
+        # Calculated the distance to the current waypoint
+        current_waypoint = self.goal_positions[self.goal_number]
+        distance_to_goal = self.distance(current_waypoint, self.drone_pos)
+
+        # Publush the current goal
+        self.goal_pub.publish(self.goal_positions[self.goal_number])
+
         # Display the distance to goal
         dis.data = distance_to_goal
         self.distance_pub.publish(dis)
 
+        # If we have moved inside our acceptance region
+        if distance_to_goal < self.acceptance_distance:
+          next_point, waypoint_index = self.trajgen.get_next_point()
+          self.goal_number += 1
+
         if print_counter < 0:
-          rospy.loginfo(str(rospy.get_name()) + ": Current Goal: x-" + str(round(current_goal.x, 2)) + "  y-" + str(round(current_goal.y, 2)) + "  z-" + str(round(current_goal.z, 2)))
-          rospy.loginfo(str(rospy.get_name()) + ": Current Pos : x-" + str(round(self.drone_pos.x, 2)) + "  y-" + str(round(self.drone_pos.y, 2)) + "  z-" + str(round(self.drone_pos.z, 2)))
-          rospy.loginfo(str(rospy.get_name()) + ": Distance: " + str(distance_to_goal))
+          rospy.loginfo(str(rospy.get_name()) + ": Flyto Goal\t: x;" + str(round(current_goal.x, 2)) + "  y;" + str(round(current_goal.y, 2)) + "  z;" + str(round(current_goal.z, 2)))
+          rospy.loginfo(str(rospy.get_name()) + ": Waypoint Goal\t: x;" + str(round(self.goal_positions[self.goal_number].x, 2)) + "  y;" + str(round(self.goal_positions[self.goal_number].y, 2)) + "  z;" + str(round(self.goal_positions[self.goal_number].z, 2)))
+          rospy.loginfo(str(rospy.get_name()) + ": Current Pos\t: x;" + str(round(self.drone_pos.x, 2)) + "  y;" + str(round(self.drone_pos.y, 2)) + "  z;" + str(round(self.drone_pos.z, 2)))
+          rospy.loginfo(str(rospy.get_name()) + ": Distance\t: " + str(distance_to_goal))
+          rospy.loginfo(str(rospy.get_name()) + ": Goal Number\t: " + str(self.goal_number) + "/" + str(len(self.goal_positions)))
           rospy.loginfo(str(rospy.get_name()) + "----------------------------")
           print_counter = self.rate / 10
 

@@ -63,7 +63,7 @@ class PerformanceTester():
 
     # Create the subscribers and publishers
     self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
-    self.pos_set_sub = rospy.Subscriber("uav/input/position", Vector3, self.set_pos)
+    self.pos_set_sub = rospy.Subscriber("uav/goal/position", Vector3, self.set_pos)
     self.col_pub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
     self.shutdown_sub = rospy.Subscriber('/test/completed', Empty, self.completed_callback)
     self.navigation_start = rospy.Subscriber('/test/started', Empty, self.start_callback)

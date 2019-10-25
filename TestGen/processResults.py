@@ -11,21 +11,24 @@ from processResultsUtils import lineseg_dist
 #                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/",
 #                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/"]
 
-all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
+# all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
+#
+# all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
 
-all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
+all_folders = ["./Results/minsnaptest/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",]
 
-system_types = ["speed-2",
-                "speed-1",
-                "speed5",
-                "speed10"]
+system_types = ["speed-2_minsnap0",
+                "speed-1_minsnap0",
+                "speed5_minsnap0",
+                "speed10_minsnap0",
+                "speed-1_minsnap1"]
 
 for stype in system_types:
     for folder in all_folders:
@@ -349,7 +352,7 @@ for stype in system_types:
             plt.plot(w_pos[:, 0], w_pos[:, 2], color='red', linestyle="-", linewidth=0.75, label='Ideal Trajectory')
             plt.scatter(w_pos[:, 0], w_pos[:, 2], c='red', label='Waypoints')
             plt.xlim([-5, 35])
-            plt.ylim([-5, 25])
+            plt.ylim([-5, 35])
             plt.xlabel('X-axis')
             plt.ylabel('Z-axis')
             plt.title("Optimal vs. true trajectory")
@@ -363,7 +366,7 @@ for stype in system_types:
             plt.plot(w_pos[:, 1], w_pos[:, 2], color='red', linestyle="-", linewidth=0.75, label='Ideal Trajectory')
             plt.scatter(w_pos[:, 1], w_pos[:, 2], c='red', label='Waypoints')
             plt.xlim([5, -35])
-            plt.ylim([-5, 25])
+            plt.ylim([-5, 35])
             plt.xlabel('Y-axis')
             plt.ylabel('Z-axis')
             plt.title("Optimal vs. true trajectory")

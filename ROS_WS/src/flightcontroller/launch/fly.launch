@@ -15,20 +15,24 @@
 
   <arg name="minsnap" default="0" />
 
+  <!-- Set the requested velocity, -2 is unstable waypoint mode -->
   <!-- Set the requested velocity, -1 is waypoint mode -->
-  <arg name="speed" default="10" />
+  <!-- Set the requested velocity, +ve is constant vel mode -->
+  <arg name="speed" default="-1" />
 
   <group if="$(eval arg('minsnap') == 0)">
+    <!-- Recommend speed to be set to -1 -->
     <node pkg="flightcontroller" type="straight_controller.py" name="straight_controller_node" output="screen">
       <param name="test_location" type="string" value="$(arg test_location)"/>
       <param name="test_name" type="string" value="$(arg test_name)"/>
     </node>
   </group>
 
-  <group if="$(eval arg('minsnap') == 1)">
+  <group if="$(eval arg('minsnap') != 0)">
     <node pkg="flightcontroller" type="minsnap_controller.py" name="minsnap_controller_node" output="screen">
       <param name="test_location" type="string" value="$(arg test_location)"/>
       <param name="test_name" type="string" value="$(arg test_name)"/>
+      <param name="min_snap" type="integer" value="$(arg minsnap)"/>
     </node>
   </group>
 

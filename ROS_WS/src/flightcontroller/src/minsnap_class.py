@@ -35,22 +35,41 @@ class MinSnapTrajGen:
         self.y_final = np.array([])
         self.z_final = np.array([])
         self.point_time = np.array([])
+        self.waypoint_index = np.array([])
+        # Go through each of the time segments and calculate the trajectory
         for i in range(0, polys_x.shape[1]):
             tt = np.arange(self.ts[i], self.ts[i+1], 0.01)
+            # Add the x,y,z (they start at the previous waypoint and end 1 element before the end waypoint)
             self.x_final = np.concatenate([self.x_final, polys_vals(polys_x, self.ts, tt, 0)])
             self.y_final = np.concatenate([self.y_final, polys_vals(polys_y, self.ts, tt, 0)])
             self.z_final = np.concatenate([self.z_final, polys_vals(polys_z, self.ts, tt, 0)])
             self.point_time = np.concatenate([self.point_time, tt])
+            wy = np.zeros((1, len(tt))).reshape(-1)
+            wy[0] = 1
+            self.waypoint_index = np.concatenate([self.waypoint_index, wy])
+
+        # Add the final waypoint
+        self.x_final = np.concatenate([self.x_final, np.array([self.waypoints[0][-1]])])
+        self.y_final = np.concatenate([self.y_final, np.array([self.waypoints[1][-1]])])
+        self.z_final = np.concatenate([self.z_final, np.array([self.waypoints[2][-1]])])
+        # Add the final true index
+        self.waypoint_index = np.concatenate([self.waypoint_index, np.array([1])])
+
 
     def get_next_point(self):
+        # If we are requesting more than available
+        if self.counter >= len(self.x_final):
+            self.counter -= 1
+
         # Get the x,y,z co-ordinates
         x = self.x_final[self.counter]
         y = self.y_final[self.counter]
         z = self.z_final[self.counter]
+        w = self.waypoint_index[self.counter]
         # Increment the counter
         self.counter += 1
 
-        return [x,y,z]
+        return [x,y,z], w
 
     def get_all_points(self):
         return self.x_final, self.y_final, self.z_final

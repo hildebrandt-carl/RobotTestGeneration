@@ -143,6 +143,7 @@ a1 = np.array([0, 0, 0])
 
 T = 5
 ts = arrangeT(waypoints, T)
+print(ts)
 
 n_order = 5
 
@@ -154,11 +155,20 @@ polys_z = minimum_snap_single_axis_close_form(waypoints[2, :], ts, n_order, v0[2
 xx = np.array([])
 yy = np.array([])
 zz = np.array([])
+waypoint_index = np.array([])
 for i in range(0, polys_x.shape[1]):
     tt = np.arange(ts[i], ts[i+1], 0.01)
     xx = np.concatenate([xx, polys_vals(polys_x, ts, tt, 0)])
     yy = np.concatenate([yy, polys_vals(polys_y, ts, tt, 0)])
     zz = np.concatenate([zz, polys_vals(polys_z, ts, tt, 0)])
+    wy = np.zeros((1, len(tt))).reshape(-1)
+    wy[0] = 1
+    waypoint_index = np.concatenate([waypoint_index, wy])
+
+xx = np.concatenate([xx, np.array([waypoints[0][-1]])])
+yy = np.concatenate([yy, np.array([waypoints[1][-1]])])
+zz = np.concatenate([zz, np.array([waypoints[2][-1]])])
+waypoint_index = np.concatenate([waypoint_index, np.array([1])])
 
 fig = plt.figure(1)
 ax = fig.gca(projection='3d')

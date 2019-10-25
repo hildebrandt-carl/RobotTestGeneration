@@ -23,8 +23,8 @@ class StraightController():
     self.dt = 1.0 / self.rate
 
     # Getting the load file parameters
-    test_location = rospy.get_param("goal_tester_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/")
-    test_name = rospy.get_param("goal_tester_node/test_name", "test.txt")
+    test_location = rospy.get_param("straight_controller_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/")
+    test_name = rospy.get_param("straight_controller_node/test_name", "test.txt")
 
     # Display incoming parameters
     rospy.loginfo(str(rospy.get_name()) + ": Lauching with the following parameters:")
@@ -55,7 +55,8 @@ class StraightController():
 
     # Create the subscribers and publishers
     self.gps_sub = rospy.Subscriber("uav/sensors/gps", Pose, self.get_gps)
-    self.goal_pub = rospy.Publisher("uav/input/position", Vector3, queue_size=1)
+    self.goal_pub = rospy.Publisher("uav/goal/position", Vector3, queue_size=1)
+    self.flyto_pub = rospy.Publisher("uav/input/position", Vector3, queue_size=1)
     self.col_sub = rospy.Subscriber('/uav/collision', Empty, self.collision_callback)
     self.complete_pub = rospy.Publisher('/test/completed', Empty, queue_size=1)
     self.navigation_start = rospy.Publisher('/test/started', Empty, queue_size=1)
@@ -124,6 +125,8 @@ class StraightController():
 
         # Publish the goal
         current_goal = self.goal_positions[self.goal_number]
+        # Goal and where to fly are the same position
+        self.flyto_pub.publish(current_goal)
         self.goal_pub.publish(current_goal)
         order_string = "Navigation node: %s" % rospy.get_time()
         self.order_pub.publish(order_string)
@@ -140,9 +143,11 @@ class StraightController():
         self.distance_pub.publish(dis)
 
         if print_counter < 0:
-          rospy.loginfo(str(rospy.get_name()) + ": Current Goal: x-" + str(round(current_goal.x, 2)) + "  y-" + str(round(current_goal.y, 2)) + "  z-" + str(round(current_goal.z, 2)))
-          rospy.loginfo(str(rospy.get_name()) + ": Current Pos : x-" + str(round(self.drone_pos.x, 2)) + "  y-" + str(round(self.drone_pos.y, 2)) + "  z-" + str(round(self.drone_pos.z, 2)))
-          rospy.loginfo(str(rospy.get_name()) + ": Distance: " + str(distance_to_goal))
+          rospy.loginfo(str(rospy.get_name()) + ": Flyto Goal\t: x;" + str(round(current_goal.x, 2)) + "  y;" + str(round(current_goal.y, 2)) + "  z;" + str(round(current_goal.z, 2)))
+          rospy.loginfo(str(rospy.get_name()) + ": Waypoint Goal\t: x;" + str(round(self.goal_positions[self.goal_number].x, 2)) + "  y;" + str(round(self.goal_positions[self.goal_number].y, 2)) + "  z;" + str(round(self.goal_positions[self.goal_number].z, 2)))
+          rospy.loginfo(str(rospy.get_name()) + ": Current Pos\t: x;" + str(round(self.drone_pos.x, 2)) + "  y;" + str(round(self.drone_pos.y, 2)) + "  z;" + str(round(self.drone_pos.z, 2)))
+          rospy.loginfo(str(rospy.get_name()) + ": Distance\t: " + str(distance_to_goal))
+          rospy.loginfo(str(rospy.get_name()) + ": Goal Number\t: " + str(self.goal_number) + "/" + str(len(self.goal_positions)))
           rospy.loginfo(str(rospy.get_name()) + "----------------------------")
           print_counter = self.rate / 10
       
