@@ -25,6 +25,7 @@ class StraightController():
     # Getting the load file parameters
     test_location = rospy.get_param("straight_controller_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/")
     test_name = rospy.get_param("straight_controller_node/test_name", "test.txt")
+    self.acceptance_distance = rospy.get_param("straight_controller_node/acceptance_distance", 1)
 
     # Display incoming parameters
     rospy.loginfo(str(rospy.get_name()) + ": Lauching with the following parameters:")
@@ -42,9 +43,6 @@ class StraightController():
 
     # Init the goal positions
     self.goal_positions = []
-
-    # The distance which a goal is accepted
-    self.acceptance_distance = 1
 
     # Load the goal positions
     self.LoadGoalPositions(file_location)

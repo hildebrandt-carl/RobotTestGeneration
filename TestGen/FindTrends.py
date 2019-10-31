@@ -9,12 +9,14 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
 
-all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/"]
+all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",]
 
 system_types = ["speed-2",
                 "speed-1",
                 "speed5",
-                "speed10"]
+                "speed10",
+                "speed-1_minsnap1",
+                "speed-1_minsnap2"]
 
 for folder in all_folders:
 
@@ -55,6 +57,12 @@ for folder in all_folders:
                                                      the_string="Angles:")
             flight_magnitudes = get_numbers_after_string(file_name=flight_details_file,
                                                          the_string="Out Vector Magnitude:")
+
+
+            # Count how many minsnap corridor failed
+            if dev_per_waypoint[0][0] > 12 and system == "speed-1_minsnap2":
+                print("Maximum Deviation over 5m (" + str(dev_per_waypoint[0][0]) + "m): " + str(flight_log_file))
+                continue
 
             # Get the euler angles
             x_angle = []
@@ -114,6 +122,7 @@ for folder in all_folders:
                 print("Error in: " + str(flight_log_file))
                 print(len(dev_per_waypoint[0]))
                 print(len(x_angle))
+                continue
 
             system_dev.extend(dev_per_waypoint[0])
             system_xangles.extend(x_angle)

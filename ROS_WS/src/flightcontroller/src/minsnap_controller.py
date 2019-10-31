@@ -29,14 +29,19 @@ class MinimumSnapController():
     self.dt = 1.0 / self.rate
 
     # Getting the load file parameters
-    test_location = rospy.get_param("minsnap_controller_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/")
+    test_location = rospy.get_param("minsnap_controller_node/test_location", "/home/autosoftlab/Desktop/RobotTestGeneration/Build25001")
     test_name = rospy.get_param("minsnap_controller_node/test_name", "test.txt")
-    snap_type = rospy.get_param("minsnap_controller_node/min_snap", 1)
+    snap_type = rospy.get_param("minsnap_controller_node/min_snap", 2)
+    self.acceptance_distance = rospy.get_param("minsnap_controller_node/acceptance_distance", 1)
+    corridor_size = rospy.get_param("minsnap_controller_node/corridor_size", 0.2)
 
     # Display incoming parameters
     rospy.loginfo(str(rospy.get_name()) + ": Lauching with the following parameters:")
     rospy.loginfo(str(rospy.get_name()) + ": test_location - " + str(test_location))
     rospy.loginfo(str(rospy.get_name()) + ": test_name - " + str(test_name))
+    rospy.loginfo(str(rospy.get_name()) + ": snap_type - " + str(snap_type))
+    rospy.loginfo(str(rospy.get_name()) + ": acceptance_distance - " + str(self.acceptance_distance))
+    rospy.loginfo(str(rospy.get_name()) + ": corridor_size - " + str(corridor_size))
 
     # File location of the goals
     file_location = test_location + "/" + test_name
@@ -49,9 +54,6 @@ class MinimumSnapController():
 
     # Init the goal positions
     self.goal_positions = []
-
-    # The distance which a goal is accepted
-    self.acceptance_distance = 1
 
     # Load the goal positions
     self.LoadGoalPositions(file_location)
@@ -78,22 +80,73 @@ class MinimumSnapController():
 
     waypoints = np.array(waypoints)
 
-    # Create a trajectory generator
-    self.trajgen = MinSnapTrajGen(waypoints=waypoints, total_time=5)
+    np.set_printoptions(precision=3)
+    print(np.array([waypoints]))
 
-    # Uncomment to view the expected trajectory
-    # x,y,z = self.trajgen.get_all_points()
-    # waypoints = waypoints.T
-    # fig = plt.figure(1)
-    # ax = fig.gca(projection='3d')
-    # ax.scatter(waypoints[0, :], waypoints[1, :], waypoints[2, :], label='Waypoints')
-    # ax.plot(waypoints[0, :], waypoints[1, :], waypoints[2, :], linestyle='--', label='Original Line')
-    # ax.plot(x,y,z, label='Minimum Snap Line')
-    # ax.legend()
-    # plt.show()
-    
+    # Create a trajectory generator
+    self.trajgen = MinSnapTrajGen(wpts=waypoints, total_time=5, constraint_type=snap_type, corridor=corridor_size)
+
+    # Check if the save location ends in "/"
+    if test_location[-1] != "/":
+      test_location = test_location + "/"
+
+    # Save the trajectory figure
+    x,y,z = self.trajgen.get_all_points()
+    waypoints = waypoints.T
+    fig = plt.figure(1)
+    ax = fig.gca(projection='3d')
+    ax.scatter(waypoints[0, :], waypoints[1, :], waypoints[2, :], label='Waypoints')
+    ax.plot(waypoints[0, :], waypoints[1, :], waypoints[2, :], linestyle='--', label='Original Line')
+    ax.plot(x,y,z, label='Minimum Snap Line')
+    ax.legend(loc="best")
+    ax.set_xlim([-5, 35])
+    ax.set_ylim([5, -35])
+    ax.set_zlim([-5, 35])
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.set_zlabel("Z")
+    plt.savefig(str(test_location) + "all_minsnap" + str(snap_type) + ".png")
+    plt.close()
+
+    fig = plt.figure(2)
+    plt.scatter(waypoints[0, :], waypoints[1, :], label='Waypoints')
+    plt.plot(waypoints[0, :], waypoints[1, :], linestyle='--', label='Original Line')
+    plt.plot(x,y, label='Minimum Snap Line')
+    plt.legend(loc="best")
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.xlim([-5, 35])
+    plt.ylim([5, -35])        
+    plt.savefig(str(test_location) + "top_minsnap" + str(snap_type) + ".png")
+    plt.close()
+
+    fig = plt.figure(3)
+    plt.scatter(waypoints[0, :], waypoints[2, :], label='Waypoints')
+    plt.plot(waypoints[0, :], waypoints[2, :], linestyle='--', label='Original Line')
+    plt.plot(x,z, label='Minimum Snap Line')
+    plt.legend(loc="best")
+    plt.xlabel("X")
+    plt.ylabel("Z")
+    plt.xlim([-5, 35])
+    plt.ylim([-5, 35])
+    plt.savefig(str(test_location) + "sidexz_minsnap" + str(snap_type) + ".png")
+    plt.close()
+
+    fig = plt.figure(4)
+    plt.scatter(waypoints[1, :], waypoints[2, :], label='Waypoints')
+    plt.plot(waypoints[1, :], waypoints[2, :], linestyle='--', label='Original Line')
+    plt.plot(y,z, label='Minimum Snap Line')
+    plt.legend(loc="best")
+    plt.xlabel("Y")
+    plt.ylabel("Z")
+    plt.xlim([5, -35])
+    plt.ylim([-5, 35])
+    plt.savefig(str(test_location) + "sideyz_minsnap" + str(snap_type) + ".png")
+    plt.close()
+   
     # Run the communication node
     self.ControlLoop()
+
 
   # This loads the goals positions from a file
   def LoadGoalPositions(self, filename):
@@ -226,6 +279,7 @@ class MinimumSnapController():
   def clock_callback(self, clock_msg):
     self.current_time = clock_msg.clock
 
+
   # Call back to get the gps data
   def get_gps(self, msg):
     x_pos = msg.position.x
@@ -254,9 +308,11 @@ class MinimumSnapController():
     # Return the distance
     return distance
   
+
   # On collsion reset the goal number
   def collision_callback(self, msg):
     self.goal_number = 0
+
 
   def shutdown_sequence(self):
     rospy.loginfo(str(rospy.get_name()) + ": Shutting Down")

@@ -1,7 +1,10 @@
-import math
+import matlab.engine
 import numpy as np
 from scipy.linalg import block_diag
-import matlab.engine
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from multiprocessing import Pool
+
 
 # Given a time T and waypoints w
 # Assign a time each waypoint should be met scaled by distance
@@ -18,6 +21,7 @@ def arrangeT(w, T):
     # Return the time
     return ts
 
+
 def computeQ(n, r, t1, t2):
     T = np.zeros(((n-r)*2+1, 1))
     for i in range(0, (n-r)*2+1):
@@ -29,9 +33,10 @@ def computeQ(n, r, t1, t2):
             k1 = i - r
             k2 = j - r
             k = k1 + k2 + 1
-            Q[i,j] = np.prod(np.arange(k1 + 1,k1 + r + 1)) * np.prod(np.arange(k2 + 1, k2 + r + 1))/k * T[k-1]
-            Q[j,i] = Q[i,j]
+            Q[i, j] = np.prod(np.arange(k1 + 1, k1 + r + 1)) * np.prod(np.arange(k2 + 1, k2 + r + 1))/k * T[k-1]
+            Q[j, i] = Q[i, j]
     return Q
+
 
 def calc_tvec(t, n_order, r):
     tvec = np.zeros((1, n_order+1))
@@ -41,9 +46,9 @@ def calc_tvec(t, n_order, r):
 
 
 def minimum_snap_single_axis_corridor(args):
+
     waypts, ts, n_order, v0, a0, ve, ae, corridor_r, orig_waypt_indx = args
 
-    # Get the original waypoints
     orig_waypt = waypts[orig_waypt_indx.astype(bool)]
 
     p0 = waypts[0]
@@ -55,6 +60,9 @@ def minimum_snap_single_axis_corridor(args):
     Q_all = np.array([])
     for i in range(0, n_poly):
         Q_all = block_diag(Q_all, computeQ(n_order, 3, ts[i], ts[i+1]))
+
+    # Remove the first row of the Q_all array
+    Q_all = Q_all[1:, :]
 
     b_all = np.zeros((Q_all.shape[0], 1))
 
@@ -87,7 +95,7 @@ def minimum_snap_single_axis_corridor(args):
     # Add constraint to go through waypoints
     i = 0
     for ind in orig_waypt_indx:
-        if i >= len(orig_waypt_indx) - 1:
+        if i >= len(orig_waypt_indx) -1:
             break
         if ind == 1:
             neq = neq + 1
@@ -100,6 +108,15 @@ def minimum_snap_single_axis_corridor(args):
     Aieq = np.zeros((2 * (n_poly - 1), n_coef * n_poly))
     bieq = np.zeros((2 * (n_poly - 1), 1))
 
+    # for i in range(0, n_poly-1):
+    #     tvec_p = calc_tvec(ts[i + 1], n_order, 0)
+    #     i1 = 2 * i
+    #     i2 = 2 * (i + 1)
+    #     i3 = n_coef * (i + 1)
+    #     i4 = n_coef * (i + 2)
+    #     Aieq[i1:i2, i3:i4] = np.array([tvec_p, -tvec_p])
+    #     bieq[i1:i2] = np.array([waypts[i+1]+corridor_r, corridor_r-waypts[i+1]]).reshape(2, 1)
+
     for i in range(0, n_poly-1):
         tvec_p = calc_tvec(ts[i + 1], n_order, 0)
         i1 = 2 * i
@@ -109,7 +126,6 @@ def minimum_snap_single_axis_corridor(args):
         Aieq[i1:i2, i3:i4] = np.array([tvec_p, -tvec_p])
         bieq[i1:i2] = np.array([waypts[i] + corridor_r, corridor_r - waypts[i]]).reshape(2, 1)
 
-    # Start the matlab engine
     eng = matlab.engine.start_matlab()
     Q_all_m = matlab.double(list(Q_all.tolist()))
     b_all_m = matlab.double(list(b_all.tolist()))
@@ -119,8 +135,7 @@ def minimum_snap_single_axis_corridor(args):
     beq_m = matlab.double(list(beq.tolist()))
     blank = matlab.double([])
 
-    # Default was 200, used 25 to speed it up
-    options = eng.optimoptions('quadprog', 'MaxIterations', 50)
+    options = eng.optimoptions('quadprog', 'MaxIterations', 25)
     p = eng.quadprog(Q_all_m, b_all_m, Aieq_m, bieq_m, Aeq_m, beq_m, blank, blank, blank, options)
 
     # # p = quadprog(Q_all, b_all, Aieq, bieq, Aeq, beq)
@@ -134,74 +149,6 @@ def minimum_snap_single_axis_corridor(args):
 
     return polys
 
-def minimum_snap_single_axis_close_form(args):
-
-    wayp, ts, n_order, v0, a0, v1, a1,  = args
-
-    n_coef = n_order+1
-    n_poly = len(wayp)-1
-    polys = 0
-    Q_all = np.array([])
-    for i in range(0, n_poly):
-        Q_all = block_diag(Q_all, computeQ(n_order, 3, ts[i], ts[i+1]))
-
-    # compute Tk
-    tk = np.zeros((n_poly + 1, n_coef))
-    for i in range(0, n_coef):
-        tk[:, i] = ts[:] ** i
-
-    n_continuous = 3
-    A = np.zeros((n_continuous * 2 * n_poly, n_coef * n_poly))
-    for i in range(0, n_poly):
-        for j in range(0, n_continuous):
-            for k in range(j, n_coef):
-                if k == j:
-                    t1 = 1
-                    t2 = 1
-                else:
-                    t1 = tk[i, k - j]
-                    t2 = tk[i + 1, k - j]
-                a = np.prod(np.arange(k - j + 1, k+1)) * t1
-                b = np.prod(np.arange(k - j + 1, k+1)) * t2
-                index11 = n_continuous * 2 * (i) + j
-                index12 = n_coef * (i) + k
-                A[index11, index12] = a
-                index21 = n_continuous * 2 * (i) + n_continuous + j
-                index22 = n_coef * (i) + k
-                A[index21, index22] = b
-
-    # compute M
-    M = np.zeros((n_poly * 2 * n_continuous, n_continuous * (n_poly + 1)))
-    for i in range(1, n_poly * 2 + 1):
-        j = math.floor(i / 2) + 1
-        rbeg = int(n_continuous * (i - 1))
-        cbeg = int(n_continuous * (j - 1))
-        M[rbeg:rbeg + n_continuous, cbeg:cbeg + n_continuous] = np.eye(n_continuous)
-
-    # compute C
-    num_d = n_continuous * (n_poly + 1)
-    C = np.eye(num_d)
-    df = np.concatenate([wayp, np.array([v0, a0, v1, a1])])
-    fix_idx = np.concatenate([np.arange(0, num_d, 3), np.array([1, 2, num_d - 2, num_d-1])])
-    free_idx = np.setdiff1d(np.arange(0, num_d), fix_idx)
-    C = np.hstack([C[:, fix_idx], C[:, free_idx]])
-
-    AiMC = np.dot(np.dot(np.linalg.inv(A), M), C)
-    R = np.dot(np.dot(AiMC.T, Q_all), AiMC)
-
-    n_fix = len(fix_idx)
-    Rff = R[0:n_fix, 0:n_fix]
-    Rpp = R[n_fix:, n_fix:]
-    Rfp = R[0:n_fix, n_fix:]
-    Rpf = R[n_fix:, 0:n_fix]
-
-    dp = np.dot(np.dot((-1 * np.linalg.inv(Rpp)), Rfp.T), df)
-
-    p = np.dot(AiMC, np.concatenate([df, dp]))
-
-    polys = p.reshape(n_poly, n_coef).T
-
-    return polys
 
 def poly_val(poly, t, r):
     val = 0
@@ -214,6 +161,7 @@ def poly_val(poly, t, r):
             a = poly[ind+1] * np.prod(np.arange(ind-r+1, ind)) * t**(ind-r)
             val = val + a
     return val
+
 
 def polys_vals(polys, ts, tt, r):
     idx = 0
@@ -229,3 +177,95 @@ def polys_vals(polys, ts, tt, r):
             vals[i] = poly_val(polys[:, idx], t, r)
 
     return vals
+
+
+waypoints = np.array([[0, 0, 0],
+                     [5, 2, 5],
+                     [2, 2, 2],
+                     [7, 3, 2],
+                     [3, 3, 4]]).T
+
+# # Example of actual waypoints
+waypoints = np.array([[0.1, -0.1, 0.1],
+                    [7.01746807, -0.47438195, 12.33942555],
+                    [17.69236745, -12.35556763, 17.97738286],
+                    [23.97354414, -9.67153598, 23.77979945],
+                    [22.40996379, -8.67317643, 23.06455235],
+                    [24.40126482, -13.25209284, 15.89520135],
+                    [21.31856002, -16.83695051, 20.21547731],
+                    [21.52024023, -17.25974625, 26.19989471],
+                    [12.9570001, -18.67680441, 28.17673884],
+                    [15., -15., 15.]]).T
+
+waypoints = np.array([[  0.1,  -0.1,   0.1],
+  [  12.97,-1.126 , 5.988],
+  [  28.64 , -10.39  , 23.62],
+  [  25.95 , -25.60 ,  24.18],
+  [  20.32 , -29.76 ,  5.157],
+  [  15.52 , -26.39 ,  0.02011],
+  [  13.26 , -14.81 ,  7.603],
+  [  20.20 , -4.138 ,  27.77],
+  [  18.28 , -1.145,   26.50],
+  [  15.00 , -15.00 ,  15.00]]).T
+
+ 
+v0 = np.array([0, 0, 0])
+a0 = np.array([0, 0, 0])
+v1 = np.array([0, 0, 0])
+a1 = np.array([0, 0, 0])
+T = 5
+n_order = 5
+
+# Re-sample mid points
+r = 0.2
+step = r
+new_waypts = np.array(waypoints[:, 0]).reshape(3, 1)
+for i in range(0, waypoints.shape[1]-1):
+    x1 = waypoints[0, i]
+    y1 = waypoints[1, i]
+    z1 = waypoints[2, i]
+    x2 = waypoints[0, i+1]
+    y2 = waypoints[1, i+1]
+    z2 = waypoints[2, i+1]
+    n = int(np.ceil((np.sqrt((x1-x2)**2+(y1-y2)**2+(z1-z2)**2))/step)+1)
+    sample_pts = np.vstack([np.linspace(x1, x2, n), np.linspace(y1, y2, n), np.linspace(z1, z2, n)])
+    new_waypts = np.hstack([new_waypts, sample_pts[:, 2:]])
+
+# Mark the original waypoints
+original_waypoint_index = np.zeros((new_waypts.shape[1], 1))
+for i in range(0, new_waypts.shape[1]):
+    for j in range(0, waypoints.shape[1]):
+        if (new_waypts[:, i] == waypoints[:, j]).all():
+            original_waypoint_index[i] = 1
+
+original_waypoint_index = original_waypoint_index.reshape(-1)
+
+ts = arrangeT(new_waypts, T)
+
+input1 = new_waypts[0, :], ts, n_order,  v0[0], a0[0], v1[0], a1[0], r, original_waypoint_index
+input2 = new_waypts[1, :], ts, n_order,  v0[0], a0[0], v1[0], a1[0], r, original_waypoint_index
+input3 = new_waypts[2, :], ts, n_order,  v0[0], a0[0], v1[0], a1[0], r, original_waypoint_index
+
+p = Pool(3)
+results = p.map(minimum_snap_single_axis_corridor, [input1, input2, input3])
+
+polys_x = results[0]
+polys_y = results[1]
+polys_z = results[2]
+
+# polys_x = minimum_snap_single_axis_corridor(input1)
+# polys_y = minimum_snap_single_axis_corridor(input2)
+# polys_z = minimum_snap_single_axis_corridor(input3)
+
+tt = np.arange(0, T, 0.01)
+xx = polys_vals(polys_x, ts, tt, 0)
+yy = polys_vals(polys_y, ts, tt, 0)
+zz = polys_vals(polys_z, ts, tt, 0)
+
+fig = plt.figure(1)
+ax = fig.gca(projection='3d')
+ax.scatter(waypoints[0, :], waypoints[1, :], waypoints[2, :], label='Waypoints')
+ax.plot(waypoints[0, :], waypoints[1, :], waypoints[2, :], linestyle='--', label='Original Line')
+ax.plot(xx, yy, zz, label='Minimum Snap Line')
+ax.legend()
+plt.show()

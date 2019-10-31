@@ -30,8 +30,8 @@ def computeQ(n, r, t1, t2):
             k1 = i - r
             k2 = j - r
             k = k1 + k2 + 1
-            Q[i,j] = np.prod(np.arange(k1 + 1,k1 + r + 1)) * np.prod(np.arange(k2 + 1, k2 + r + 1))/k * T[k-1]
-            Q[j,i] = Q[i,j]
+            Q[i, j] = np.prod(np.arange(k1 + 1, k1 + r + 1)) * np.prod(np.arange(k2 + 1, k2 + r + 1))/k * T[k-1]
+            Q[j, i] = Q[i, j]
     return Q
 
 def minimum_snap_single_axis_close_form(wayp, ts, n_order, v0, a0, v1, a1):
@@ -39,6 +39,7 @@ def minimum_snap_single_axis_close_form(wayp, ts, n_order, v0, a0, v1, a1):
     n_coef = n_order+1
     n_poly = len(wayp)-1
     polys = 0
+
     Q_all = np.array([])
     for i in range(0, n_poly):
         Q_all = block_diag(Q_all, computeQ(n_order, 3, ts[i], ts[i+1]))
@@ -132,18 +133,43 @@ def polys_vals(polys, ts, tt, r):
     return vals
 
 waypoints = np.array([[0, 0, 0],
-                     [5, 5, 2],
-                     [2, -1, 1],
-                     [4, 8, 2]]).T
+                     [5, 2, 5],
+                     [2, 2, 2],
+                     [7, 3, 2],
+                     [3, 3, 4]]).T
+
+# # Example of actual waypoints
+waypoints = np.array([[0.1, -0.1, 0.1],
+                    [7.01746807, -0.47438195, 12.33942555],
+                    [17.69236745, -12.35556763, 17.97738286],
+                    [23.97354414, -9.67153598, 23.77979945],
+                    [22.40996379, -8.67317643, 23.06455235],
+                    [24.40126482, -13.25209284, 15.89520135],
+                    [21.31856002, -16.83695051, 20.21547731],
+                    [21.52024023, -17.25974625, 26.19989471],
+                    [12.9570001, -18.67680441, 28.17673884],
+                    [15., -15., 15.]]).T
+
+
+waypoints = np.array([[  0.1,  -0.1,   0.1],
+  [  12.97,-1.126 , 5.988],
+  [  28.64 , -10.39  , 23.62],
+  [  25.95 , -25.60 ,  24.18],
+  [  20.32 , -29.76 ,  5.157],
+  [  15.52 , -26.39 ,  0.02011],
+  [  13.26 , -14.81 ,  7.603],
+  [  20.20 , -4.138 ,  27.77],
+  [  18.28 , -1.145,   26.50],
+  [  15.00 , -15.00 ,  15.00]]).T
+
 
 v0 = np.array([0, 0, 0])
 a0 = np.array([0, 0, 0])
 v1 = np.array([0, 0, 0])
 a1 = np.array([0, 0, 0])
 
-T = 5
+T = 10
 ts = arrangeT(waypoints, T)
-print(ts)
 
 n_order = 5
 

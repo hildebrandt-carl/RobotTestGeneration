@@ -22,13 +22,23 @@ from processResultsUtils import lineseg_dist
 #                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
 #                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
 
-all_folders = ["./Results/minsnaptest/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",]
+all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap2/"]
 
-system_types = ["speed-2_minsnap0",
-                "speed-1_minsnap0",
-                "speed5_minsnap0",
-                "speed10_minsnap0",
-                "speed-1_minsnap1"]
+all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap2/"]
+
+system_types = ["speed-2",
+                "speed-1",
+                "speed5",
+                "speed10",
+                "speed-1_minsnap1",
+                "speed-1_minsnap2"]
 
 for stype in system_types:
     for folder in all_folders:

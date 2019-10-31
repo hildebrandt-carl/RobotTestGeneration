@@ -1,13 +1,13 @@
 #!/bin/zsh
 
 # Change the ROS_MASTER_URI to allow multiple version of ROS to run at the same time
-ROS_MASTER_URI=http://localhost:11312
+ROS_MASTER_URI=http://localhost:11311
 
 # Source the ros workspace
 source ROS_WS/devel/setup.zsh
 
 # Used to save the port number
-port=25002
+port=25001
 
 # Create a temporary unity folder
 cp -r ./Unity/Build ./Build$port
@@ -28,19 +28,19 @@ beamcounter=10
 totaltime=28800
 simtime=90
 nodescounter=250
-mainfolder='PolySameTimeFull1'
+mainfolder='minsnaptest'
 
-for minsnap in 1
+for minsnap in 0
 do
-	for gentype in 'score'
+	for gentype in 'kinematic'
 	do
-		for controllertype in 'speed-1_minsnap1'
+		for controllertype in 'waypoint'
 		do
 			# Get the folder
 			folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_totaltime$totaltime\_simtime$simtime\_$gentype\_$controllertype
 
 			# Get the total number of tests to run
-			mapcounter=57
+			mapcounter=1
 			totaltests=$(ls ..$folder/maps | wc -l)
 
 			echo "--------------------------------------------------------"
@@ -48,7 +48,7 @@ do
 			echo "Total tests found: $totaltests"
 			echo "--------------------------------------------------------"
 
-			while [ $mapcounter -le 113 ]
+			while [ $mapcounter -le 56 ]
 			do
 				echo "Processing: $folder/maps/map$mapcounter"
 				echo " "

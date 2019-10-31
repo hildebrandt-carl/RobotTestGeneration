@@ -21,7 +21,6 @@ current_dir="$PWD"
 # Change the port number inside the new build
 sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
-
 # Variables we can change
 depthcounter=10
 rescounter=4
@@ -29,13 +28,13 @@ beamcounter=10
 totaltime=28800
 simtime=90
 nodescounter=250
-mainfolder='minsnaptest'
+mainfolder='PolySameTimeFull1'
 
-for minsnap in 0 1
+for minsnap in 1
 do
-	for gentype in 'kinematic'
+	for gentype in 'score'
 	do
-		for controllertype in 'waypoint'
+		for controllertype in 'speed-1_minsnap1'
 		do
 			# Get the folder
 			folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_totaltime$totaltime\_simtime$simtime\_$gentype\_$controllertype
@@ -49,13 +48,13 @@ do
 			echo "Total tests found: $totaltests"
 			echo "--------------------------------------------------------"
 
-			while [ $mapcounter -le 1 ]
+			while [ $mapcounter -le 56 ]
 			do
 				echo "Processing: $folder/maps/map$mapcounter"
 				echo " "
 
 				# If it is in min snap mode
-				if [ $minsnap = 1 ]
+				if [ $minsnap -ne 0 ]
 				then
 					declare -a speeds=(-1)
 				# Otherwise use all speeds
@@ -85,7 +84,12 @@ do
 					roslaunch_PID=$!
 
 					# Each test is given 30 seconds
-					sleep 90
+					if [ $minsnap -eq 2 ]
+					then
+						sleep 270
+					else
+						sleep 90
+					fi
 
 					# Kill the code
 					kill -INT $unity_PID
@@ -99,6 +103,15 @@ do
 					mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_speed$speed\_minsnap$minsnap.txt
 					mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_speed$speed\_minsnap$minsnap.txt
 					mv position_log.txt ..$folder/maps/map$mapcounter/position_log_speed$speed\_minsnap$minsnap.txt
+
+					# If it is in min snap mode
+					if [ $minsnap -ne 0 ]
+					then
+						mv all_minsnap$minsnap.png ..$folder/maps/map$mapcounter/all_minsnap$minsnap\_speed$speed.png
+						mv sidexz_minsnap$minsnap.png ..$folder/maps/map$mapcounter/sidexz_minsnap$minsnap\_speed$speed.png
+						mv sideyz_minsnap$minsnap.png ..$folder/maps/map$mapcounter/sideyz_minsnap$minsnap\_speed$speed.png
+						mv top_minsnap$minsnap.png ..$folder/maps/map$mapcounter/top_minsnap$minsnap\_speed$speed.png
+					fi
 
 					# Allow 5 seconds for clean up
 					sleep 5

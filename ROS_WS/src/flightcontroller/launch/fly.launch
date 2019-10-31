@@ -13,7 +13,12 @@
   <arg name="ip" default="127.0.01" />
   <arg name="port" default="25001" />
 
-  <arg name="minsnap" default="0" />
+  <arg name="acceptance_distance" default="1" />
+
+  <!-- Set minsnap, 0 standard trajectory -->
+  <!-- Set minsnap, 1 constraints are to go through waypoints while minimizing snap -->
+  <!-- Set minsnap, 2 constraints are to go keep a certain radius away from straight trajectory while minimizing snap -->
+  <arg name="minsnap" default="2" />
 
   <!-- Set the requested velocity, -2 is unstable waypoint mode -->
   <!-- Set the requested velocity, -1 is waypoint mode -->
@@ -25,6 +30,7 @@
     <node pkg="flightcontroller" type="straight_controller.py" name="straight_controller_node" output="screen">
       <param name="test_location" type="string" value="$(arg test_location)"/>
       <param name="test_name" type="string" value="$(arg test_name)"/>
+      <param name="acceptance_distance" type="int" value="$(arg acceptance_distance)"/>
     </node>
   </group>
 
@@ -32,7 +38,9 @@
     <node pkg="flightcontroller" type="minsnap_controller.py" name="minsnap_controller_node" output="screen">
       <param name="test_location" type="string" value="$(arg test_location)"/>
       <param name="test_name" type="string" value="$(arg test_name)"/>
-      <param name="min_snap" type="integer" value="$(arg minsnap)"/>
+      <param name="min_snap" type="int" value="$(arg minsnap)"/>
+      <param name="acceptance_distance" type="int" value="$(arg acceptance_distance)"/>
+      <param name="corridor_size" type="double" value="0.2"/>
     </node>
   </group>
 

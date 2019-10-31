@@ -15,6 +15,15 @@ system_types = ["speed-2",
                 "speed5",
                 "speed10"]
 
+all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",]
+
+system_types = ["speed-2",
+                "speed-1",
+                "speed5",
+                "speed10",
+                "speed-1_minsnap1",
+                "speed-1_minsnap2"]
+
 for stype in system_types:
     for folder in all_folders:
 
