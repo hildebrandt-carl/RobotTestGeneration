@@ -174,3 +174,43 @@ $ rostopic echo /bebop/states/ardrone3/PilotingState/PositionChanged
 
 Top TIP: To restart your network manager after running one of the simulations use:
 $ sudo service network-manager restart
+
+
+
+This simulator connects to the network interface. When we close the simulator it does not reset the network interface name to the orignal name. In order to do this we have added a set of rules in the udev folder as follows:
+```
+$ cd /etc/udev/rules.d
+# Possibly didnt need this one
+$ sudo nano 76-netnames.rules
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="e0:d5:5e:25:d4:6a", NAME="enp0"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0c", NAME="enp1p0"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0d", NAME="enp1p1"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0e", NAME="enp1p2"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0f", NAME="enp1p3"
+
+$ sudo nano 70-persistent-net.rules
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="e0:d5:5e:25:d4:6a", NAME="enp0"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0c", NAME="enp1p0"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0d", NAME="enp1p1"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0e", NAME="enp1p2"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0f", NAME="enp1p3"
+```
+
+Now the network interface names will stay the same. However after each simulation you need to deactive and reactivate the network card. You can do this using:
+```
+$ ifconfig <wrong_name> down  
+$ ip link set <wrong_name> name <correct_name>  
+$ ifconfig <correct_name>   up 
+```
+
+So for example
+```
+$ ifconfig dev6 down  
+$ ip link set dev6 name enp0  
+$ ifconfig enp0 up 
+```
+
+We can get the <wrong_name> using:
+```
+$ wrongname=`ifconfig | grep e0:d5:5e:25:d4:6a | awk '{print $1}'`
+```

@@ -37,7 +37,7 @@ with open(args.loadfile, "r") as f:
     # Read every line
     for line in f:
         # If the line is a waypoint file
-        if line[0] == '0':
+        if line[0].isdigit():
             # split the file based on tabs
             values = line.split('\t')
 
