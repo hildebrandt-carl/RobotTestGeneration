@@ -18,6 +18,9 @@
     <node name="flightgoggles_uav_dynamics" pkg="flightgoggles_uav_dynamics" type="node"
           if="$(arg use_dynamics)" output="screen">
       <param name="ignore_collisions" type="bool" value="$(arg ignore_collisions)" />
+      <param name="angular_process_noise" type="double" value="0.0" />
+      <param name="linear_process_noise" type="double" value="0.0" />
+      <param name="clockscale" type="double" value="1"/>
     </node>
 
     <!-- Run RVIZ for visualization

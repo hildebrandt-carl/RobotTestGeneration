@@ -21,97 +21,109 @@ current_dir="$PWD"
 # Change the port number inside the new build
 sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
+# Variables we can change
 depthcounter=10
+rescounter=4
+beamcounter=10
+totaltime=28800
+simtime=90
+nodescounter=250
+mainfolder='PolySameTimeFull1'
 
-for nodescounter in 500
+for minsnap in 1
 do
-	for rescounter in 4
+	for gentype in 'score'
 	do
-		for angle in 180
+		for controllertype in 'speed-1_minsnap1'
 		do
-			for beamcounter in 10
+			# Get the folder
+			folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_totaltime$totaltime\_simtime$simtime\_$gentype\_$controllertype
+
+			# Get the total number of tests to run
+			mapcounter=57
+			totaltests=$(ls ..$folder/maps | wc -l)
+
+			echo "--------------------------------------------------------"
+			echo "Processing: $folder"
+			echo "Total tests found: $totaltests"
+			echo "--------------------------------------------------------"
+
+			while [ $mapcounter -le 113 ]
 			do
-				for simtype in 'score'
+				echo "Processing: $folder/maps/map$mapcounter"
+				echo " "
+
+				# If it is in min snap mode
+				if [ $minsnap -ne 0 ]
+				then
+					declare -a speeds=(-1)
+				# Otherwise use all speeds
+				else
+					declare -a speeds=(-2 -1 5 10)
+				fi
+
+				for speed in "${speeds[@]}"
 				do
-					for searchtime in 600
-					do
-							# Get the folder
-							folder=/TestGen/Results/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_searchtime$searchtime\_$simtype\_angle$angle
 
-							# Get the total number of tests to run
-							mapcounter=13
-							totaltests=$(ls ..$folder/maps | wc -l)
+					# Get the current test
+					cp ..$folder/maps/map$mapcounter/test.txt test.txt
 
-							echo "--------------------------------------------------------"
-							echo "Processing: $folder"
-							echo "Total tests found: $totaltests"
-							echo "--------------------------------------------------------"
+					# Run the simulator
+					./WorldEngine.x86_64 &
 
-							while [ $mapcounter -le $totaltests ]
-							do
-								echo "Processing: $folder/maps/map$mapcounter"
-								echo " "
+					# Get the PID so that I can kill it later
+					unity_PID=$!
 
-								for speed in -1 10
-								do
+					# Wait 30 seconds for unity to start
+					sleep 20
 
-									# Get the current test
-									cp ..$folder/maps/map$mapcounter/test.txt test.txt
+					# Launch the ros file
+					roslaunch flightcontroller fly.launch port:="$port" test_location:="$current_dir" save_location:="$current_dir" speed:="$speed" minsnap:="$minsnap" &
 
-									# Run the simulator
-									./WorldEngine.x86_64 &
+					# Get the PID so that I can kill it later
+					roslaunch_PID=$!
 
-									# Get the PID so that I can kill it later
-									unity_PID=$!
+					# Each test is given 30 seconds
+					if [ $minsnap -eq 2 ]
+					then
+						sleep 270
+					else
+						sleep 90
+					fi
 
-									# Wait 30 seconds for unity to start
-									sleep 30
+					# Kill the code
+					kill -INT $unity_PID
+					kill -INT $roslaunch_PID
 
-									# Launch the ros file
-									roslaunch flightcontroller fly.launch port:="$port" test_location:="$current_dir" save_location:="$current_dir" speed:="$speed" &
+					# Remove the temporary test
+					rm test.txt
+					
+					# Save the test to the appropriate file
+					mv performance.txt ..$folder/maps/map$mapcounter/performance_speed$speed\_minsnap$minsnap.txt
+					mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_speed$speed\_minsnap$minsnap.txt
+					mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_speed$speed\_minsnap$minsnap.txt
+					mv position_log.txt ..$folder/maps/map$mapcounter/position_log_speed$speed\_minsnap$minsnap.txt
 
-									# Get the PID so that I can kill it later
-									roslaunch_PID=$!
+					# If it is in min snap mode
+					if [ $minsnap -ne 0 ]
+					then
+						mv all_minsnap$minsnap.png ..$folder/maps/map$mapcounter/all_minsnap$minsnap\_speed$speed.png
+						mv sidexz_minsnap$minsnap.png ..$folder/maps/map$mapcounter/sidexz_minsnap$minsnap\_speed$speed.png
+						mv sideyz_minsnap$minsnap.png ..$folder/maps/map$mapcounter/sideyz_minsnap$minsnap\_speed$speed.png
+						mv top_minsnap$minsnap.png ..$folder/maps/map$mapcounter/top_minsnap$minsnap\_speed$speed.png
+					fi
 
-									# Each test is given 30 seconds
-									sleep 75
-
-									# Kill the code
-									kill -INT $unity_PID
-									kill -INT $roslaunch_PID
-
-									# Remove the temporary test
-									rm test.txt
-									
-									# Save the test to the appropriate file
-									if [ $speed -eq -1 ]
-									then
-										mv performance.txt ..$folder/maps/map$mapcounter/performance_waypoint.txt
-									else
-										mv performance.txt ..$folder/maps/map$mapcounter/performance_constant.txt
-									fi
-
-									# Allow 30 seconds for gezbo to clean up
-									sleep 30
-								
-								# End speed
-								done
-
-								# Increment the mapcounter
-								((mapcounter++))
-							# End mapcounter
-							done
-					# End searchtime
-					done
-				# End simtype
+					# Allow 5 seconds for clean up
+					sleep 5
+				
+				# End speed
 				done
-			# End beamcounter
+
+				# Increment the mapcounter
+				((mapcounter++))
 			done
-		# End depthcounter
 		done
-	# End rescounter
 	done
-# End nodescounter
 done
 
 # Go back to the original dir

@@ -4,59 +4,45 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import glob
 from math import sqrt, pow
+from processResultsUtils import get_numbers_from_string
+from processResultsUtils import lineseg_dist
 
-# https://stackoverflow.com/questions/56463412/distance-from-a-point-to-a-line-segment-in-3d-python
-def get_numbers_from_string(string_var):
-    # Split by space
-    space_list = string_var.split(" ")
+# all_folders = ["./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
+#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/",
+#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/"]
 
-    # Saves numbers
-    final_numbers = []
+# all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
+#
+# all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
 
-    # Try convert each word to a number
-    for s in space_list:
-        # Remove comma
-        s = s.strip(",")
-        try:
-            number = float(s)
-            final_numbers.append(number)
-        except:
-            pass
+all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap2/"]
 
-    return final_numbers
+all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/",
+               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap2/"]
 
-
-def lineseg_dist(p, a, b):
-
-    # normalized tangent vector
-    d = np.divide(b - a, np.linalg.norm(b - a))
-
-    # signed parallel distance components
-    s = np.dot(a - p, d)
-    t = np.dot(p - b, d)
-
-    # clamped parallel distance
-    h = np.maximum.reduce([s, t, 0])
-
-    # perpendicular distance component
-    c = np.cross(p - a, d)
-
-    return np.hypot(h, np.linalg.norm(c))
-
-all_folders = ["./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_random_angle180/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_maxvel_angle180/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_kinematic_angle180/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle180/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle135/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle90/",
-               "./Results/CompleteTestRun3/MIT_seed10_depth10_nodes500_res4_beamwidth10_searchtime600_score_angle45/"]
-
-system_types = ["constant",
-                "waypoint"]
+system_types = ["speed-2",
+                "speed-1",
+                "speed5",
+                "speed10",
+                "speed-1_minsnap1",
+                "speed-1_minsnap2"]
 
 for stype in system_types:
     for folder in all_folders:
-
+        #MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_kinematic_angle180
         file_location = folder
         file_names = glob.glob(file_location + "maps/map*/performance_" + stype + ".txt")
         print(file_location + "maps/map*/performance_" + stype + ".txt")
@@ -98,6 +84,10 @@ for stype in system_types:
             current_waypoint_position = []
             current_waypoint_time = []
             current_deviation = []
+            deviation_per_waypoint = []
+            max_deviation_per_waypoint = []
+            deviation_squared_per_waypoint = []
+            goal_switch_indicies = []
             current_total_time = -1
             total_distance_travelled = 0
             trajectory_distance = 0
@@ -230,6 +220,9 @@ for stype in system_types:
                 distance = sqrt(pow(p1[0] - p2[0], 2) + pow(p1[1] - p2[1], 2) + pow(p1[2] - p2[2], 2))
                 trajectory_distance += distance
 
+            # Keeps track of how many recordings per waypoint there are
+            recordings_per_waypoint = 0
+
             # Get the average distance from the optimal trajectory
             for cur_pos, cur_goal in zip(current_drone_position, current_waypoint_position):
                 # There is no previous waypoint before we hit the first waypoint
@@ -247,11 +240,41 @@ for stype in system_types:
 
                     # Calculate the distance from current position to the line created by the goal
                     d = lineseg_dist(p=np.asarray(cur_pos),
-                                        a=np.asarray(cur_goal),
-                                        b=np.asarray(prev_goal))
+                                     a=np.asarray(cur_goal),
+                                     b=np.asarray(prev_goal))
+
+                # Save the deviation per waypoint
+                if len(deviation_per_waypoint) <= index:
+                    # Get the average for the previous waypoint
+                    if len(deviation_per_waypoint) > 0:
+                        deviation_per_waypoint[index - 1] = deviation_per_waypoint[index - 1] / float(recordings_per_waypoint)
+                        deviation_squared_per_waypoint[index - 1] = deviation_squared_per_waypoint[index - 1] / float(recordings_per_waypoint)
+
+                    # Start the new deviation tracker
+                    deviation_per_waypoint.append(abs(d))
+                    deviation_squared_per_waypoint.append(abs(d) ** 2)
+                    max_deviation_per_waypoint.append(abs(d))
+                    recordings_per_waypoint = 1
+
+                    # Save the index as this is when a switch between waypoints happened
+                    goal_switch_indicies.append(len(current_deviation))
+                else:
+                    deviation_per_waypoint[index] += abs(d)
+                    deviation_squared_per_waypoint[index] += (abs(d) ** 2)
+                    max_deviation_per_waypoint[index] = max( max_deviation_per_waypoint[index], abs(d) )
+                    recordings_per_waypoint += 1
 
                 # Save the smallest distance to the deviation from optimal array
-                current_deviation.append(d)
+                current_deviation.append(abs(d))
+
+            # Average the last deviation
+            deviation_per_waypoint[index] = deviation_per_waypoint[index] / float(recordings_per_waypoint)
+            deviation_squared_per_waypoint[index] = deviation_squared_per_waypoint[index] / float(recordings_per_waypoint)
+
+            # Remove the first which was just 0
+            deviation_per_waypoint = deviation_per_waypoint[1:]
+            deviation_squared_per_waypoint = deviation_squared_per_waypoint[1:]
+            max_deviation_per_waypoint = max_deviation_per_waypoint[1:]
 
             # Calculate the average deviation from optimal trajectory
             average_current_deviation = sum(current_deviation) / len(current_deviation)
@@ -268,7 +291,7 @@ for stype in system_types:
             # Save the details of that test into the correct folder
             file = open(folder_name + "analysis_" + str(stype) + ".txt", "w")
             file.write("Path Score: " + str(path_score) + "\n")
-            file.write("Time between waypoints: " + str(current_waypoint_time) + "\n")
+            file.write("Time between waypoints: " + str(list(current_waypoint_time)) + "\n")
             file.write("Average time between waypoints: " + str(average_time_between_waypoints) + "\n")
             file.write("Total waypoints: " + str(len(current_waypoint_time)) + "\n")
             file.write("Total time between waypoints: " + str(sum(current_waypoint_time)) + "\n")
@@ -277,8 +300,11 @@ for stype in system_types:
             file.write("Average deviation from optimal trajectory: " + str(average_current_deviation) + "\n")
             file.write("Total deviation from optimal trajectory: " + str(sum(current_deviation)) + "\n")
             file.write("Maximum deviation from optimal trajectory: " + str(max(current_deviation)) + "\n")
-            file.write("Total distance travelled: " + str(total_distance_travelled)  + "\n")
+            file.write("Total distance travelled: " + str(total_distance_travelled) + "\n")
             file.write("Trajectory length: " + str(trajectory_distance) + "\n")
+            file.write("Average deviation between waypoints: " + str(deviation_per_waypoint) + "\n")
+            file.write("Average squared deviation between waypoints: " + str(deviation_squared_per_waypoint) + "\n")
+            file.write("Maximum deviation between waypoints: " + str(max_deviation_per_waypoint) + "\n")
             file.close()
 
             print("Path Score: " + str(path_score))
@@ -303,11 +329,11 @@ for stype in system_types:
             fig = plt.figure()
             ax = Axes3D(fig)
             ax.plot3D(d_pos[:, 0], d_pos[:, 1], d_pos[:, 2], color='green', linestyle=":", linewidth=0.75, label='Drone Position')
-            ax.plot(w_pos[:, 0], w_pos[:, 1], w_pos[:, 2], color='red', linestyle=":", linewidth=0.75, label='Ideal Trajectory')
+            ax.plot(w_pos[:, 0], w_pos[:, 1], w_pos[:, 2], color='red', linestyle="-", linewidth=0.55, label='Ideal Trajectory')
             ax.scatter(w_pos[:, 0], w_pos[:, 1], w_pos[:, 2], c='red', label='Waypoints')
             ax.set_xlim([0, 30])
             ax.set_ylim([0, -30])
-            ax.set_zlim([0, 15])
+            ax.set_zlim([0, 30])
             ax.set_xlabel('X-axis')
             ax.set_ylabel('Y-axis')
             ax.set_zlabel('Z-axis')
@@ -316,9 +342,53 @@ for stype in system_types:
             plt.savefig(folder_name + "flight_comparison_" + stype + ".png")
             plt.close()
 
+            # Create a 3D plot of the trajectory and actual path
+            fig = plt.figure()
+            plt.plot(d_pos[:, 0], d_pos[:, 1], color='green', linestyle=":", linewidth=0.75, label='Drone Position')
+            plt.plot(w_pos[:, 0], w_pos[:, 1], color='red', linestyle="-", linewidth=0.75, label='Ideal Trajectory')
+            plt.scatter(w_pos[:, 0], w_pos[:, 1], c='red', label='Waypoints')
+            plt.xlim([-5, 35])
+            plt.ylim([5, -35])
+            plt.xlabel('X-axis')
+            plt.ylabel('Y-axis')
+            plt.title("Optimal vs. true trajectory")
+            plt.legend()
+            plt.savefig(folder_name + "flight_comparison_top_" + stype + ".png")
+            plt.close()
+
+            # Create a 3D plot of the trajectory and actual path
+            fig = plt.figure()
+            plt.plot(d_pos[:, 0], d_pos[:, 2], color='green', linestyle=":", linewidth=0.75, label='Drone Position')
+            plt.plot(w_pos[:, 0], w_pos[:, 2], color='red', linestyle="-", linewidth=0.75, label='Ideal Trajectory')
+            plt.scatter(w_pos[:, 0], w_pos[:, 2], c='red', label='Waypoints')
+            plt.xlim([-5, 35])
+            plt.ylim([-5, 35])
+            plt.xlabel('X-axis')
+            plt.ylabel('Z-axis')
+            plt.title("Optimal vs. true trajectory")
+            plt.legend()
+            plt.savefig(folder_name + "flight_comparison_sidexz_" + stype + ".png")
+            plt.close()
+
+            # Create a 3D plot of the trajectory and actual path
+            fig = plt.figure()
+            plt.plot(d_pos[:, 1], d_pos[:, 2], color='green', linestyle=":", linewidth=0.75, label='Drone Position')
+            plt.plot(w_pos[:, 1], w_pos[:, 2], color='red', linestyle="-", linewidth=0.75, label='Ideal Trajectory')
+            plt.scatter(w_pos[:, 1], w_pos[:, 2], c='red', label='Waypoints')
+            plt.xlim([5, -35])
+            plt.ylim([-5, 35])
+            plt.xlabel('Y-axis')
+            plt.ylabel('Z-axis')
+            plt.title("Optimal vs. true trajectory")
+            plt.legend()
+            plt.savefig(folder_name + "flight_comparison_sideyz_" + stype + ".png")
+            plt.close()
+
             # Plot the trajectory deviation
             fig = plt.figure()
             plt.plot(current_elapsed_time, current_deviation)
+            for vert_line in goal_switch_indicies:
+                plt.axvline(current_elapsed_time[vert_line], color='red', linestyle=":", linewidth=0.75)
             plt.ylim([0, 10])
             plt.xlabel("Time")
             plt.ylabel("Deviation")
