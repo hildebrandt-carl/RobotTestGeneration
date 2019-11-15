@@ -24,8 +24,12 @@ class StreamingExample:
 
     def __init__(self):
         # Create the olympe.Drone object from its IP address
+        # self.drone = olympe.Drone(
+        #     "10.202.0.1",
+        #     loglevel=3,
+        # )
         self.drone = olympe.Drone(
-            "10.202.0.1",
+            "192.168.42.1",
             loglevel=3,
         )
         self.tempd = tempfile.mkdtemp(prefix="olympe_streaming_test_")

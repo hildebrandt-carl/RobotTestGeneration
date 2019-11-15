@@ -207,16 +207,8 @@ class DroneController:
         """"""
         print("Takeoff if necessary...")
         self.drone(
-            FlyingStateChanged(state="hovering", _policy="check")
-            | FlyingStateChanged(state="flying", _policy="check")
-            | (
-                GPSFixStateChanged(fixed=1, _timeout=5, _policy="check_wait")
-                >> (
-                    TakeOff(_no_expect=True)
-                    & FlyingStateChanged(
-                        state="hovering", _timeout=5, _policy="check_wait")
-                )
-            )
+            TakeOff(_no_expect=True)
+            & FlyingStateChanged(state="hovering", _timeout=5, _policy="check_wait")
         ).wait()
 
 
@@ -251,7 +243,7 @@ class DroneController:
 
 
 if __name__ == "__main__":
-    drone = olympe.Drone(DroneController.SIMULATED_IP, loglevel=0)
+    drone = olympe.Drone(DroneController.PHYSICAL_IP, loglevel=0)
 
     try:
         x = DroneController(drone)
