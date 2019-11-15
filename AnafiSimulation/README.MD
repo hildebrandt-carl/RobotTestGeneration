@@ -58,3 +58,10 @@ Current Password: autosoftlab
 
 ### Forgot wifi password
 Hold the drones power button for 10 second to reset and reinitiate the password
+
+
+
+
+# Deleting Olympe
+Delete the file code/Parrot-SDK
+It should be in your home directory
