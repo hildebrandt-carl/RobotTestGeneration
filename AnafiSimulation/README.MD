@@ -33,3 +33,28 @@ Moveto takes in long lat
 
 
 Installing olympe
+
+
+
+
+
+# Connecting to the parrot
+
+## Via phone connection
+
+Open the central arm on the anafi controller
+connect your phone to the controller via a USB cable
+Start the free flight 6
+Click fly
+
+It should connect automatically to the drone
+
+
+### Changing the wifi password for anafi
+In freeflight 6 open settings->network->password
+Then enter a new wifi password
+
+Current Password: autosoftlab
+
+### Forgot wifi password
+Hold the drones power button for 10 second to reset and reinitiate the password
