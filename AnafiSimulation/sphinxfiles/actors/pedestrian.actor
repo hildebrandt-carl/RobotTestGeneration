@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actor name="pedestrian">
+  <pose>0 0 0 0 0 0</pose>
+  <skin>
+    <filename>moonwalk.dae</filename>
+    <scale>1.0</scale>
+  </skin>
+  <animation name="walk">
+    <filename>walk.dae</filename>
+    <scale>1.000000</scale>
+    <interpolate_x>true</interpolate_x>
+  </animation>
+  <animation name="run">
+     <filename>run.dae</filename>
+     <scale>1.000000</scale>
+     <interpolate_x>true</interpolate_x>
+  </animation>
+  <animation name="moonwalk">
+     <filename>moonwalk.dae</filename>
+     <scale>1.000000</scale>
+     <interpolate_x>true</interpolate_x>
+  </animation>
+  <animation name="sit_down">
+     <filename>sit_down.dae</filename>
+     <scale>1.000000</scale>
+     <interpolate_x>true</interpolate_x>
+  </animation>
+  <animation name="sitting">
+     <filename>sitting.dae</filename>
+     <scale>1.000000</scale>
+     <interpolate_x>true</interpolate_x>
+  </animation>
+  <animation name="stand">
+     <filename>stand.dae</filename>
+     <scale>1.000000</scale>
+     <interpolate_x>true</interpolate_x>
+  </animation>
+  <animation name="stand_up">
+     <filename>stand_up.dae</filename>
+     <scale>1.000000</scale>
+     <interpolate_x>true</interpolate_x>
+  </animation>
+  <animation name="talk_a">
+     <filename>talk_a.dae</filename>
+     <scale>1.000000</scale>
+     <interpolate_x>true</interpolate_x>
+  </animation>
+  <animation name="talk_b">
+     <filename>talk_b.dae</filename>
+     <scale>1.000000</scale>
+     <interpolate_x>true</interpolate_x>
+  </animation>
+  <plugin name="actor" filename="libsphinx_actor.so">
+    <animation_factor>5.1</animation_factor>
+    <actor_height>1.7</actor_height>
+    <actor_cog_height>1.05</actor_cog_height>
+  </plugin>
+  <plugin name="omniscient" filename="libsphinx_omniscient.so">
+    <omnicient></omnicient>
+  </plugin>
+  <plugin name="gps" filename="libsphinx_gps.so">
+    <update_rate>1</update_rate>
+    <initial_time>2016-01-01 00:00:00.000</initial_time>
+    <status>A</status> <!-- Navigation receiver status ('A':Valid, 'V':Warning) -->
+    <position_lat_expr>val</position_lat_expr> <!-- Latitude position expression ("val": nominal value in decimal degrees) -->
+    <position_lng_expr>val</position_lng_expr> <!-- Longitude position expression ("val": nominal value in decimal degrees) -->
+    <position_alt_expr>val</position_alt_expr> <!-- Altitude position expression ("val": nominal value in decimal degrees) -->
+    <velocity_lat_expr>val</velocity_lat_expr> <!-- Latitude velocity expression ("val": nominal value in decimal degrees) -->
+    <velocity_lng_expr>val</velocity_lng_expr> <!-- Longitude velocity expression ("val": nominal value in decimal degrees) -->
+    <velocity_alt_expr>val</velocity_alt_expr> <!-- Altitude velocity expression ("val": nominal value in decimal degrees) -->
+    <p_acc_m_expr>0.8</p_acc_m_expr> <!-- Position Accuracy Estimate (m) -->
+    <s_acc_mps_expr>0.5</s_acc_mps_expr> <!-- Speed Accuracy Estimate (m/s) -->
+    <faa_mode_indicator>A</faa_mode_indicator> <!-- Mode indicator ('N':No Fix, 'A':Autonomous, 'D':Differential, 'E':Estimated/Dead reckoning fix) -->
+    <pos_mode>AA</pos_mode> <!-- Positioning mode, First character for GPS, second character for GLONASS -->
+    <num_sv>12</num_sv> <!-- Number of satellites used (range: 0-99) -->
+    <quality>1</quality> <!-- Quality indicator (0:No Fix, 1:Autonomous, 2:Differential, 6:Estimated/Dead reckoning fix) -->
+    <pdop_expr>1.0</pdop_expr> <!-- Position Dilution of Precision -->
+    <hdop_expr>1.0</hdop_expr> <!-- Horizontal Dilution of Precision -->
+    <vdop_expr>1.0</vdop_expr> <!-- Vertical Dilution of Precision -->
+    <range_rms_expr>0.0</range_rms_expr> <!-- RMS value of the standard deviation of the ranges (m) -->
+    <selection_mode>A</selection_mode> <!-- 'A':Automatic selection, 'M':Manual selection (2D/3D) -->
+    <fix_mode>3</fix_mode> <!-- Fix mode 1:No Fix, 2: 2D Fix, 3: 3D Fix -->
+    <std_lat_expr>0.8</std_lat_expr> <!-- Standard deviation of latitude error (m) -->
+    <std_long_expr>0.8</std_long_expr> <!-- Standard deviation of longitude error (m) -->
+    <std_alt_expr>0.8</std_alt_expr> <!-- Standard deviation of altitude error (m) -->
+    <out_of_order>false</out_of_order> <!-- error flag: true activate breakdown without sensor output -->
+    <number_delay_samples>0</number_delay_samples>
+  </plugin>
+  <plugin name="barometer" filename="libsphinx_barometer_ng.so">
+    <linkBaro>body</linkBaro>
+    <iio_name>ms5607</iio_name>
+    <barometer>
+      <frequency>1</frequency>
+      <out_of_order>false</out_of_order>
+      <temperature_expr>val</temperature_expr>
+      <pressure_expr>val+noise*0.01</pressure_expr>
+    </barometer>
+  </plugin>
+</actor>

@@ -55,7 +55,7 @@ def get_numbers_after_string(file_name, the_string):
     # Get details from the simulation data
     for line in file:
         # Find the total time
-        if the_string in line:
+        if the_string.upper() in line.upper():
             nums.append(get_numbers_from_string(line))
     file.close()
 

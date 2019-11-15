@@ -48,20 +48,20 @@ def add_values(bp, ax, left=False):
 #                "./Results/PolySameTime2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_waypoint/",
 #                "./Results/PolySameTime2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_constant/"]
 
-all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap2/"]
+all_folders = ["./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/"]
 
-system_types = ["speed10",
-                "speed5",
+system_types = ["speed-2",
                 "speed-1",
-                "speed-2",
-                "speed-1_minsnap1",
-                "speed-1_minsnap2"]
+                "speed5",
+                "speed10",
+                "speed-1_minsnap1"]
+
+ticks = ["Waypoint Unstable", "Waypoint Stable", "Fixed Velocity Slow", "Fixed Velocity Fast", "Min Snap"]
 
 
 failed_tests = 0
@@ -70,9 +70,7 @@ beam_lengths = [10]
 depths = [10]
 res_numbers = [4]
 
-system_time = []
-system_distance = []
-system_maximum_deviation = []
+final_data = []
 
 for folder in all_folders:
 
@@ -142,20 +140,6 @@ for folder in all_folders:
                         failed_tests += 1
                     else:
 
-
-                    # # Check for any anomalies
-                    # if tot_dev[0][0] > 450:
-                    #     print("Total Deviation over 450m (" + str(tot_dev[0][0]) + "m): " + str(file_name))
-                    #
-                    # if avg_time[0][0] > 20:
-                    #     print("Average time over 20 seconds (" + str(avg_time[0][0]) + "s): " + str(file_name))
-                    #
-                    # if optimal_distance_heuristic > 2.5:
-                    #     print("Optimal distance heuristic over 2.2 (" + str(optimal_distance_heuristic) + "): " + str(file_name))
-                    #
-                    # if tot_time[0][0] > 40:
-                    #     print("Total time over 40 (" + str(tot_time[0][0]) + "): " + str(file_name))
-
                         # Save the data
                         average_deviation.append(avg_dev[0][0])
                         total_deviation.append(tot_dev[0][0])
@@ -168,289 +152,128 @@ for folder in all_folders:
                         trajectory_length.append(traj_len)
 
         # Save the data into each respective system
-        system_distance.append(total_deviation)
-        system_time.append(total_time)
-        system_maximum_deviation.append(maximum_deviation)
+
+        record = {
+            'total_deviation': total_deviation,
+            'total_time': total_time,
+            'max_deviation': maximum_deviation,
+            'test_set': folder,
+            'system_type': system,
+            'total_deviation': total_deviation,
+            'average_deviation': average_deviation,
+        }
+
+        final_data.append(record)
 
 
 print("Failed tests: " + str(failed_tests))
 
 
+# Create the data from running on the kinematic set
+kin_max_dev = []
+kin_tot_time = []
+kin_tot_dev = []
+kin_avg_dev = []
+for sys in system_types:
+    for item in final_data:
+        if "kinematic" in item['test_set'] and sys == item['system_type']:
+            kin_max_dev.append(item['max_deviation'])
+            kin_tot_time.append(item['total_time'])
+            kin_tot_dev.append(item['total_deviation'])
+            kin_avg_dev.append(item['average_deviation'])
+
+our_max_dev = []
+our_tot_time = []
+our_tot_dev = []
+our_avg_dev = []
+for sys in system_types:
+    for item in final_data:
+        if (sys in item['test_set']) and (sys == item['system_type']):
+            # Check if there is nothing after sys in item['test_set']
+            if (len(item['test_set'][item['test_set'].find(sys):-1]) == len(sys)):
+                our_max_dev.append(item['max_deviation'])
+                our_tot_time.append(item['total_time'])
+                our_tot_dev.append(item['total_deviation'])
+                our_avg_dev.append(item['average_deviation'])
+    print("------------------------------")
+
+
+
+
 def set_box_color(bp, color):
-    plt.setp(bp['boxes'], color=color, linewidth=2)
-    # plt.setp(bp['whiskers'], color=color)
-    # plt.setp(bp['caps'], color=color)
-    # plt.setp(bp['medians'], color=color)
-    # plt.setp(bp['fliers'], color=color)
-    # plt.setp(bp['means'], color=color)
+    plt.setp(bp['boxes'], color=color, linewidth=3)
+    plt.setp(bp['whiskers'], linewidth=2)
+    plt.setp(bp['caps'], linewidth=2)
+    plt.setp(bp['medians'], linewidth=2)
+    # plt.setp(bp['fliers'], linewidth=3)
+    # plt.setp(bp['means'], linewidth=3)
 
-tick_names = ["Random Test", "Our Technique"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-bpl = plt.boxplot([system_maximum_deviation[0]] + [system_maximum_deviation[41]], showmeans=True)
-bpr = plt.boxplot([system_maximum_deviation[41]] + [system_maximum_deviation[6]], showmeans=True)
-add_values(bpl, ax1)
-add_values(bpr, ax1)
-set_box_color(bpr, '#D7191C') # colors are from http://colorbrewer2.org/
+
+fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
+
+bpl = plt.boxplot(kin_max_dev, positions=1.5*np.arange(len(kin_max_dev)), showmeans=True)
+bpr = plt.boxplot(our_max_dev, positions=1.5*np.arange(len(our_max_dev))+0.6, showmeans=True)
+
+# add_values(bpl, ax1)
+# add_values(bpr, ax1)
 set_box_color(bpl, '#2C7BB6')
+set_box_color(bpr, '#D7191C')
+
 plt.plot([], c='#D7191C', label='Computed Tests')
 plt.plot([], c='#2C7BB6', label='Random Tests')
-plt.legend()
-plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-plt.xlabel("Test Technique", fontsize=15)
-plt.ylabel("Maximum Deviation", fontsize=15)
-plt.title("Constant Velocity 10m/s")
+plt.legend(fontsize=20)
 
-tick_names = ["Random Test", "Our Technique"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-bpl = plt.boxplot([system_maximum_deviation[1]] + [system_maximum_deviation[41]], showmeans=True)
-bpr = plt.boxplot([system_maximum_deviation[41]] + [system_maximum_deviation[13]], showmeans=True)
-add_values(bpr, ax1)
-add_values(bpl, ax1)
-set_box_color(bpr, '#D7191C') # colors are from http://colorbrewer2.org/
-set_box_color(bpl, '#2C7BB6')
-plt.plot([], c='#D7191C', label='Computed Tests')
-plt.plot([], c='#2C7BB6', label='Random Tests')
-plt.legend()
-plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-plt.xlabel("Test Technique", fontsize=15)
-plt.ylabel("Maximum Deviation", fontsize=15)
-plt.title("Constant Velocity 5m/s")
+plt.xlim([-0.5, 1.5*len(our_max_dev)-0.5])
 
-tick_names = ["Random Test", "Our Technique"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-bpl = plt.boxplot([system_maximum_deviation[2]] + [system_maximum_deviation[41]], showmeans=True)
-bpr = plt.boxplot([system_maximum_deviation[41]] + [system_maximum_deviation[20]], showmeans=True)
-add_values(bpr, ax1)
-add_values(bpl, ax1)
-set_box_color(bpr, '#D7191C') # colors are from http://colorbrewer2.org/
-set_box_color(bpl, '#2C7BB6')
-plt.plot([], c='#D7191C', label='Computed Tests')
-plt.plot([], c='#2C7BB6', label='Random Tests')
-plt.legend()
-plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-plt.xlabel("Test Technique", fontsize=15)
-plt.ylabel("Maximum Deviation", fontsize=15)
-plt.title("Stable Waypoint Controller")
+plt.yticks(fontsize=15)
+plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=10)
 
-tick_names = ["Random Test", "Our Technique"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-bpl = plt.boxplot([system_maximum_deviation[3]] + [system_maximum_deviation[41]], showmeans=True)
-bpr = plt.boxplot([system_maximum_deviation[41]] + [system_maximum_deviation[27]], showmeans=True)
-add_values(bpr, ax1)
-add_values(bpl, ax1)
-set_box_color(bpr, '#D7191C') # colors are from http://colorbrewer2.org/
-set_box_color(bpl, '#2C7BB6')
-plt.plot([], c='#D7191C', label='Computed Tests')
-plt.plot([], c='#2C7BB6', label='Random Tests')
-plt.legend()
-plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-plt.xlabel("Test Technique", fontsize=15)
-plt.ylabel("Maximum Deviation", fontsize=15)
-plt.title("Unstable Waypoint Controller")
+plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
 
+# log scale
+from matplotlib.ticker import FormatStrFormatter
+plt.yscale('log')
+plt.tick_params(axis='y', which='minor', labelsize=15)
+ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
 
-tick_names = ["Random Test", "Our Technique"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-bpl = plt.boxplot([system_maximum_deviation[4]] + [system_maximum_deviation[41]], showmeans=True)
-bpr = plt.boxplot([system_maximum_deviation[41]] + [system_maximum_deviation[34]], showmeans=True)
-add_values(bpr, ax1)
-add_values(bpl, ax1)
-set_box_color(bpr, '#D7191C') # colors are from http://colorbrewer2.org/
-set_box_color(bpl, '#2C7BB6')
-plt.plot([], c='#D7191C', label='Computed Tests')
-plt.plot([], c='#2C7BB6', label='Random Tests')
-plt.legend()
-plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-plt.xlabel("Test Technique", fontsize=15)
-plt.ylabel("Maximum Deviation", fontsize=15)
-plt.title("Minimum Snap No Corridor")
-
-tick_names = ["Random Test", "Our Technique"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-bpl = plt.boxplot([system_maximum_deviation[4]] + [system_maximum_deviation[41]], showmeans=True)
-bpr = plt.boxplot([system_maximum_deviation[41]] + [system_maximum_deviation[41]], showmeans=True)
-add_values(bpr, ax1)
-add_values(bpl, ax1)
-set_box_color(bpr, '#D7191C') # colors are from http://colorbrewer2.org/
-set_box_color(bpl, '#2C7BB6')
-plt.plot([], c='#D7191C', label='Computed Tests')
-plt.plot([], c='#2C7BB6', label='Random Tests')
-plt.legend()
-plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-plt.xlabel("Test Technique", fontsize=15)
-plt.ylabel("Maximum Deviation", fontsize=15)
-plt.title("Minimum Snap With Corridor")
-
-
-tick_names = ["Velocity 10m/s", "Velocity 5m/s", "Stable Waypoint", "Unstable Waypoint", "Way Min Snap", "Corridor Min Snap"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-bpl = plt.boxplot([system_maximum_deviation[0]] + [system_maximum_deviation[1]] + [system_maximum_deviation[2]] + [system_maximum_deviation[3]] + [system_maximum_deviation[4]] + [system_maximum_deviation[5]], showmeans=True)
-add_values(bpl, ax1)
-set_box_color(bpl, '#2C7BB6')
-plt.plot([], c='#2C7BB6', label='Random Tests')
-plt.legend()
-plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-plt.xlabel("Test Technique", fontsize=15)
-plt.ylabel("Maximum Deviation", fontsize=15)
-plt.title("Comparison of Performance")
 plt.show()
 
 
-tick_names = ["Velocity 10m/s", "", "Velocity 5m/s", "", "Stable Waypoint", "", "Unstable Waypoint", "", "Way Min Snap", "", "Corridor Min Snap", ""]
-fig1, ax1 = plt.subplots(1, 1, figsize=(13, 10))
-bpl = plt.boxplot([system_maximum_deviation[0]] + [system_maximum_deviation[41]] + [system_maximum_deviation[1]] + [system_maximum_deviation[41]] + [system_maximum_deviation[2]] + [system_maximum_deviation[41]] + [system_maximum_deviation[3]] + [system_maximum_deviation[41]] + [system_maximum_deviation[4]] + [system_maximum_deviation[41]] + [system_maximum_deviation[5]] + [system_maximum_deviation[41]], showmeans=True)
-bpr = plt.boxplot([system_maximum_deviation[41]] + [system_maximum_deviation[6]] + [system_maximum_deviation[41]] + [system_maximum_deviation[13]] + [system_maximum_deviation[41]] + [system_maximum_deviation[20]] + [system_maximum_deviation[41]] + [system_maximum_deviation[27]] + [system_maximum_deviation[41]] + [system_maximum_deviation[34]] + [system_maximum_deviation[41]] + [system_maximum_deviation[41]], showmeans=True)
-add_values(bpl, ax1)
-set_box_color(bpr, '#D7191C') # colors are from http://colorbrewer2.org/
+
+
+
+
+
+
+fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
+
+bpl = plt.boxplot(kin_avg_dev, positions=1.5*np.arange(len(kin_avg_dev)), showmeans=True)
+bpr = plt.boxplot(our_avg_dev, positions=1.5*np.arange(len(our_avg_dev))+0.6, showmeans=True)
+
+# add_values(bpl, ax1)
+# add_values(bpr, ax1)
 set_box_color(bpl, '#2C7BB6')
+set_box_color(bpr, '#D7191C')
+
 plt.plot([], c='#D7191C', label='Computed Tests')
 plt.plot([], c='#2C7BB6', label='Random Tests')
-plt.legend()
-plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=35)
-plt.xlabel("Controller", fontsize=15)
-plt.ylabel("Maximum Deviation", fontsize=15)
-plt.title("Comparison of Performance")
+plt.legend(fontsize=20)
+
+plt.xlim([-0.5, 1.5*len(our_avg_dev)-0.5])
+
+plt.yticks(fontsize=15)
+plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=10)
+
+plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+plt.ylabel("Average Deviation", fontweight='bold', fontsize=20)
+
+# log scale
+from matplotlib.ticker import FormatStrFormatter
+plt.yscale('log')
+plt.tick_params(axis='y', which='minor', labelsize=15)
+ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
 plt.show()
-
-# [system_maximum_deviation[0]] + [system_maximum_deviation[6]] + [system_maximum_deviation[1]] + [system_maximum_deviation[13]] + [system_maximum_deviation[2]] + [system_maximum_deviation[20] + [system_maximum_deviation[3]] + [system_maximum_deviation[27]] + [system_maximum_deviation[4]] + [system_maximum_deviation[34]] + [system_maximum_deviation[5]] + [system_maximum_deviation[41]]
-
-
-
-
-
-
-
-
-#
-#
-#
-# # Display the compared box plots
-
-#
-# # First plot
-# tick_names = ["Random Test", "Our Technique"]
-# fig1, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-# bpl = plt.boxplot([system_maximum_deviation[0]] + [system_maximum_deviation[4]], showmeans=True)
-# add_values(bpl, ax1)
-# plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-# plt.xlabel("Test Technique", fontsize=15)
-# plt.ylabel("Maximum Deviation", fontsize=15)
-# plt.title("Unstable Waypoint Controller")
-#
-# fig2, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-# bpl = plt.boxplot([system_maximum_deviation[1]] + [system_maximum_deviation[9]], showmeans=True)
-# add_values(bpl, ax1)
-# plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-# plt.xlabel("Test Technique", fontsize=15)
-# plt.ylabel("Maximum Deviation", fontsize=15)
-# plt.title("Waypoint Controller")
-#
-# fig3, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-# bpl = plt.boxplot([system_maximum_deviation[2]] + [system_maximum_deviation[14]], showmeans=True)
-# add_values(bpl, ax1)
-# plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-# plt.xlabel("Test Technique", fontsize=15)
-# plt.ylabel("Maximum Deviation", fontsize=15)
-# plt.title("Constant Speed 5m/s")
-#
-# fig4, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-# bpl = plt.boxplot([system_maximum_deviation[3]] + [system_maximum_deviation[19]], showmeans=True)
-# add_values(bpl, ax1)
-# plt.xticks(range(1, len(tick_names) + 1), tick_names, fontsize=12, rotation=0)
-# plt.xlabel("Test Technique", fontsize=15)
-# plt.ylabel("Maximum Deviation", fontsize=15)
-# plt.title("Constant Speed 10m/s")
-# plt.show()
-#
-#
-# # for i in range(0, len(system_types)):
-# #     bpl = plt.boxplot(system_maximum_deviation[i], positions=np.array(range(len(system_maximum_deviation[i])))*2.0-0.4, widths=0.6, showmeans=True)
-# #     add_values(bpl, ax1, left=True)
-# #     bpr = plt.boxplot(system_waypoint_maximum_deviation, positions=np.array(range(len(system_waypoint_maximum_deviation)))*2.0+0.4, widths=0.6, showmeans=True)
-# #     add_values(bpr, ax1)
-# #     set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
-# #     set_box_color(bpr, '#2C7BB6')
-# # #
-# # # draw temporary red and blue lines and use them to create a legend
-# # plt.plot([], c='#D7191C', label='Constant Velocity')
-# # plt.plot([], c='#2C7BB6', label='Waypoint Controller')
-# # plt.legend()
-# # plt.xticks(range(0, len(tick_names) * 2, 2), tick_names, fontsize=12, rotation=15)
-# # plt.xlim(-2, len(tick_names)*2)
-# # plt.tight_layout()
-# #
-# #
-# #
-# # print("----------------------------------------------------------")
-# # print("Maximum Deviation Statistics")
-# # print("Random Test Set:")
-# # print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_maximum_deviation[0])))
-# # print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_maximum_deviation[0])))
-# # print("Waypoint Test Set:")
-# # print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_maximum_deviation[1])))
-# # print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_maximum_deviation[1])))
-# # print("Constant Test Set:")
-# # print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_maximum_deviation[2])))
-# # print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_maximum_deviation[2])))
-# # print("----------------------------------------------------------")
-# #
-# #
-# #
-# #
-# # fig, ax1 = plt.subplots(1, 1, figsize=(10, 10))
-# # bpl = plt.boxplot(system_constant_distance, positions=np.array(range(len(system_constant_distance)))*2.0-0.4, widths=0.6, showmeans=True)
-# # add_values(bpl, ax1, left=True)
-# # bpr = plt.boxplot(system_waypoint_distance, positions=np.array(range(len(system_waypoint_distance)))*2.0+0.4, widths=0.6, showmeans=True)
-# # add_values(bpr, ax1)
-# # set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
-# # set_box_color(bpr, '#2C7BB6')
-# #
-# # # draw temporary red and blue lines and use them to create a legend
-# # plt.plot([], c='#D7191C', label='Constant Velocity')
-# # plt.plot([], c='#2C7BB6', label='Waypoint Controller')
-# # plt.legend()
-# # plt.xticks(range(0, len(tick_names) * 2, 2), tick_names, fontsize=12, rotation=15)
-# # plt.xlim(-2, len(tick_names)*2)
-# # plt.tight_layout()
-# # plt.ylabel("Accumulated Deviation", fontsize=15)
-# # plt.xlabel("Test Set", fontsize=15)
-# #
-# #
-# # print("----------------------------------------------------------")
-# # print("Accumulated Deviation Statistics")
-# # print("Random Test Set:")
-# # print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_distance[0])))
-# # print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_distance[0])))
-# # print("Waypoint Test Set:")
-# # print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_distance[1])))
-# # print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_distance[1])))
-# # print("Constant Test Set:")
-# # print("Constant Velocity Controller Mean: " + str(np.mean(system_constant_distance[2])))
-# # print("Waypoint Controller Mean: " + str(np.mean(system_waypoint_distance[2])))
-# # print("----------------------------------------------------------")
-# #
-# # # va = [0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0, 0, 0, -0.1, 0, 0]
-# # # for t, y in zip(ax1.get_xticklabels(), va):
-# # #     t.set_y(y)
-# #
-# #
-# # fig1, ax2 = plt.subplots(1, 1, figsize=(10, 10))
-# # bpl = plt.boxplot(system_constant_time, positions=np.array(range(len(system_constant_time)))*2.0-0.4, widths=0.6, showmeans=True)
-# # add_values(bpl, ax2, left=True)
-# # bpr = plt.boxplot(system_waypoint_time, positions=np.array(range(len(system_waypoint_time)))*2.0+0.4, widths=0.6, showmeans=True)
-# # add_values(bpr, ax2)
-# # set_box_color(bpl, '#D7191C') # colors are from http://colorbrewer2.org/
-# # set_box_color(bpr, '#2C7BB6')
-# #
-# # # draw temporary red and blue lines and use them to create a legend
-# # plt.plot([], c='#D7191C', label='Constant Velocity')
-# # plt.plot([], c='#2C7BB6', label='Waypoint Controller')
-# # plt.legend()
-# # plt.xticks(range(0, len(tick_names) * 2, 2), tick_names, fontsize=12, rotation=15)
-# # plt.xlim(-2, len(tick_names)*2)
-# # plt.tight_layout()
-# # plt.ylabel("Total Time", fontsize=15)
-# # plt.xlabel("Test Set", fontsize=15)
-# #
-# #
-# # plt.show()

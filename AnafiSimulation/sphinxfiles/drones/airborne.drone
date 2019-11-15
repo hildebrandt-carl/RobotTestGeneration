@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<drone
+  name="airborne"
+  firmware="http://plf.parrot.com/sphinx/firmwares/delos/evo_pc/latest/images/delos-evo_pc.ext2.zip"
+  hardware="delosevosip6board">
+  <machine_params
+    evo_type="brick"
+    evo_style="mars"
+    with_bumpers="false"/>
+  <pose>default</pose>
+  <!-- !! to be completed with your actual Bluetooth MAC address !! -->
+  <stolen_bdaddr>00:1A:7D:DA:71:03</stolen_bdaddr>
+</drone>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This path is defined to follow the road that can be found in the following
+     worlds:
+     - /opt/parrot-sphinx/usr/share/sphinx/worlds/outdoor_1.world
+     - /opt/parrot-sphinx/usr/share/sphinx/worlds/outdoor_targets.world
+-->
+<path name="follow_road">
+  <auto_start>true</auto_start>
+  <delay_start>7.000000</delay_start>
+  <loop>false</loop>
+  <waypoint>
+    <velocity>15</velocity>
+    <xy>90 0</xy>
+    <stop_duration>5</stop_duration>
+  </waypoint>
+  <waypoint>
+    <velocity>15</velocity>
+    <xy>145 40</xy>
+  </waypoint>
+  <waypoint>
+    <velocity>15</velocity>
+    <xy>150 90</xy>
+  </waypoint>
+  <waypoint>
+    <velocity>15</velocity>
+    <xy>200 100</xy>
+  </waypoint>
+</path>
