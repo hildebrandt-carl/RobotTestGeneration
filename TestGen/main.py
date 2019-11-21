@@ -19,6 +19,7 @@ class DroneType(Enum):
     BEBOP = 1
     HECTOR = 2
     MIT = 3
+    ANAFI = 4
 
 # Get the time of the program start
 start_time = time.time()
@@ -27,7 +28,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--drone',
                     default="mit",
                     type=str,
-                    help='Select drone type (bebop), (hector), (mit)')
+                    help='Select drone type (bebop), (hector), (mit), (anafi)')
 parser.add_argument('-t', '--type',
                     default="score",
                     type=str,
@@ -87,6 +88,10 @@ elif args.drone == "mit":
     drone = DroneType.MIT
     # Save locations
     save_path = "Results/MIT_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_totaltime" + str(args.totaltime) + "_simtime" + str(args.simulationtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
+elif args.drone == "anafi":
+    drone = DroneType.ANAFI
+    # Save locations
+    save_path = "Results/ANAFI_seed" + str(args.seed) + "_depth" + str(args.depth) + "_nodes" + str(args.nodes) + "_res" + str(args.resolution) + "_beamwidth" + str(args.beamwidth) + "_totaltime" + str(args.totaltime) + "_simtime" + str(args.simulationtime) + "_" + str(args.type) + "_" + str(args.gentype) +"/"
 
 # Do you want to plot the figures or not
 plotting = False
@@ -154,6 +159,20 @@ elif drone == DroneType.MIT:
     drone_kinematic["velocity"] = [0, 0, 0]
     drone_kinematic["angular_velocity"] = [0, 0, 0]
     drone_kinematic["maximum_velocity"] = 20  # This take horizontal and vertical into consideration
+
+elif drone == DroneType.ANAFI:
+    drone_kinematic["m"] = 0.8
+    drone_kinematic["d"] = 0.20
+    drone_kinematic["kf"] = 1.91e-6
+    drone_kinematic["km"] = 2.6e-7
+    drone_kinematic["max_rotor_speed"] = 2000.0
+    drone_kinematic["inertial_properties"] = [2.32e-3, 2.32e-3, 4.00e-3]
+    drone_kinematic["position"] = initial_conditions["start_point"]
+    drone_kinematic["attitude"] = [0, 0, 0]
+    drone_kinematic["velocity"] = [0, 0, 0]
+    drone_kinematic["angular_velocity"] = [0, 0, 0]
+    drone_kinematic["maximum_velocity"] = 15  # This take horizontal and vertical into consideration
+
 
 # Create the Figure manager
 fig_manager = FigureManager(save_path)

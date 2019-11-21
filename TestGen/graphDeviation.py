@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from processResultsUtils import get_numbers_after_string
 
-
 # This has the run when all tests are considered
 # all_folders = ["./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
 #                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/",
@@ -61,8 +60,15 @@ system_types = ["speed-2",
                 "speed10",
                 "speed-1_minsnap1"]
 
-ticks = ["Waypoint Unstable", "Waypoint Stable", "Fixed Velocity Slow", "Fixed Velocity Fast", "Min Snap"]
+ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Fast", "Min Snap"]
 
+# Coefficients of determination (can get from running FindTrends)
+# Make sure to turn the saving off when you do run it
+coefficients_of_determination = [0.48648857791186556,
+                                0.45916510608372396,
+                                0.6071376814038854,
+                                0.2362556661022981,
+                                0.44939513435675327]
 
 failed_tests = 0
 
@@ -219,9 +225,9 @@ bpr = plt.boxplot(our_max_dev, positions=1.5*np.arange(len(our_max_dev))+0.6, sh
 set_box_color(bpl, '#2C7BB6')
 set_box_color(bpr, '#D7191C')
 
-plt.plot([], c='#D7191C', label='Computed Tests')
-plt.plot([], c='#2C7BB6', label='Random Tests')
-plt.legend(fontsize=20)
+plt.plot([], c='#D7191C', label='Valid Stressfull Tests')
+plt.plot([], c='#2C7BB6', label='Valid Random Tests')
+plt.legend(fontsize=18)
 
 plt.xlim([-0.5, 1.5*len(our_max_dev)-0.5])
 
@@ -257,9 +263,9 @@ bpr = plt.boxplot(our_avg_dev, positions=1.5*np.arange(len(our_avg_dev))+0.6, sh
 set_box_color(bpl, '#2C7BB6')
 set_box_color(bpr, '#D7191C')
 
-plt.plot([], c='#D7191C', label='Computed Tests')
-plt.plot([], c='#2C7BB6', label='Random Tests')
-plt.legend(fontsize=20)
+plt.plot([], c='#D7191C', label='Valid Stressfull Tests')
+plt.plot([], c='#2C7BB6', label='Valid Random Tests')
+plt.legend(fontsize=18)
 
 plt.xlim([-0.5, 1.5*len(our_avg_dev)-0.5])
 

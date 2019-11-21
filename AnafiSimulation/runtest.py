@@ -6,6 +6,21 @@ import re
 from olympe.messages.ardrone3.Piloting import TakeOff, moveBy, Landing
 from olympe.messages.ardrone3.PilotingState import FlyingStateChanged, PositionChanged
 from olympe.messages.ardrone3.GPSSettingsState import HomeChanged, GPSFixStateChanged
+import signal
+import sys
+
+
+PHYSICAL_IP = "192.168.42.1"
+SIMULATED_IP = "10.202.0.1"
+DRONE_IP = SIMULATED_IP
+
+def signal_handler(sig, frame):
+        print('You pressed Ctrl+C!')
+        drone(Landing()).wait()
+        drone.disconnection()
+        sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 filename = "test.txt"
 
@@ -59,7 +74,7 @@ for i in range(0, len(gp)):
     print("")
 
 
-with olympe.Drone("10.202.0.1") as drone:
+with olympe.Drone(DRONE_IP) as drone:
     drone.connection()
 
     # Wait for GPS fix

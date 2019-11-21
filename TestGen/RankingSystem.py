@@ -22,11 +22,6 @@ class RankingSystem:
         poly_features = []
         poly_reg = []
 
-        # Used to calculate the scores
-        poly_features = np.load("Models/poly_features_" + str(gen_type) + ".npy", allow_pickle=True).item()
-        poly_reg = np.load("Models/regression_model_" + str(gen_type) + ".npy", allow_pickle=True).item()
-
-
         # Used to save the scores of each path
         scores = []
         linear_scores = []
@@ -67,6 +62,10 @@ class RankingSystem:
 
         # Generate a score according to our metric
         else:
+            # Used to calculate the scores
+            poly_features = np.load("Models/poly_features_" + str(gen_type) + ".npy", allow_pickle=True).item()
+            poly_reg = np.load("Models/regression_model_" + str(gen_type) + ".npy", allow_pickle=True).item()
+
             # For each path
             for path in paths:
                 maximum_vel_magnitude = []

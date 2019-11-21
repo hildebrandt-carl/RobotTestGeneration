@@ -6,14 +6,9 @@ import math
 
 all_files = ["./Results/PolySameTimeFull2/mit_details_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simulationtime90_random_waypoint.txt",
              "./Results/PolySameTimeFull2/mit_details_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simulationtime90_maxvel_waypoint.txt",
-             "./Results/PolySameTimeFull2/mit_details_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simulationtime90_kinematic_waypoint.txt",
-             "./Results/PolySameTimeFull2/mit_details_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simulationtime90_score_speed-2.txt",
-             "./Results/PolySameTimeFull2/mit_details_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simulationtime90_score_speed-1.txt",
-             "./Results/PolySameTimeFull2/mit_details_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simulationtime90_score_speed5.txt",
-             "./Results/PolySameTimeFull2/mit_details_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simulationtime90_score_speed10.txt",
-             "./Results/PolySameTimeFull2/mit_details_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simulationtime90_score_speed-1_minsnap1.txt"]
+             "./Results/PolySameTimeFull2/mit_details_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simulationtime90_kinematic_waypoint.txt"]
 
-save_names = ["R", "M", "K", "w1", "w2", "c1", "c2", "s"]
+save_names = ["R", "M", "K"]
 
 tick_names = ["Random", "Max Vel", "Kinematic", "Waypoint Unstable", "Waypoint Stable", "Fixed Velocity Slow", "Fixed Velocity Fast", "Min Snap"]
 
@@ -193,14 +188,14 @@ barWidth = 0.25
 r1 = np.arange(len(all_processed_paths))
 r2 = [x + barWidth for x in r1]
 r3 = [x + barWidth for x in r2]
-plt.bar(r1, all_processed_paths, color='C1', width=barWidth, edgecolor='white', label="Trajectories Considered")
-plt.bar(r2, all_total_paths, color='C0', width=barWidth, edgecolor='white', label="Invalid Trajectories")
+plt.bar(r1, all_processed_paths, color='C1', width=barWidth, edgecolor='white', label="Processed Trajectories", hatch='x')
+plt.bar(r2, all_total_paths, color='C0', width=barWidth, edgecolor='white', label="Complete Trajectories", hatch='//')
 plt.bar(r3, all_valid_paths, color='C2', width=barWidth, edgecolor='white', label="Valid Trajectories")
 
 plt.xlabel("Technique", fontweight='bold', fontsize=20)
 plt.ylabel("Number Trajectories", fontweight='bold', fontsize=20)
 
-plt.xticks(np.arange(len(bars1)) + barWidth, tick_names, fontsize=15, rotation=20)
+plt.xticks(np.arange(len(bars1)) + barWidth, tick_names, fontsize=20, rotation=0)
 plt.yticks(fontsize=15)
 
 plt.yscale('log')

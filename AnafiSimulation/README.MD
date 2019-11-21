@@ -65,3 +65,59 @@ Hold the drones power button for 10 second to reset and reinitiate the password
 # Deleting Olympe
 Delete the file code/Parrot-SDK
 It should be in your home directory
+
+
+
+# Reading X,Y,Z position from Drone
+You can do this using datalog feature.
+
+Run the sphinx simulator in datalog mode:
+$ sphinx <path_to_drone>/anafi4k.drone::stolen_interface=enp0:eth0:192.168.42.1/24 --datalog
+
+You can then access the data using:
+$ tlm-data-logger inet:127.0.0.1:9060 | grep worldPosition
+
+
+<!-- TODO: [DOES NOT SEEM TO WORK YET] -->
+To speed up the datalogging run (note: rate is in ms): datalog-rate=<rate>
+$ sphinx <path_to_drone>/anafi4k.drone::stolen_interface=enp0:eth0:192.168.42.1/24 --datalog --datalog-rate=10
+
+
+
+
+
+# Connect to wifi on Main Machine
+
+First start by turning the parrot drone on. The parrot drone will create a wifi hotspot which you can then connect to.
+
+To connect we can use the ethernet wifi cards we have bought.
+
+We need to assign static IP to the ether port. To do this run:
+
+$ ifconfig
+>>> It should be an enp1p* connection
+
+Now assign the IP address:
+
+$ sudo ifconfig enp1p1 192.168.1.2
+
+Then launch the internet browser and connect to "192.168.1.252"
+
+
+
+
+
+
+
+
+
+
+
+# Changing simulation state
+Get the current state
+$ echo '{"jsonrpc": "2.0", "method": "GetAllParameters", "params": {}, "id": 1}' | curl -d @- http://localhost:8383 | python -m json.tool
+
+Turn the GPS off
+$ echo '{"jsonrpc": "2.0", "method": "SetParam", "params": {"machine":"anafi4k", "object":"gps/gps", "parameter":"out_of_order", "value":"true"}, "id": 1}' | curl -d @- http://localhost:8383 | python -m json.tool
+
+I am not sure how to make the compass not function properly
