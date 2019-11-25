@@ -112,7 +112,7 @@ public class LoadEnvironment : MonoBehaviour
 						Day = (Value == "1");
 						sun.SetActive(Day);
 						break;
-					// Day
+					// Cage Walls
 					case "C":
 						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
 						if (Value == "0")
