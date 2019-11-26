@@ -7,13 +7,13 @@ from processResultsUtils import get_numbers_from_string
 file_location = "../AnafiSimulation/TestingAnafi/test/maps/"
 
 # Find all the flight files
-analysis_file_names = glob.glob(file_location + "/map*/test.txt")
+analysis_file_names = glob.glob(file_location + "/map1/test.txt")
 total_files = len(analysis_file_names)
 
 # Go through all the files
 for i in range(0, total_files):
 
-    systems = ["outdoor", "simulation"]
+    systems = ["outdoorSouth", "simulation"]
 
     fig = plt.figure(i)
 
@@ -68,8 +68,8 @@ for i in range(0, total_files):
 
             # Covert to m
             invert = 1
-            # if system == "outdoor":
-            #     invert = -1
+            if system == "outdoor":
+                invert = -1
             new_longitude.append(delta_longitude[j] * invert * 40075160.0 * math.cos(math.radians(latitude[j])) / 360.0)
             new_latitude.append(delta_latitude[j] * invert * 40008000.0 / 360.0)
             new_altitude.append(delta_altitude[j])

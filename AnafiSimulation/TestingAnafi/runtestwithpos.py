@@ -14,11 +14,11 @@ from olympe.messages.ardrone3.Piloting import TakeOff
 from olympe.messages.ardrone3.GPSSettingsState import HomeChanged
 import time
 
-test_number = 5
+test_number = 3
 
 PHYSICAL_IP = "192.168.42.1"
 SIMULATED_IP = "10.202.0.1"
-DRONE_IP = SIMULATED_IP
+DRONE_IP = PHYSICAL_IP
 
 def signal_handler(sig, frame):
         print('You pressed Ctrl+C!')
@@ -33,7 +33,7 @@ testname = "./test/maps/map" +str(test_number)+ "/test.txt"
 if DRONE_IP == SIMULATED_IP:
     savename = "./test/maps/map" +str(test_number)+ "/simulation_output.txt"
 else:
-    savename = "./test/maps/map" +str(test_number)+ "/outdoor_output.txt"
+    savename = "./test/maps/map" +str(test_number)+ "/outdoorEast_output.txt"
 
 # Read the test file to get the positions
 with open(testname, "r") as f:
