@@ -14,11 +14,11 @@ from olympe.messages.ardrone3.Piloting import TakeOff
 from olympe.messages.ardrone3.GPSSettingsState import HomeChanged
 import time
 
-test_number = 36
+test_number = 5
 
 PHYSICAL_IP = "192.168.42.1"
 SIMULATED_IP = "10.202.0.1"
-DRONE_IP = PHYSICAL_IP
+DRONE_IP = SIMULATED_IP
 
 def signal_handler(sig, frame):
         print('You pressed Ctrl+C!')
@@ -30,7 +30,10 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 testname = "./test/maps/map" +str(test_number)+ "/test.txt"
-savename = "./test/maps/map" +str(test_number)+ "/outdoor_output.txt"
+if DRONE_IP == SIMULATED_IP:
+    savename = "./test/maps/map" +str(test_number)+ "/simulation_output.txt"
+else:
+    savename = "./test/maps/map" +str(test_number)+ "/outdoor_output.txt"
 
 # Read the test file to get the positions
 with open(testname, "r") as f:
@@ -51,7 +54,7 @@ for line in filedata:
         result = re.search('[(](.*)[)]', line)
         goal_string = result.group(0)
 
-        # Remove the first character '(' an last charcter ')' from the strong
+        # Remove the first character '(' an last character ')' from the strong
         goal_string = goal_string[1:-1]
 
         # Get the goal positions
@@ -61,7 +64,6 @@ for line in filedata:
         gp.append([ float(goals[0]), 
                     -1*float(goals[1]),
                     float(goals[2])])
-
 
 # Need to convert the goals to be relative to each other
 prevx = 0
@@ -111,7 +113,6 @@ with olympe.Drone(DRONE_IP) as drone:
     )
 
     print(-1*rp[9][2])
-
 
     while 1:
         print("GPS position after take-off : ", drone.get_state(PositionChanged))

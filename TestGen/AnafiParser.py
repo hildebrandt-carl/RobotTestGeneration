@@ -6,19 +6,22 @@ from processResultsUtils import get_numbers_from_string
 # Define where the tests are stored
 file_location = "../AnafiSimulation/TestingAnafi/test/maps/"
 
-systems = ["simulation"]
+# Find all the flight files
+analysis_file_names = glob.glob(file_location + "/map*/test.txt")
+total_files = len(analysis_file_names)
 
-for system in systems:
+# Go through all the files
+for i in range(0, total_files):
 
-    # Find all the flight files
-    analysis_file_names = glob.glob(file_location + "/map*/" + system + "_output.txt")
-    total_files = len(analysis_file_names)
+    systems = ["outdoor", "simulation"]
 
-    # Go through all the files
-    for i in range(0, total_files):
+    fig = plt.figure(i)
 
+    # For each system type
+    for system in systems:
+    
         # Print which file is being processed
-        file_name = analysis_file_names[i]
+        file_name = analysis_file_names[i][:-8] + system + "_output.txt"
         print("-------------------------------------------")
         print("Processing: " + str(file_name))
         print("-------------------------------------------")
@@ -35,13 +38,16 @@ for system in systems:
         for line in file:
             if "Longitude" in line:
                 num = get_numbers_from_string(line)[0]
-                longitude.append(num)
+                if num - 500 != 0:
+                    longitude.append(num)
             if "Latitude" in line:
                 num = get_numbers_from_string(line)[0]
-                latitude.append(num)
+                if num - 500 != 0:
+                    latitude.append(num)
             if "Altitude" in line:
                 num = get_numbers_from_string(line)[0]
-                altitude.append(num)
+                if num - 500 != 0:
+                    altitude.append(num)
 
         # Close the file    
         file.close()
@@ -61,10 +67,18 @@ for system in systems:
             delta_altitude.append(altitude[j] - at_init)
 
             # Covert to m
-            new_longitude.append(delta_longitude[j] * 40075160.0 * math.cos(math.radians(latitude[j])) / 360.0)
-            new_latitude.append(delta_latitude[j] * 40008000.0 / 360.0)
+            invert = 1
+            # if system == "outdoor":
+            #     invert = -1
+            new_longitude.append(delta_longitude[j] * invert * 40075160.0 * math.cos(math.radians(latitude[j])) / 360.0)
+            new_latitude.append(delta_latitude[j] * invert * 40008000.0 / 360.0)
             new_altitude.append(delta_altitude[j])
 
-        print("Longitude: " + str(new_longitude[-1]))
-        print("Latitude: " + str(new_latitude[-1]))
-        print("Altitude: " + str(new_altitude[-1]))
+        print("Final Longitude: " + str(new_longitude[-1]))
+        print("Final Latitude: " + str(new_latitude[-1]))
+        print("Final Altitude: " + str(new_altitude[-1]))
+
+        plt.plot(new_longitude,new_latitude, label=system)
+    
+    plt.legend()
+    plt.show()
