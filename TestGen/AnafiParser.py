@@ -13,7 +13,7 @@ total_files = len(analysis_file_names)
 # Go through all the files
 for i in range(0, total_files):
 
-    systems = ["outdoorSouth", "simulation"]
+    systems = ["outdoorNorth","outdoorEast","outdoorSouth","outdoorWest", "simulation"]
 
     fig = plt.figure(i)
 
