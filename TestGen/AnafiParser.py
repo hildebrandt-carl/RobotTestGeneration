@@ -25,13 +25,13 @@ def rotate(point, angle):
 file_location = "../AnafiSimulation/TestingAnafi/test/maps"
 
 # Find all the flight files
-analysis_file_names = glob.glob(file_location + "/map1/test.txt")
+analysis_file_names = glob.glob(file_location + "/map*/test.txt")
 total_files = len(analysis_file_names)
 
 systems = ["simulation", "outdoor"]
 
 # Used to controll plotting
-plotting_individual = False
+plotting_individual = True
 potting_deviation = False
 
 # List used to save all the results for processing later
@@ -79,7 +79,8 @@ for i in range(0, total_files):
             # Add the goals to the final goal array (Y is inverted in test file)
             expected_x.append(float(goals[0]))
             expected_y.append(float(goals[1]))
-            expected_z.append(float(goals[2]))
+            # Add 1 because the drone always starts 1m off the ground
+            expected_z.append(float(goals[2]) + 1)
 
     # Close the file    
     file.close()
@@ -201,8 +202,16 @@ for i in range(0, total_files):
         plt.legend()
         plt.show()
 
+print("-------------------------------------------")
+print("Processing Deviation from Optimal Trajectory")
+print("-------------------------------------------")
 # For each of the data points calculate a distance from optimal line
 for d in all_data:
+
+    print("-------------------------------------------")
+    print("Processing: " + str(d['filename']))
+    print("-------------------------------------------")
+
     # For each system type
     for system in systems:
         # Used to store the deviation at each point
@@ -221,22 +230,17 @@ for d in all_data:
             goal = []
             prev_goal = []
             for k in range(0, len(d["expected"][0])):
-                print(d["expected"][0])
                 cur_goal = [d["expected"][0][k], d["expected"][1][k], d["expected"][2][k]]
 
                 # If its not our first run
                 if k != 0:
-                    print(cur_pos)
-                    print(cur_goal)
-                    print(prev_goal)
-                    print(k)
-                    d = lineseg_dist(p=np.asarray(cur_pos),
-                                     a=np.asarray(cur_goal),
-                                     b=np.asarray(prev_goal))
+                    dist = lineseg_dist(p=np.asarray(cur_pos),
+                                        a=np.asarray(cur_goal),
+                                        b=np.asarray(prev_goal))
 
                     # Save the closest distance to the expected behavior
-                    if d < min_distance:
-                        min_distance = d
+                    if dist < min_distance:
+                        min_distance = dist
                 
                 prev_goal = cur_goal
 
@@ -244,7 +248,7 @@ for d in all_data:
             deviation.append(min_distance)
 
         # Save the devation
-        d["deviation"] = deviation
+        d[system + "deviation"] = deviation
 
         # Display the deviation
         if potting_deviation:
@@ -253,3 +257,21 @@ for d in all_data:
             plt.xlabel("Point Index")
             plt.ylabel("Deviation from Optimal")
             plt.show()
+
+
+# For each of the system type get the maximum deviation
+max_dev = []
+for system in systems:
+    system_dev = []
+    for d in all_data:
+        system_dev.append(max(d[system + "deviation"]))
+
+    max_dev.append(system_dev)
+
+
+fig, ax = plt.subplots()
+bp = ax.boxplot(max_dev)
+ax.set_xlabel('System Type')
+ax.set_ylabel('Maximum Deviation')
+ax.set_xticklabels(systems)
+plt.show()
