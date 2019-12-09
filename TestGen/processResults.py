@@ -22,21 +22,18 @@ from processResultsUtils import lineseg_dist
 #                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
 #                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
 
-all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap2/"]
+all_folders = ["./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/",
+               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap2/"]
 
-all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/",
-               "./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap2/"]
-
-system_types = ["speed-2",
-                "speed-1",
-                "speed5",
-                "speed10",
+system_types = ["speed-2_minsnap0",
+                "speed-1_minsnap0",
+                "speed5_minsnap0",
+                "speed10_minsnap0",
                 "speed-1_minsnap1",
                 "speed-1_minsnap2"]
 
@@ -64,6 +61,10 @@ for stype in system_types:
         failed_times_before_collision = []
         failed_distance_to_goal = []
         failed_current_goal = []
+        test_worst_velocity = []
+        test_avg_velocity = []
+        test_worst_acceleration = []
+        test_avg_acceleration = []
 
         file_counter = 0
         for file_name in file_names:
@@ -223,6 +224,58 @@ for stype in system_types:
             # Keeps track of how many recordings per waypoint there are
             recordings_per_waypoint = 0
 
+            # Get the average velocity at any given point
+            previous_pos = None
+            previous_time = None
+            velocity = []
+            velocity_time = []
+            for cur_pos, cur_time in zip(current_drone_position, current_elapsed_time):
+                # If we are starting then get the current time and current pos
+                if previous_pos == None:
+                    previous_pos = cur_pos
+                    previous_time = cur_time[0]
+                # Otherwise compute the velocity
+                else:
+                    delta_time = cur_time[0] - previous_time
+                    distance = sqrt(pow(previous_pos[0] - cur_pos[0], 2) + pow(previous_pos[1] - cur_pos[1], 2) + pow(previous_pos[2] - cur_pos[2], 2))
+
+                    # Compute the velocity
+                    vel = distance / delta_time
+
+                    # Save the velocity
+                    velocity.append(vel)
+                    velocity_time.append(cur_time[0])
+
+                    # Set the previous time and position
+                    previous_time = cur_time[0]
+                    previous_pos = cur_pos
+
+
+            # Get the average acceleration at any given point
+            previous_vel = None
+            previous_time = None
+            acceleration = []
+            for cur_vel, cur_time in zip(velocity, velocity_time):
+                # If we are starting then get the current time and current vel
+                if previous_vel == None:
+                    previous_vel = cur_vel
+                    previous_time = cur_time
+                # Otherwise compute the acceleration
+                else:
+                    delta_time = cur_time - previous_time
+                    delta_vel = cur_vel - previous_vel
+
+                    # Compute the acceleration
+                    acc = delta_vel / delta_time
+
+                    # Save the acceleration
+                    acceleration.append(acc)
+
+                    # Set the previous vel and time
+                    previous_vel = cur_vel
+                    previous_time = cur_time
+
+
             # Get the average distance from the optimal trajectory
             for cur_pos, cur_goal in zip(current_drone_position, current_waypoint_position):
                 # There is no previous waypoint before we hit the first waypoint
@@ -288,6 +341,12 @@ for stype in system_types:
             test_worst_waypoint_time.append(max(current_waypoint_time))
             test_worst_deviation.append(max(current_deviation))
 
+            # Get the worst and average acceleration and velocity
+            test_worst_velocity.append(max(velocity))
+            test_avg_velocity.append(np.average(velocity))
+            test_worst_acceleration.append(max(acceleration))
+            test_avg_acceleration.append(np.average(acceleration))
+
             # Save the details of that test into the correct folder
             file = open(folder_name + "analysis_" + str(stype) + ".txt", "w")
             file.write("Path Score: " + str(path_score) + "\n")
@@ -305,6 +364,10 @@ for stype in system_types:
             file.write("Average deviation between waypoints: " + str(deviation_per_waypoint) + "\n")
             file.write("Average squared deviation between waypoints: " + str(deviation_squared_per_waypoint) + "\n")
             file.write("Maximum deviation between waypoints: " + str(max_deviation_per_waypoint) + "\n")
+            file.write("Average Velocity: " + str(np.average(velocity)) + "\n")
+            file.write("Maximum Velocity: " + str(max(velocity)) + "\n")
+            file.write("Average Acceleration: " + str(np.average(acceleration)) + "\n")
+            file.write("Maximum Acceleration: " + str(max(acceleration)) + "\n")
             file.close()
 
             print("Path Score: " + str(path_score))
@@ -319,6 +382,10 @@ for stype in system_types:
             print("Maximum deviation from optimal trajectory: " + str(max(current_deviation)))
             print("Total distance travelled: " + str(total_distance_travelled))
             print("Trajectory length: " + str(trajectory_distance))
+            print("Average Velocity: " + str(np.average(velocity)))
+            print("Maximum Velocity: " + str(max(velocity)))
+            print("Average Acceleration: " + str(np.average(acceleration)))
+            print("Maximum Acceleration: " + str(max(acceleration)))
             print("")
 
             # Stack the drone positions and waypoints for plotting
@@ -478,3 +545,8 @@ for stype in system_types:
         test_worst_waypoint_time = np.array(test_worst_waypoint_time)[sorted_indices]
 
         print("Best total score: " + str(total_test_scores[0]))
+
+        print("Worst Velocity: " + str(max(test_worst_velocity)))
+        print("Average Velocity: " + str(np.average(test_avg_velocity)))
+        print("Worst Acceleration: " + str(max(test_worst_acceleration)))
+        print("Average Acceleration: " + str(np.average(test_avg_acceleration)))

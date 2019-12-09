@@ -45,17 +45,17 @@
   </group>
 
   <include file="$(find flightcontroller)/launch/angle.launch">
-    <arg name="save_name" default="angle_log.txt"/>
+    <arg name="save_name" default="angular_rate_log.txt"/>
     <arg name="save_location" default="$(arg save_location)"/>
   </include>
 
   <include file="$(find flightcontroller)/launch/velocity.launch">
-    <arg name="save_name" default="velocity_log.txt"/>
+    <arg name="save_name" default="attitude_thrust_log.txt"/>
     <arg name="save_location" default="$(arg save_location)"/>
   </include>
 
   <include file="$(find flightcontroller)/launch/position.launch">
-    <arg name="save_name" default="position_log.txt"/>
+    <arg name="save_name" default="velocity_log.txt"/>
     <arg name="save_location" default="$(arg save_location)"/>
     <arg name="speed" value="$(arg speed)"/>
   </include>

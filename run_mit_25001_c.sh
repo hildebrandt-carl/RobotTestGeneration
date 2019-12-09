@@ -1,13 +1,13 @@
 #!/bin/zsh
 
 # Change the ROS_MASTER_URI to allow multiple version of ROS to run at the same time
-ROS_MASTER_URI=http://localhost:11311
+ROS_MASTER_URI=http://localhost:11313
 
 # Source the ros workspace
 source ROS_WS/devel/setup.zsh
 
 # Used to save the port number
-port=25001
+port=25003
 
 # Create a temporary unity folder
 cp -r ./Unity/Build ./Build$port
@@ -28,13 +28,13 @@ beamcounter=10
 totaltime=28800
 simtime=90
 nodescounter=250
-mainfolder='PolySameTimeFull1'
+mainfolder='PolySameTimeFull3'
 
 for minsnap in 0
 do
-	for gentype in 'waypoint'
+	for gentype in 'kinematic'
 	do
-		for controllertype in 'kinematic'
+		for controllertype in 'waypoint'
 		do
 			# Get the folder
 			folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_totaltime$totaltime\_simtime$simtime\_$gentype\_$controllertype
@@ -48,7 +48,7 @@ do
 			echo "Total tests found: $totaltests"
 			echo "--------------------------------------------------------"
 
-			while [ $mapcounter -le 56 ]
+			while [ $mapcounter -le $totaltests ]
 			do
 				echo "Processing: $folder/maps/map$mapcounter"
 				echo " "
@@ -59,7 +59,7 @@ do
 					declare -a speeds=(-1)
 				# Otherwise use all speeds
 				else
-					declare -a speeds=(-2)
+					declare -a speeds=(5 10)
 				fi
 
 				for speed in "${speeds[@]}"
@@ -103,6 +103,7 @@ do
 					mv attitude_thrust_log.txt ..$folder/maps/map$mapcounter/attitude_thrust_log_speed$speed\_minsnap$minsnap.txt
 					mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_speed$speed\_minsnap$minsnap.txt
 					mv angular_rate_log.txt ..$folder/maps/map$mapcounter/angular_rate_log_speed$speed\_minsnap$minsnap.txt
+
 
 					# If it is in min snap mode
 					if [ $minsnap -ne 0 ]

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import time
+import math
 
 from geometry_msgs.msg import Vector3
 from geometry_msgs.msg import Pose
@@ -139,9 +140,17 @@ class PositionController():
           velocity_total = self.speed # m/s
 
           # Calculate the velocity in the x and y direction
-          x_vel = velocity_total * (x_proportion/total)
-          y_vel = velocity_total * (y_proportion/total)
-          z_vel = velocity_total * (z_proportion/total)
+          x_ratio = (x_proportion/total)
+          y_ratio = (y_proportion/total)
+          z_ratio = (z_proportion/total)
+
+          # Compute the scaling factor
+          scaling_factor = float(velocity_total) / math.sqrt(math.pow(x_ratio, 2) + math.pow(y_ratio, 2) + math.pow(z_ratio, 2))
+
+          # Compute the velocity
+          x_vel = x_ratio * scaling_factor
+          y_vel = y_ratio * scaling_factor
+          z_vel = z_ratio * scaling_factor
 
         # Create and publish the data
         velocity = Vector3(x_vel, -1* y_vel, z_vel)

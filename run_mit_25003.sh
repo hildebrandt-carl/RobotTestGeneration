@@ -100,9 +100,9 @@ do
 					
 					# Save the test to the appropriate file
 					mv performance.txt ..$folder/maps/map$mapcounter/performance_speed$speed\_minsnap$minsnap.txt
-					mv angle_log.txt ..$folder/maps/map$mapcounter/angle_log_speed$speed\_minsnap$minsnap.txt
+					mv attitude_thrust_log.txt ..$folder/maps/map$mapcounter/attitude_thrust_log_speed$speed\_minsnap$minsnap.txt
 					mv velocity_log.txt ..$folder/maps/map$mapcounter/velocity_log_speed$speed\_minsnap$minsnap.txt
-					mv position_log.txt ..$folder/maps/map$mapcounter/position_log_speed$speed\_minsnap$minsnap.txt
+					mv angular_rate_log.txt ..$folder/maps/map$mapcounter/angular_rate_log_speed$speed\_minsnap$minsnap.txt
 
 					# If it is in min snap mode
 					if [ $minsnap -ne 0 ]

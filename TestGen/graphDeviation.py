@@ -84,6 +84,7 @@ for folder in all_folders:
 
         scores = []
         average_deviation = []
+        travelled_length =[]
         total_deviation = []
         average_time = []
         total_time = []
@@ -156,6 +157,7 @@ for folder in all_folders:
                         time_heuristic.append(optimal_time_heuristic)
                         maximum_deviation.append(max_dev[0][0])
                         trajectory_length.append(traj_len)
+                        travelled_length.append(tot_dist[0][0])
 
         # Save the data into each respective system
 
@@ -167,6 +169,7 @@ for folder in all_folders:
             'system_type': system,
             'total_deviation': total_deviation,
             'average_deviation': average_deviation,
+            'total_travelled_length': travelled_length,
         }
 
         final_data.append(record)
@@ -187,6 +190,7 @@ for sys in system_types:
             kin_tot_time.append(item['total_time'])
             kin_tot_dev.append(item['total_deviation'])
             kin_avg_dev.append(item['average_deviation'])
+
 
 our_max_dev = []
 our_tot_time = []
@@ -283,3 +287,71 @@ ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
 ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
 
 plt.show()
+
+
+
+
+
+
+
+ticks = ["Max Dev", "Average Dev", "Total Time", "Distance Travelled", "Average Deviation"]
+
+# Create the data for the waypoint controller
+waypoint_results = []
+sys = "speed-1"
+for item in final_data:
+    if "kinematic" in item['test_set'] and sys == item['system_type']:
+        waypoint_results.append(item['max_deviation'])
+        waypoint_results.append(item['average_deviation'])
+        waypoint_results.append(item['total_time'])
+        waypoint_results.append(item['total_travelled_length'])
+        waypoint_results.append(item['average_deviation'])
+
+fixed_vel_results = []
+sys = "speed5"
+for item in final_data:
+    if "kinematic" in item['test_set'] and sys == item['system_type']:
+        fixed_vel_results.append(item['max_deviation'])
+        fixed_vel_results.append(item['average_deviation'])
+        fixed_vel_results.append(item['total_time'])
+        fixed_vel_results.append(item['total_travelled_length'])
+        fixed_vel_results.append(item['average_deviation'])
+
+
+
+
+
+
+fig2, ax2 = plt.subplots(1, 1, figsize=(10, 9))
+
+bpl = plt.boxplot(waypoint_results, positions=1.5*np.arange(len(waypoint_results)), showmeans=True)
+bpr = plt.boxplot(fixed_vel_results, positions=1.5*np.arange(len(fixed_vel_results))+0.6, showmeans=True)
+
+# add_values(bpl, ax1)
+# add_values(bpr, ax1)
+set_box_color(bpl, '#2C7BB6')
+set_box_color(bpr, '#D7191C')
+
+plt.plot([], c='#D7191C', label='Valid Stressfull Tests')
+plt.plot([], c='#2C7BB6', label='Valid Random Tests')
+plt.legend(fontsize=18)
+
+plt.xlim([-0.5, 1.5*len(waypoint_results)-0.5])
+
+plt.yticks(fontsize=15)
+plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=10)
+
+plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+plt.ylabel("Average Deviation", fontweight='bold', fontsize=20)
+
+# log scale
+from matplotlib.ticker import FormatStrFormatter
+plt.yscale('log')
+plt.tick_params(axis='y', which='minor', labelsize=15)
+ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
+plt.show()
+
+print("Average Total Deviation: ")
+print(waypoint_results[2])

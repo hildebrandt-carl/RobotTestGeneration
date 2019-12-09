@@ -22,17 +22,17 @@ def rotate(point, angle):
     return qx, qy
 
 # Define where the tests are stored
-file_location = "../AnafiSimulation/TestingAnafi/test/maps"
+file_location = "../AnafiSimulation/TestingAnafi/Outdoor/test/maps"
 
 # Find all the flight files
-analysis_file_names = glob.glob(file_location + "/map*/test.txt")
+analysis_file_names = glob.glob(file_location + "/map6/test.txt")
 total_files = len(analysis_file_names)
 
 systems = ["simulation", "outdoor"]
 
 # Used to controll plotting
 plotting_individual = True
-potting_deviation = False
+potting_deviation = True
 
 # List used to save all the results for processing later
 all_data = []
@@ -80,7 +80,7 @@ for i in range(0, total_files):
             expected_x.append(float(goals[0]))
             expected_y.append(float(goals[1]))
             # Add 1 because the drone always starts 1m off the ground
-            expected_z.append(float(goals[2]) + 1)
+            expected_z.append(float(goals[2]) + 0.75)
 
     # Close the file    
     file.close()
@@ -190,6 +190,8 @@ for i in range(0, total_files):
         
         # Plot the data
         if plotting_individual:
+            if system == "outdoor":
+                ax.scatter(rotated_data[0][99], rotated_data[1][99], rotated_data[2][99], c='r')
             ax.plot3D(rotated_data[0], rotated_data[1], rotated_data[2], label=system)
             ax.set_xlabel('X-axis')
             ax.set_ylabel('Y-axis')
@@ -261,17 +263,44 @@ for d in all_data:
 
 # For each of the system type get the maximum deviation
 max_dev = []
+avg_dev = []
 for system in systems:
-    system_dev = []
+    largest_max = 0 
+    largest_max_file = None
+    largest_avg = 0 
+    largest_avg_file = None
+    system_max_dev = []
+    system_avg_dev = []
     for d in all_data:
-        system_dev.append(max(d[system + "deviation"]))
+        cur_max = max(d[system + "deviation"])
+        cur_avg = np.average(np.array(d[system + "deviation"]))
+        system_max_dev.append(cur_max)
+        system_avg_dev.append(cur_avg)
+        if cur_max > largest_max:
+            largest_max = cur_max
+            largest_max_file = d["filename"]
+        if cur_avg > largest_avg:
+            largest_avg = cur_avg
+            largest_avg_file = d["filename"]
 
-    max_dev.append(system_dev)
+    max_dev.append(system_max_dev)
+    avg_dev.append(system_avg_dev)
+
+    print("Largest Maximum Deviation in " + str(system) + " (" + str(largest_max) + "m): " + str(largest_max_file))
+    print("Largest Average Deviation in " + str(system) + " (" + str(largest_avg) + "m): " + str(largest_avg_file))
 
 
 fig, ax = plt.subplots()
 bp = ax.boxplot(max_dev)
 ax.set_xlabel('System Type')
 ax.set_ylabel('Maximum Deviation')
+ax.set_xticklabels(systems)
+plt.show()
+
+
+fig, ax = plt.subplots()
+bp = ax.boxplot(avg_dev)
+ax.set_xlabel('System Type')
+ax.set_ylabel('Average Deviation')
 ax.set_xticklabels(systems)
 plt.show()

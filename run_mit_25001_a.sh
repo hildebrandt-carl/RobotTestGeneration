@@ -28,13 +28,13 @@ beamcounter=10
 totaltime=28800
 simtime=90
 nodescounter=250
-mainfolder='PolySameTimeFull1'
+mainfolder='PolySameTimeFull3'
 
-for minsnap in 0
+for minsnap in 0 1
 do
-	for gentype in 'waypoint'
+	for gentype in 'kinematic'
 	do
-		for controllertype in 'kinematic'
+		for controllertype in 'waypoint'
 		do
 			# Get the folder
 			folder=/TestGen/Results/$mainfolder/MIT_seed10\_depth$depthcounter\_nodes$nodescounter\_res$rescounter\_beamwidth$beamcounter\_totaltime$totaltime\_simtime$simtime\_$gentype\_$controllertype
@@ -48,7 +48,7 @@ do
 			echo "Total tests found: $totaltests"
 			echo "--------------------------------------------------------"
 
-			while [ $mapcounter -le 56 ]
+			while [ $mapcounter -le $totaltests ]
 			do
 				echo "Processing: $folder/maps/map$mapcounter"
 				echo " "
@@ -59,7 +59,7 @@ do
 					declare -a speeds=(-1)
 				# Otherwise use all speeds
 				else
-					declare -a speeds=(-2)
+					declare -a speeds=(2)
 				fi
 
 				for speed in "${speeds[@]}"
