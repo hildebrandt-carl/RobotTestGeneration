@@ -47,17 +47,17 @@ def add_values(bp, ax, left=False):
 #                "./Results/PolySameTime2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_waypoint/",
 #                "./Results/PolySameTime2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_constant/"]
 
-all_folders = ["./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
-               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
-               "./Results/PolySameTimeFull2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/"]
+all_folders = ["./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
+               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
+               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
+               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
+               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
+               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/"]
 
-system_types = ["speed-2",
-                "speed-1",
-                "speed5",
-                "speed10",
+system_types = ["speed-2_minsnap0",
+                "speed-1_minsnap0",
+                "speed5_minsnap0",
+                "speed10_minsnap0",
                 "speed-1_minsnap1"]
 
 ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Fast", "Min Snap"]
@@ -92,6 +92,10 @@ for folder in all_folders:
         time_heuristic = []
         maximum_deviation = []
         trajectory_length = []
+        avg_vel_heuristic = []
+        max_vel_heuristic = []
+        avg_acc_heuristic = []
+        max_acc_heuristic = []
 
         for depth in depths:
             for beam in beam_lengths:
@@ -118,6 +122,14 @@ for folder in all_folders:
                     # Get the average and total time for that test
                     avg_time = get_numbers_after_string(file_name=file_name, the_string="Average time between waypoints:")
                     tot_time = get_numbers_after_string(file_name=file_name, the_string="Total time between waypoints:")
+                    
+                    # Get the average and maximum velocity
+                    avg_vel = get_numbers_after_string(file_name=file_name, the_string="Average Velocity:")
+                    max_vel = get_numbers_after_string(file_name=file_name, the_string="Maximum Velocity:")
+
+                    # Get the average and maximum acceleration
+                    avg_acc = get_numbers_after_string(file_name=file_name, the_string="Average Acceleration:")
+                    max_acc = get_numbers_after_string(file_name=file_name, the_string="Maximum Acceleration:")
 
                     # Get the maximum deviation from the optimal trajectory
                     max_dev = get_numbers_after_string(file_name=file_name, the_string="Maximum deviation from optimal trajectory:")
@@ -158,6 +170,10 @@ for folder in all_folders:
                         maximum_deviation.append(max_dev[0][0])
                         trajectory_length.append(traj_len)
                         travelled_length.append(tot_dist[0][0])
+                        avg_vel_heuristic.append(avg_vel[0][0])
+                        max_vel_heuristic.append(max_vel[0][0])
+                        avg_acc_heuristic.append(avg_acc[0][0])
+                        max_acc_heuristic.append(max_acc[0][0])
 
         # Save the data into each respective system
 
@@ -170,6 +186,10 @@ for folder in all_folders:
             'total_deviation': total_deviation,
             'average_deviation': average_deviation,
             'total_travelled_length': travelled_length,
+            'avg_velocity': avg_vel_heuristic,
+            'max_velocity': max_vel_heuristic,
+            'avg_acceleration': avg_acc_heuristic,
+            'max_acceleration': max_acc_heuristic,
         }
 
         final_data.append(record)
@@ -222,18 +242,18 @@ def set_box_color(bp, color):
 fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
 
 bpl = plt.boxplot(kin_max_dev, positions=1.5*np.arange(len(kin_max_dev)), showmeans=True)
-bpr = plt.boxplot(our_max_dev, positions=1.5*np.arange(len(our_max_dev))+0.6, showmeans=True)
+# bpr = plt.boxplot(our_max_dev, positions=1.5*np.arange(len(our_max_dev))+0.6, showmeans=True)
 
 # add_values(bpl, ax1)
 # add_values(bpr, ax1)
 set_box_color(bpl, '#2C7BB6')
-set_box_color(bpr, '#D7191C')
+# set_box_color(bpr, '#D7191C')
 
 plt.plot([], c='#D7191C', label='Valid Stressfull Tests')
 plt.plot([], c='#2C7BB6', label='Valid Random Tests')
 plt.legend(fontsize=18)
 
-plt.xlim([-0.5, 1.5*len(our_max_dev)-0.5])
+plt.xlim([-0.5, 1.5*len(kin_max_dev)-0.5])
 
 plt.yticks(fontsize=15)
 plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=10)
@@ -294,30 +314,30 @@ plt.show()
 
 
 
-ticks = ["Max Dev", "Average Dev", "Total Time", "Distance Travelled", "Average Deviation"]
+ticks = ["Max Dev", "Average Dev", "Total Time", "Avg Velocity", "Max Acceleration"]
 
 # Create the data for the waypoint controller
 waypoint_results = []
-sys = "speed-1"
+sys = "speed-1_minsnap0"
 for item in final_data:
     if "kinematic" in item['test_set'] and sys == item['system_type']:
         waypoint_results.append(item['max_deviation'])
         waypoint_results.append(item['average_deviation'])
         waypoint_results.append(item['total_time'])
-        waypoint_results.append(item['total_travelled_length'])
-        waypoint_results.append(item['average_deviation'])
+        waypoint_results.append(item['avg_velocity'])
+        waypoint_results.append(item['max_acceleration'])
 
 fixed_vel_results = []
-sys = "speed5"
+sys = "speed5_minsnap0"
 for item in final_data:
     if "kinematic" in item['test_set'] and sys == item['system_type']:
         fixed_vel_results.append(item['max_deviation'])
         fixed_vel_results.append(item['average_deviation'])
         fixed_vel_results.append(item['total_time'])
-        fixed_vel_results.append(item['total_travelled_length'])
-        fixed_vel_results.append(item['average_deviation'])
+        fixed_vel_results.append(item['avg_velocity'])
+        fixed_vel_results.append(item['max_acceleration'])
 
-
+print(final_data)
 
 
 
@@ -332,8 +352,8 @@ bpr = plt.boxplot(fixed_vel_results, positions=1.5*np.arange(len(fixed_vel_resul
 set_box_color(bpl, '#2C7BB6')
 set_box_color(bpr, '#D7191C')
 
-plt.plot([], c='#D7191C', label='Valid Stressfull Tests')
-plt.plot([], c='#2C7BB6', label='Valid Random Tests')
+plt.plot([], c='#D7191C', label='Waypoint Controller')
+plt.plot([], c='#2C7BB6', label='Fixed Velocity Controller')
 plt.legend(fontsize=18)
 
 plt.xlim([-0.5, 1.5*len(waypoint_results)-0.5])
