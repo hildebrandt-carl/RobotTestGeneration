@@ -20,14 +20,16 @@ system_types = ["speed-2_minsnap0",
                 "speed2_minsnap0",
                 "speed5_minsnap0",
                 "speed10_minsnap0",
-                "speed-1_minsnap1",
-                "speed-1_minsnap2"]
+                "speed-1_minsnap1"]
 
-for folder in all_folders:
+folder_home = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+
+for f in all_folders:
 
     for system in system_types:
 
-        analysis_file_names = glob.glob(folder + "maps/map*/analysis_" + system + ".txt")
+        folder = folder_home + f
+        analysis_file_names = glob.glob(folder + "/maps/map*/analysis_" + system + ".txt")
         # Make sure we go in order from highest score to lowest score
         total_files = len(analysis_file_names)
 
@@ -46,8 +48,8 @@ for folder in all_folders:
         for file_counter in range(1, total_files + 1):
 
             # Create the file name
-            flight_log_file = folder + "maps/map" + str(file_counter) + "/analysis_" + system + ".txt"
-            flight_details_file = folder + "maps/map" + str(file_counter) + "/details.txt"
+            flight_log_file = folder + "/maps/map" + str(file_counter) + "/analysis_" + system + ".txt"
+            flight_details_file = folder + "/maps/map" + str(file_counter) + "/details.txt"
 
             # Get the data
             dev_per_waypoint = get_numbers_after_string(file_name=flight_log_file,
@@ -85,6 +87,10 @@ for folder in all_folders:
             # We want out going velocities (remove the first three)
             velocties_out = copy.deepcopy(velocties_all[3:])
             velocties_in = copy.deepcopy(velocties_all[:-3])
+
+            # Remove the first euler angle as that is with regards to it hoevering
+            euler_angles = euler_angles[3:]
+            print(euler_angles)
 
             assert (len(velocties_out) == len(velocties_in))
 
@@ -129,6 +135,27 @@ for folder in all_folders:
                 print(len(x_angle))
                 continue
 
+            print(flight_details_file)
+            print("x angle")
+            print(x_angle)
+            print("y angle")
+            print(y_angle)
+            print("z angle")
+            print(z_angle)
+            print("x vel out")
+            print(x_vel_out)
+            print("y vel out")
+            print(y_vel_out)
+            print("z vel out")
+            print(z_vel_out)
+            print("x vel in")
+            print(x_vel_in)
+            print("y vel in")
+            print(y_vel_in)
+            print("z vel in")
+            print(z_vel_in)
+            exit()
+
             system_dev.extend(dev_per_waypoint[0])
             system_xangles.extend(x_angle)
             system_yangles.extend(y_angle)
@@ -151,6 +178,8 @@ for folder in all_folders:
         system_yvel_in = np.asarray(system_yvel_in)
         system_zvel_in = np.asarray(system_zvel_in)
         system_dev = np.asarray(system_dev)
+
+        
 
         # Remove all nan values from the list
         nan_values = np.isnan(system_zangles)
@@ -279,6 +308,9 @@ for folder in all_folders:
         print("Intercepts: " + str(poly_reg.intercept_))
         print("Saving the intercept and the coefficients")
 
-        os.mkdir("Models")
+        try:
+            os.mkdir("Models")
+        except:
+            pass
         np.save("Models/poly_features_" + str(system), poly_features)
         np.save("Models/regression_model_" + str(system), poly_reg)

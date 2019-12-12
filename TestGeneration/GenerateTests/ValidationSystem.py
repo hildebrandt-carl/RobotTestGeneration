@@ -120,6 +120,7 @@ class ValidationSystem:
 
                 # Get the previous vector
                 if prev_vel is None:
+                    cur_vel = [0, 0, 0.5]
                     prev_vel = [0, 0, 0]
 
                 # Save the in and out vectors

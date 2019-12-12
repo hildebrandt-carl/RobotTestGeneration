@@ -17,14 +17,10 @@ folder = ["initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_si
         "initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_random_scoretype_random",
         "initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_maxvel_scoretype_random"]
 
-system_types = ["speed-2_minsnap0",
-                "speed-1_minsnap0",
-                "speed2_minsnap0",
-                "speed5_minsnap0",
-                "speed10_minsnap0"]
+system_types = ["speed-1_minsnap1"]
 
 
-ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Normal", "Fixed Velocity Fast"ZZ]
+ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Normal", "Fixed Velocity Fast"]
 
 for stype in system_types:
     for f in folder:
