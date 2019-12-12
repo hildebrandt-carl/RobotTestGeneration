@@ -199,7 +199,7 @@ class ScoringSystem:
     # Returns the unit vector of the vector
     # https://stackoverflow.com/questions/2827393/angles-between-two-n-dimensional-vectors-in-python/13849249#13849249
     def unit_vector(self, v):
-        return vector / np.linalg.norm(v)
+        return v / np.linalg.norm(v)
 
     # Expects angles in degrees
     def calculate_angular_score(self, current_angle, best_angle, larger):

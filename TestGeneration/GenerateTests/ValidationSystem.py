@@ -1,10 +1,12 @@
 import os
 import numpy as np
+import warnings
 
 from FigureManager import FigureManager
 from DroneReachabilitySet import DroneReachabilitySet
 from DroneKinematic import DroneKinematic
 from UnityConverter import UnityConverter
+from math import sqrt, pow, acos, degrees
 
 class ValidationSystem:
 
@@ -96,11 +98,44 @@ class ValidationSystem:
             waypoints = []
             velocity = []
             angles = []
+            velocities = []
+            in_vec = []
+            out_vec = []
+            in_vec_mag = []
+            out_vec_mag = []
+            euler_angles = []
+            vec_angles = []
+
+            cur_vel = None
+            prev_vel = None
+
             # Get the waypoints and velocities for that path
             for w in trajectories[index]:
+                # Get the current velocity
+                cur_vel = w.get_velocity()
+
                 waypoints.append(list(w.get_position()))
-                velocity.append(list(w.get_velocity()))
+                velocity.append(list(cur_vel))
                 angles.append(list(w.get_attitude()))
+
+                # Get the previous vector
+                if prev_vel is None:
+                    prev_vel = [0, 0, 0]
+
+                # Save the in and out vectors
+                in_vec.append(prev_vel)
+                out_vec.append(cur_vel)
+
+                # Compute the magnitude of the vectors
+                in_vec_mag.append(self.get_magnitude_vector(prev_vel))
+                out_vec_mag.append(self.get_magnitude_vector(cur_vel))
+
+                # Get angles between vectors
+                euler_angles.append(self.euler_angles_between_vectors(prev_vel, cur_vel))
+                vec_angles.append(self.angle_between_vectors(prev_vel, cur_vel))
+
+                # Reset the input vector
+                prev_vel = cur_vel
 
             # Create the file names
             save_directory = "maps/map" + str(path_counter) + "/"
@@ -123,10 +158,12 @@ class ValidationSystem:
             file.write("Velocity: " + str(velocity) + '\n')
             file.write("Attitude: " + str(angles) + '\n')
             file.write("----------------------------\n")
-            # file.write("Out Vector Magnitude: " + str(out_mag[index]) + '\n')
-            # file.write("largest Out Vector Magnitude: " + str(largest_out_mag[index]) + '\n')
-            # file.write("Angles: " + str(waypoint_angles[index]) + '\n')
-            # file.write("Euler Angles: " + str(euler_angles[index]) + '\n')
+            file.write("Out Vector Magnitude: " + str(out_vec_mag) + '\n')
+            file.write("In Vector Magnitude: " + str(in_vec_mag) + '\n')
+            file.write("Out Vector: " + str(out_vec) + '\n')
+            file.write("In Vector: " + str(in_vec) + '\n')
+            file.write("Angles: " + str(vec_angles) + '\n')
+            file.write("Euler Angles: " + str(euler_angles) + '\n')
             file.close()
 
             # Save the test to a unity file
@@ -157,3 +194,44 @@ class ValidationSystem:
                                          save_directory=save_directory,
                                          only_save=True,
                                          figure_number=False)
+
+    # Calculate the x,y and z angle between two vectors
+    def euler_angles_between_vectors(self, a, b):
+        axy = np.array([a[0], a[1]])
+        bxy = np.array([b[0], b[1]])
+        ayz = np.array([a[1], a[2]])
+        byz = np.array([b[1], b[2]])
+        axz = np.array([a[0], a[2]])
+        bxz = np.array([b[0], b[2]])
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            xangle = acos(np.dot(ayz, byz) / (np.linalg.norm(ayz) * np.linalg.norm(byz)))
+            yangle = acos(np.dot(axz, bxz) / (np.linalg.norm(axz) * np.linalg.norm(bxz)))
+            zangle = acos(np.dot(axy, bxy) / (np.linalg.norm(axy) * np.linalg.norm(bxy)))
+
+        # Check if any of the angles is NaN. This happens when you have a 0 vector
+        if np.isnan((xangle)):
+            xangle = 0
+        if np.isnan((yangle)):
+            yangle = 0
+        if np.isnan((zangle)):
+            zangle = 0
+
+        return [degrees(xangle), degrees(yangle), degrees(zangle)]
+
+    # Calculate the magnitude ofa  vector
+    def get_magnitude_vector(self, v1):
+        mag = sqrt(pow(v1[0], 2) + pow(v1[1], 2) + pow(v1[2], 2))
+        return mag
+
+    # Returns a single angle in radians between vectors 'v1' and 'v2'
+    # https://stackoverflow.com/questions/2827393/angles-between-two-n-dimensional-vectors-in-python/13849249#13849249
+    def angle_between_vectors(self, v1, v2):
+        v1_u = self.unit_vector(v1)
+        v2_u = self.unit_vector(v2)
+        return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+
+    # Returns the unit vector of the vector
+    # https://stackoverflow.com/questions/2827393/angles-between-two-n-dimensional-vectors-in-python/13849249#13849249
+    def unit_vector(self, v):
+        return v / np.linalg.norm(v)
