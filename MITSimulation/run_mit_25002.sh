@@ -21,7 +21,7 @@ cd ./tmp_dir/Build${port}
 current_dir="$PWD"
 
 # Change the port number inside the new build
-sed -i -e 's/(25002)/('$port')/g' ./config.txt
+sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
 # Variables we can change
 searchtype="maxvel"
@@ -36,9 +36,11 @@ seed=10
 totaltime=3600
 simulationtime=45
 
-results_folder='/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/inital_run'
+initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_maxvel_scoretype_random
 
-for minsnap in 0
+results_folder='/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown'
+
+for minsnap in 1
 do
 
 	# Get the folder
@@ -46,7 +48,7 @@ do
 
 	# Get the total number of tests to run
 	mapcounter=1
-	totaltests=$(ls ..$folder/maps | wc -l)
+	totaltests=$(ls $folder/maps | wc -l)
 
 	echo "--------------------------------------------------------"
 	echo "Processing: $folder"

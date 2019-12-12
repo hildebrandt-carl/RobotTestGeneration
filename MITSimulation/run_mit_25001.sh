@@ -28,17 +28,19 @@ searchtype="kinematic"
 score="random"
 savename="initial"
 
-trajectorylength=10
+trajectorylength=5
 beamwidth=5
 nodes=250
 resolution=4
 seed=10
 totaltime=3600
-simulationtime=90
+simulationtime=45
 
-results_folder='/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/inital_run'
+initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random
 
-for minsnap in 0
+results_folder='/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown'
+
+for minsnap in 1
 do
 
 	# Get the folder
@@ -46,7 +48,7 @@ do
 
 	# Get the total number of tests to run
 	mapcounter=1
-	totaltests=$(ls ..$folder/maps | wc -l)
+	totaltests=$(ls $folder/maps | wc -l)
 
 	echo "--------------------------------------------------------"
 	echo "Processing: $folder"

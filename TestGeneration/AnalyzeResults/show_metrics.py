@@ -3,6 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from processResultsUtils import get_numbers_after_string
 
+# This has the run when all tests are considered
+# all_folders = ["./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
+#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/",
+#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/"]
+
 def add_values(bp, ax, left=False):
     """ This actually adds the numbers to the various points of the boxplots"""
     for element in ['whiskers', 'medians', 'caps']:
@@ -42,28 +47,22 @@ def add_values(bp, ax, left=False):
 #                "./Results/PolySameTime2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_waypoint/",
 #                "./Results/PolySameTime2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_constant/"]
 
-all_folders = ["./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/"]
+folder_home = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+
+all_folders = ["initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random",
+        "initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_maxvel_scoretype_random",
+        "initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random",
+        "initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_random_scoretype_random",
+        "initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_random_scoretype_random",
+        "initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_maxvel_scoretype_random"]
 
 system_types = ["speed-2_minsnap0",
                 "speed-1_minsnap0",
+                "speed2_minsnap0",
                 "speed5_minsnap0",
-                "speed10_minsnap0",
-                "speed-1_minsnap1"]
+                "speed10_minsnap0"]
 
-ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Fast", "Min Snap"]
-
-# Coefficients of determination (can get from running FindTrends)
-# Make sure to turn the saving off when you do run it
-coefficients_of_determination = [0.48648857791186556,
-                                0.45916510608372396,
-                                0.6071376814038854,
-                                0.2362556661022981,
-                                0.44939513435675327]
+ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Normal", "Fixed Velocity Fast"]
 
 failed_tests = 0
 
@@ -95,7 +94,7 @@ for folder in all_folders:
         for depth in depths:
             for beam in beam_lengths:
 
-                file_location = folder
+                file_location = folder_home + folder
                 analysis_file_names = glob.glob(file_location + "maps/map*/analysis_" + system + ".txt")
 
                 # Make sure we go in order from highest score to lowest score

@@ -1,5 +1,6 @@
 import glob
 import copy
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from processResultsUtils import get_numbers_after_string
@@ -9,12 +10,16 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
 
-all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",]
+all_folders = ["initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random",
+                "initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random"]
 
-system_types = ["speed-2",
-                "speed-1",
-                "speed5",
-                "speed10",
+all_folders = ["initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random"]
+
+system_types = ["speed-2_minsnap0",
+                "speed-1_minsnap0",
+                "speed2_minsnap0",
+                "speed5_minsnap0",
+                "speed10_minsnap0",
                 "speed-1_minsnap1",
                 "speed-1_minsnap2"]
 
@@ -273,5 +278,7 @@ for folder in all_folders:
         print("Coefficients shape: " + str(np.shape(poly_reg.coef_)))
         print("Intercepts: " + str(poly_reg.intercept_))
         print("Saving the intercept and the coefficients")
+
+        os.mkdir("Models")
         np.save("Models/poly_features_" + str(system), poly_features)
         np.save("Models/regression_model_" + str(system), poly_reg)

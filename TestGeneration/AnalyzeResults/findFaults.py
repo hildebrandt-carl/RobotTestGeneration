@@ -1,38 +1,31 @@
 import glob
 
-# all_folders = ["./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
-#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/",
-#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/"]
+folder_home = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
 
-all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-               "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
+folder = ["initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random",
+        "initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_maxvel_scoretype_random",
+        "initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random",
+        "initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_random_scoretype_random",
+        "initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_random_scoretype_random",
+        "initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_maxvel_scoretype_random"]
 
-system_types = ["speed-2",
-                "speed-1",
-                "speed5",
-                "speed10"]
-
-all_folders = ["./Results/PolySameTimeFull1/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",]
-
-system_types = ["speed-2",
-                "speed-1",
-                "speed5",
-                "speed10",
+system_types = ["speed-2_minsnap0",
+                "speed-1_minsnap0",
+                "speed2_minsnap0",
+                "speed5_minsnap0",
+                "speed10_minsnap0",
                 "speed-1_minsnap1",
                 "speed-1_minsnap2"]
 
 for stype in system_types:
-    for folder in all_folders:
-
-        file_location = folder
-        file_names = glob.glob(file_location + "maps/map*/performance_" + stype + ".txt")
+    for f in folder:
+        file_location = folder_home + f
+        file_names = glob.glob(file_location + "/maps/map*/performance_" + stype + ".txt")
         print(file_location + "maps/map*/performance_" + stype + ".txt")
 
         if len(file_names) <= 0:
             print("NO FILES FOUND FOR: " + str(file_location))
+            print("")
             continue
 
         file_counter = 0
@@ -43,11 +36,15 @@ for stype in system_types:
 
                 for i in range(0, len(lines)-4):
                     if "Goal switch" in lines[i] and "Goal switch" in lines[i + 4]:
-                        print("Error in: " + str(file_name))
+                        print("-------------------------------------------------")
+                        print("Error in: " + str(file_name) + " --- " + str(the_line))
+                        print("-------------------------------------------------")
 
                     if "Current Goal Position:" in lines[i]:
                         the_line = lines[i]
                         parts = the_line.split(',')
                         if parts[1][1] != "-":
+                            print("-------------------------------------------------")
                             print("Error in: " + str(file_name) + " --- " + str(the_line))
+                            print("-------------------------------------------------")
 

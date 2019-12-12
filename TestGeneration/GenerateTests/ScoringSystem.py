@@ -88,8 +88,8 @@ class ScoringSystem:
     ## Defines a learned scoring function
     def learned_score(self, traj=None):
         # Load in your feature vector and polynomial regression model
-        poly_features = np.load("Models/poly_features.npy", allow_pickle=True).item()
-        poly_reg = np.load("Models/regression_model.npy", allow_pickle=True).item()
+        poly_features = np.load("/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/ScoringModels/poly_features.npy", allow_pickle=True).item()
+        poly_reg = np.load("/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/ScoringModels/regression_model.npy", allow_pickle=True).item()
 
         # Used to save the trajectory score
         trajectory_scores = []

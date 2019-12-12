@@ -7,45 +7,31 @@ from math import sqrt, pow
 from processResultsUtils import get_numbers_from_string
 from processResultsUtils import lineseg_dist
 
-# all_folders = ["./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
-#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/",
-#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/"]
 
-# all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
-#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
-#
-# all_folders = ["./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-#                "./Results/PolySameTimeFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/"]
+folder_home = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
 
-all_folders = ["./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap2/"]
+folder = ["initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random",
+        "initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_maxvel_scoretype_random",
+        "initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random",
+        "initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_random_scoretype_random",
+        "initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_random_scoretype_random",
+        "initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_maxvel_scoretype_random"]
 
 system_types = ["speed-2_minsnap0",
                 "speed-1_minsnap0",
                 "speed2_minsnap0",
                 "speed5_minsnap0",
-                "speed10_minsnap0",
-                "speed-1_minsnap1",
-                "speed-1_minsnap2"]
+                "speed10_minsnap0"]
 
-system_types = ["speed-1_minsnap0"]
+
+ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Normal", "Fixed Velocity Fast"ZZ]
 
 for stype in system_types:
-    for folder in all_folders:
-        #MIT_seed10_depth10_nodes1000_res4_beamwidth10_searchtime36000_kinematic_angle180
-        file_location = folder
-        file_names = glob.glob(file_location + "maps/map*/performance_" + stype + ".txt")
-        print(file_location + "maps/map*/performance_" + stype + ".txt")
+    for f in folder:
+        file_location = folder_home + f
+        file_names = glob.glob(file_location + "/maps/map*/performance_" + stype + ".txt")
+
+        print(file_location + "/maps/map*/performance_" + stype + ".txt")
 
         if len(file_names) <= 0:
             print("NO FILES FOUND FOR: " + str(file_location))
@@ -252,11 +238,6 @@ for stype in system_types:
                     # Set the previous time and position
                     previous_time = cur_time[0]
                     previous_pos = cur_pos
-
-            plt.figure(1)
-            plt.plot(velocity)
-            plt.show()
-
 
             # Get the average acceleration at any given point
             previous_vel = None
