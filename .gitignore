@@ -41,6 +41,7 @@
 # Ignore the test generation files
 **/TestGeneration/FinalResults/*
 **/TestGeneration/GenerateTests/Results/*
+**/TestGeneration/Results/*
 
 # Ignore the tempory files used for simulation
 Build25001/*

@@ -10,7 +10,7 @@ drone="mit"
 
 trajectorylength=5
 beamwidth=5
-nodes=50
+nodes=250
 resolution=4
 seed=10
 totaltime=180
