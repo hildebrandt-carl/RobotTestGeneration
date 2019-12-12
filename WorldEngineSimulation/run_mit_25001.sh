@@ -1,17 +1,30 @@
 #!/bin/zsh
 
+# Get the variables passed to the bash script
+savedirectory=$1 
+searchtype=$2
+scoretype=$3
+saveprefix=$4
+trajlength=$5
+
+if [ -z "$savedirectory" ] || [ -z "$searchtype" ]  || [ -z "$scoretype" ]  || [ -z "$saveprefix" ] || [ -z "$trajlength" ] 
+then
+      echo "Please run this script using ./script.sh <your_directory> <search_type> <score_type> <save_prefix> <trajectory_length>"
+	  exit 1
+fi
+
 # Change the ROS_MASTER_URI to allow multiple version of ROS to run at the same time
-ROS_MASTER_URI=http://localhost:11312
+ROS_MASTER_URI=http://localhost:11311
 
 # Source the ros workspace
 source devel/setup.zsh
 
-# Used to save the port number
-port=25002
+# # Used to save the port number
+port=25001
 
-# Create a temporary unity folder
-mkdir -p ./tmp_dir/
-cp -r ../Unity/Build ./tmp_dir/Build
+# Create a temporary unity folder #TODO
+mkdir -p ./tmp_dir/Build
+# cp -r ../Unity/Build ./tmp_dir/Build
 mv ./tmp_dir/Build ./tmp_dir/Build${port}
 
 # Go into the directory
@@ -20,31 +33,27 @@ cd ./tmp_dir/Build${port}
 # Get current directory
 current_dir="$PWD"
 
+# Get the directory of the final results
+cd ../../../TestGeneration/FinalResults/${savedirectory}
+results_dir="$PWD"
+cd ${current_dir}
+pwd
+
 # Change the port number inside the new build
 sed -i -e 's/(25001)/('$port')/g' ./config.txt
 
-# Variables we can change
-searchtype="maxvel"
-score="random"
-savename="initial"
-
-trajectorylength=5
+# Some of the variables we assumed to be static from the generation
 beamwidth=5
 nodes=250
 resolution=4
 seed=10
 totaltime=3600
-simulationtime=45
-
-initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_maxvel_scoretype_random
-
-results_folder='/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown'
 
 for minsnap in 1
 do
 
 	# Get the folder
-	folder=${results_folder}/${savename}_MIT_seed${seed}_length${trajectorylength}_nodes${nodes}_res${resolution}_beamwidth${beamwidth}_totaltime${totaltime}_simtime${simulationtime}_searchtype_${searchtype}_scoretype_${score}
+	folder=${results_dir}/${saveprefix}_MIT_seed${seed}_length${trajlength}_nodes${nodes}_res${resolution}_beamwidth${beamwidth}_totaltime${totaltime}_simtime${simulationtime}_searchtype_${searchtype}_scoretype_${scoretype}
 
 	# Get the total number of tests to run
 	mapcounter=1
@@ -128,7 +137,7 @@ done
 
 echo "Done"
 
-# Go back to the original dir
+Go back to the original dir
 cd $current_dir
 cd ..
 
