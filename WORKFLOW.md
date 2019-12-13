@@ -140,12 +140,12 @@ This will crate a set of handcrafted tests.
 
 Move the handcrafted tests into the results folder (DONT USE THESE COMMANDS YET) - BASICALLY MOVE EVERYTHING INTO handcrafted_run_flown)
 
-$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "improved" "5" "-1"
-$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "improved" "5" "-1"
-$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "improved" "5" "-1"
-$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "improved" "10" "-1"
-$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "improved" "10" "-1"
-$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "improved" "10" "-1"
+$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "handcrafted" "5" "-1"
+$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "handcrafted" "5" "-1"
+$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted" "5" "-1"
+$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "handcrafted" "10" "-1"
+$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "handcrafted" "10" "-1"
+$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted" "10" "-1"
 
 
 Now you need to process them using:
