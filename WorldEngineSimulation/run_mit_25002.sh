@@ -72,8 +72,7 @@ do
 
 	if [ -z "$controllertype" ]
 	then
-		declare -a speeds=(-1 -2 2 5 10)
-		#declare -a speeds=(-42 -1 -2 2 5 10)
+		declare -a speeds=(-42 -1 -2 2 5 10)
 	else
 		declare -a speeds=($controllertype)
 	fi
