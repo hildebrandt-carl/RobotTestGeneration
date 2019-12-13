@@ -77,22 +77,28 @@ First we want to parse the resulting data to extract high level metrics from it.
 
 ```
 maindir="~/RobotTestGeneration/TestGeneration/FinalResults/<your_directory>
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "random" --scoretype "random --fileprefix "initial" --trajectorylength "5"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "maxvel" --scoretype "random --fileprefix "initial" --trajectorylength "5"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "random --fileprefix "initial" --trajectorylength "5"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "random" --scoretype "random --fileprefix "initial" --trajectorylength "10"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "maxvel" --scoretype "random --fileprefix "initial" --trajectorylength "10"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "random --fileprefix "initial" --trajectorylength "10"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "random" --scoretype "random" --fileprefix "initial" --trajectorylength "5"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "maxvel" --scoretype "random" --fileprefix "initial" --trajectorylength "5"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "5"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "random" --scoretype "random" --fileprefix "initial" --trajectorylength "10"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "maxvel" --scoretype "random" --fileprefix "initial" --trajectorylength "10"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "10"
 ```
 
 TODO: (NEED TO UPDATE THIS SO I CAN JUST PASS IN COMMANDS)
 You have to run
 ```
-$ python3 graghGenerationStatistics.py
+$ python3 graphGenerationStatistics.py
 ```
 
 
+Now we want to plot the deviation for RQ1)
 
+python3 graphDeviation.py
+Make sure RQ1 is uncommented
+
+initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random
+initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random
 
 
 
@@ -184,12 +190,12 @@ $ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted"
 Now you need to process them using:
 ```
 maindir="~/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "5"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "5"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "5"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "10"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "10"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "10"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "5"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "5"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "5"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "10"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "10"
+$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "10"
 ```
 
 You can use the graph deviation file for this:

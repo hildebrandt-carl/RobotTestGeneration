@@ -3,6 +3,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from processResultsUtils import get_numbers_after_string
 
+
+
+def set_box_color(bp, color):
+    plt.setp(bp['boxes'], color=color, linewidth=3)
+    plt.setp(bp['whiskers'], linewidth=2)
+    plt.setp(bp['caps'], linewidth=2)
+    plt.setp(bp['medians'], linewidth=2)
+    # plt.setp(bp['fliers'], linewidth=3)
+    # plt.setp(bp['means'], linewidth=3)
+
+
 def add_values(bp, ax, left=False):
     """ This actually adds the numbers to the various points of the boxplots"""
     for element in ['whiskers', 'medians', 'caps']:
@@ -28,18 +39,40 @@ def add_values(bp, ax, left=False):
                         verticalalignment='center', # Centered vertically with line
                         fontsize=10, backgroundcolor="white")
 
-# For RQ2
-main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown/"
+
+
+# # For RQ1
+# main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+# main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+
+# # For RQ2
+# main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown/"
+main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/"
+
+
+
+# # For the RQ1 length 5
+# all_folders = ["initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random/"]
+
+# # For the RQ1 length 10
+# all_folders = ["/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random/"]
+
+
+
+
 
 # For the RQ2 length 5
-all_folders = ["/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge/",
-                "/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge90/",
-                "/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge180/"]
+all_folders = ["initial_run_flown/initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random/",
+                "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge/",
+                "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge90/",
+                "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge180/"]
 
-# For the RQ2 length 10
-all_folders = ["/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge/",
-                "/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge90/",
-                "/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge180/"]
+# # For the RQ2 length 10
+# all_folders = ["/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge/",
+#                 "/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge90/",
+#                 "/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge180/"]
+
+
 
 # All the different system types which are generated using the WorldEngineSimulator
 system_types = ["speed-2_minsnap0",
@@ -81,7 +114,7 @@ for folder in all_folders:
         for depth in depths:
             for beam in beam_lengths:
 
-                file_location = folder
+                file_location = main_folder + folder
                 analysis_file_names = glob.glob(file_location + "maps/map*/analysis_" + system + ".txt")
 
                 # Make sure we go in order from highest score to lowest score
@@ -182,20 +215,184 @@ print("Failed tests: " + str(failed_tests))
 
 
 
-# Create a set of data which contains only a single type waypoint controller for RQ2
 
-waypoint_results = []
+
+
+
+
+
+
+# # RQ1
+
+# # Create a set of data which contains only a single type waypoint controller for RQ2
+
+# waypoint_results = []
+# sys = "speed-1_minsnap0"
+# for item in final_data:
+#     if "kinematic" in item['test_set'] and sys == item['system_type']:
+#         waypoint_results.append(item['max_deviation'])
+#         waypoint_results.append(item['average_deviation'])
+#         waypoint_results.append(item['total_time'])
+#         waypoint_results.append(item['avg_velocity'])
+#         waypoint_results.append(item['max_acceleration'])
+
+
+# # Plot here
+
+
+# ticks = ["Max Deviation", "Avg Deviation", "Total Time", "Avg Velocity", "Max Acceleration"]
+
+# fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
+
+# ax1.grid()
+# ax1.grid(which='minor', linestyle='--', linewidth=0.5)
+
+# bpl = plt.boxplot(waypoint_results, showmeans=True)
+
+# set_box_color(bpl, '#000000')
+
+# plt.yticks(fontsize=15)
+# plt.xticks(1 + np.arange(len(ticks)), ticks, fontsize=15, rotation=10)
+
+# plt.xlabel("Performance Metric", fontweight='bold', fontsize=20)
+# plt.ylabel("Measured Valued", fontweight='bold', fontsize=20)
+
+# # log scale
+# from matplotlib.ticker import FormatStrFormatter
+# plt.yscale('log')
+# plt.tick_params(axis='y', which='minor', labelsize=15)
+# ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+# ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
+# plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# RQ2)
+
+
+randomscore_results = []
 sys = "speed-1_minsnap0"
 for item in final_data:
-    if "kinematic" in item['test_set'] and sys == item['system_type']:
-        waypoint_results.append(item['max_deviation'])
-        waypoint_results.append(item['average_deviation'])
-        waypoint_results.append(item['total_time'])
-        waypoint_results.append(item['avg_velocity'])
-        waypoint_results.append(item['max_acceleration'])
+    if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
+        randomscore_results.append(item['max_deviation'])
+        randomscore_results.append(item['average_deviation'])
+        randomscore_results.append(item['total_time'])
+        randomscore_results.append(item['avg_velocity'])
+        randomscore_results.append(item['max_acceleration'])
+
+
+edgecore_results = []
+sys = "speed-1_minsnap0"
+for item in final_data:
+    if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
+        edgecore_results.append(item['max_deviation'])
+        edgecore_results.append(item['average_deviation'])
+        edgecore_results.append(item['total_time'])
+        edgecore_results.append(item['avg_velocity'])
+        edgecore_results.append(item['max_acceleration'])
+
+edge90score_results = []
+sys = "speed-1_minsnap0"
+for item in final_data:
+    if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
+        edge90score_results.append(item['max_deviation'])
+        edge90score_results.append(item['average_deviation'])
+        edge90score_results.append(item['total_time'])
+        edge90score_results.append(item['avg_velocity'])
+        edge90score_results.append(item['max_acceleration'])
+
+edge180score_results = []
+sys = "speed-1_minsnap0"
+for item in final_data:
+    if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
+        edge180score_results.append(item['max_deviation'])
+        edge180score_results.append(item['average_deviation'])
+        edge180score_results.append(item['total_time'])
+        edge180score_results.append(item['avg_velocity'])
+        edge180score_results.append(item['max_acceleration'])
 
 
 # Plot here
+
+ticks = ["Max Deviation", "Avg Deviation", "Total Time", "Avg Velocity", "Max Acceleration"]
+fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
+
+bp1 = plt.boxplot(randomscore_results, positions=3*np.arange(len(randomscore_results)), showmeans=True)
+bp2 = plt.boxplot(edgecore_results, positions=3*np.arange(len(edgecore_results))+0.6, showmeans=True)
+bp3 = plt.boxplot(edge90score_results, positions=3*np.arange(len(edge90score_results))+1.2, showmeans=True)
+bp4 = plt.boxplot(edge180score_results, positions=3*np.arange(len(edge180score_results))+1.8, showmeans=True)
+
+ax1.grid()
+ax1.grid(which='minor', linestyle='--', linewidth=0.5)
+
+# add_values(bpl, ax1)
+# add_values(bpr, ax1)
+set_box_color(bp1, 'C0')
+set_box_color(bp2, 'C5')
+set_box_color(bp3, 'C2')
+set_box_color(bp4, 'C3')
+
+plt.plot([], c='C0', label='No Scoring')
+plt.plot([], c='C5', label='Edge of Reachable Set')
+plt.plot([], c='C2', label='Edge of Reachable Set + 90 Deg')
+plt.plot([], c='C3', label='Edge of Reachable Set + 180 Deg')
+plt.plot([], c='C6', label='Learnt Model')
+plt.legend(fontsize=18)
+
+plt.xlim([-0.5, 3*len(randomscore_results)-0.5])
+
+plt.yticks(fontsize=15)
+plt.xticks(3 * np.arange(len(ticks)) + 0.9, ticks, fontsize=15, rotation=10)
+
+plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
+
+# log scale
+from matplotlib.ticker import FormatStrFormatter
+plt.yscale('log')
+plt.tick_params(axis='y', which='minor', labelsize=15)
+ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -248,13 +445,7 @@ for item in final_data:
 
 
 
-# def set_box_color(bp, color):
-#     plt.setp(bp['boxes'], color=color, linewidth=3)
-#     plt.setp(bp['whiskers'], linewidth=2)
-#     plt.setp(bp['caps'], linewidth=2)
-#     plt.setp(bp['medians'], linewidth=2)
-#     # plt.setp(bp['fliers'], linewidth=3)
-#     # plt.setp(bp['means'], linewidth=3)
+
 
 
 # fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))

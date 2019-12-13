@@ -1,5 +1,6 @@
 import re
 import glob
+import argparse
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -34,7 +35,8 @@ parser.add_argument('-l', '--trajectorylength',
 args = parser.parse_args()
 
 # Creat the folder based on the passed arguments
-folder = args.saveprefix + "_MIT_seed10_length" + args.saveprefix + "_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
+simtime = str(int(args.trajectorylength) * 9)
+folder = args.fileprefix + "_MIT_seed10_length" + args.trajectorylength + "_nodes250_res4_beamwidth5_totaltime3600_simtime" + simtime + "_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
 
 # All the different system types which are generated using the WorldEngineSimulator
 system_types = ["speed-2_minsnap0",
@@ -52,7 +54,7 @@ for stype in system_types:
     # If for some reason we cant find files exit
     if len(file_names) <= 0:
         print("NO FILES FOUND FOR: " + str(file_location))
-        exit()
+        continue
 
     # Used to store the entire test set information
     test_total_times = []
