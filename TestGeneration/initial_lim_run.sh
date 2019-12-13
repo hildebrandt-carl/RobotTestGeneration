@@ -3,18 +3,14 @@
 # need to make the directory
 mkdir Results
 
-searchtype="kinematic"
 score="random"
 savename="initial"
-drone="mit"
 
 beamwidth=5
 nodes=250
 resolution=4
 seed=10
 totaltime=3600
-simulationtime=90
-
 
 for searchtype in "random" "maxvel" "kinematic"
 do

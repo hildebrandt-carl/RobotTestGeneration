@@ -7,9 +7,10 @@ import warnings
 
 class ScoringSystem:
 
-    def __init__(self, score_type=""):
+    def __init__(self, score_type="", modeldir=args.modeldirectory + args.modelprefix):
         # Set the type of scoring you want to use
         self.scoretype = score_type
+        self.modeldir=modeldir
 
     # Given a set of trajectories compute a score for each one based on a scoring function
     def calculate_scores(self, trajectories):
@@ -161,8 +162,8 @@ class ScoringSystem:
     ## Defines a learned scoring function
     def learned_score(self, traj=None):
         # Load in your feature vector and polynomial regression model
-        poly_features = np.load("/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/ScoringModels/poly_features.npy", allow_pickle=True).item()
-        poly_reg = np.load("/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/ScoringModels/regression_model.npy", allow_pickle=True).item()
+        poly_features = np.load(self.modeldir + "_poly_features.npy", allow_pickle=True).item()
+        poly_reg = np.load(self.modeldir + "_regression_model.npy", allow_pickle=True).item()
 
         # Used to save the trajectory score
         trajectory_scores = []

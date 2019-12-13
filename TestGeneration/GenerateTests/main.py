@@ -29,7 +29,7 @@ parser.add_argument('-t', '--searchtype',
 parser.add_argument('-c', '--scoretype',
                     default="random",
                     type=str,
-                    help='Select the scoring type used (random), (learned)')
+                    help='Select the scoring type used (random), (edge), (edge90), (edge180) (learned)')
 parser.add_argument('-l', '--trajectorylength',
                     default=5,
                     type=int,
@@ -65,6 +65,14 @@ parser.add_argument('-s', '--savename',
                     default="",
                     type=str,
                     help='This name will be appended as a suffix to each of the files saved by test generation')
+parser.add_argument('-s', '--modeldirectory',
+                    default="",
+                    type=str,
+                    help='This is the directory of the scoring model you are using if you are using the score type learned')
+parser.add_argument('-s', '--modelprefix',
+                    default="",
+                    type=str,
+                    help='This is the name of the scoring model you are using if you are using the score type learned')
 args = parser.parse_args()
 
 # Init the drone and save path vairables
@@ -154,7 +162,7 @@ FigureManager.z_range = {"lower": initial_conditions["map_z_bounds"][0],
                          "upper": initial_conditions["map_z_bounds"][1]}
 
 # Create a ranking system object
-scoring_function = ScoringSystem(score_type=args.scoretype)
+scoring_function = ScoringSystem(score_type=args.scoretype, modeldir=args.modeldirectory + args.modelprefix)
 
 # Create a validation system class
 validation_function = ValidationSystem()

@@ -17,19 +17,10 @@ You can generate the tests using 1 of 2 available scripts. The scripts which are
 
 To run a script you use
 ```
-$ cd ~/RobotTestGeneration
-$ cd TestGeneration
+$ cd ~/RobotTestGeneration/TestGeneration
 $ ./initial_lim_runs.sh
 or
 $ ./initial_all_run.sh
-```
-
-
-You can generate the initial set of tests using the initial test generation script.
-```
-$ cd ~/RobotTestGeneration
-$ cd TestGeneration
-$ ./initial_run.sh
 ```
 
 All tests will be output into `RobotTestGeneration/TestGeneration/Results` folder. We want to move them to a final folder. Once your tests are done running. You can do this by checking the list of process. Move the results into the final results folder
@@ -79,4 +70,67 @@ $ ./run_mit_25003.sh "initial_run_flown" "kinematic" "random" "initial" "10"
 The simulators output will be automatically put into the correct folders inside of `RobotTestGeneration/TestGeneration/FinalResults/<your_directory>`.
 
 ## Analyzing Results
+
+The next thing we need to do is to parse all the resulting data to get the details from each of the runs. To do that we use the files which can be found in the `TestGeneration/AnalyzeResults` folder.
+
+First we want to parse the resulting data to extract high level metrics from it. We do that using the file `processResults.py`. For each of the test sets we need to extract high level information from them individually. To do that we can run the following commands:
+
+```
+maindir="~/RobotTestGeneration/TestGeneration/FinalResults/<your_directory>
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "random" --scoretype "random --fileprefix "initial" --trajectorylength "5"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "maxvel" --scoretype "random --fileprefix "initial" --trajectorylength "5"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "random --fileprefix "initial" --trajectorylength "5"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "random" --scoretype "random --fileprefix "initial" --trajectorylength "10"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "maxvel" --scoretype "random --fileprefix "initial" --trajectorylength "10"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "random --fileprefix "initial" --trajectorylength "10"
+```
+
+TODO:
+Need to insert how to create graphs for RQ1 here
+
+
+
+
+
+TODO:
+This section needs major cleanup
+
+
+## Generating More Stressfull Tests
+
+Once you have completed that we are ready to learn a scoring function to generate new tests for the robot. This file will learn from the results we just generated which types of trajectories are hardest for the quadrotor. For this section we are only going to be working on the the trajectories generated using the kinematic search approach. First we need to generate models for both the length 5 and length 10 trajectories. We can do this by running the command:
+
+```
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "random --fileprefix "initial" --trajectorylength "5" --saveprefix "len5"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "random --fileprefix "initial" --trajectorylength "10" --saveprefix "len10"
+```
+
+Using these models we are able to restart the test generation process from before however using our handcrafted scoring functions as well as our learnt scoring functions. This can be done by first going back to the test generation folder and then restarted the test generation process. Generating the tests can be slightly cumbersome and so I have created a script for it. You can run the script as follows
+
+To run a script you use
+```
+$ cd ~/RobotTestGeneration/TestGeneration
+$ ./improved_lim_run.sh <modeldirectory> <model_prefix> <trajectorylength>
+```
+
+So for in our case we need to run:
+```
+$ cd ~/RobotTestGeneration/TestGeneration
+$ ./improved_lim_run.sh 
+```
+
+This will crate a set of handcrafted tests.
+
+Move the handcrafted tests into the results folder (DONT USE THESE COMMANDS YET) - BASICALLY MOVE EVERYTHING INTO handcrafted_run_flown)
+```
+$ mv Results FinalResults
+$ cd FinalResults
+$ mkdir handcrafted_run_flown
+$ mv `ls -A | grep -v initial_run_flown` ./handcrafted_run_flown
+```
+
+$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "improved" "5"
+$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "improved" "5"
+
+Then fly each of the tests
 
