@@ -147,15 +147,16 @@ $ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "improved" "10" 
 $ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "improved" "10" "-1"
 $ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "improved" "10" "-1"
 
+
 Now you need to process them using:
 ```
-maindir="~/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge --fileprefix "initial" --trajectorylength "5"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90 --fileprefix "initial" --trajectorylength "5"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180 --fileprefix "initial" --trajectorylength "5"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge --fileprefix "initial" --trajectorylength "10"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90 --fileprefix "initial" --trajectorylength "10"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180 --fileprefix "initial" --trajectorylength "10"
+maindir="~/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "5"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "5"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "5"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "10"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "10"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "10"
 ```
 
 Plot the deviation
@@ -167,10 +168,27 @@ RQ3
 
 Need to figure out how to generate a learned value for each controller
 
+based on the inital test runs we are interested in two a folders:
+initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random
+initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random
+
+We need to generate a model for each of the types in here. To generate a model we run:
+```
+maindir="~/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown"
+$ python3 FindTrends --main_directory --searchtype "kinematic" -- scoretype "random" --fileprefix "initial" --trajectorylength 5 --saveprefix "len5"
+$ python3 FindTrends --main_directory --searchtype "kinematic" -- scoretype "random" --fileprefix "initial" --trajectorylength 10 --saveprefix "len10"
+```
+
+This will produce a set of models in the models directory named:
+
+* len5_speed-1_minsnap0_poly_features.npy && len5_speed-1_minsnap0_regression_mode.npy
+* len5_speed-2_minsnap0_poly_features.npy && len5_speed-2_minsnap0_regression_mode.npy
+* len5_speed1_minsnap0_poly_features.npy && len5_speed1_minsnap0_regression_mode.npy
+* len5_speed2_minsnap0_poly_features.npy && len5_speed2_minsnap0_regression_mode.npy
+* len5_speed5_minsnap0_poly_features.npy && len5_speed5_minsnap0_regression_mode.npy
+* len5_speed10_minsnap0_poly_features.npy && len5_speed10_minsnap0_regression_mode.npy
 
 Need to figure out how to then make a test set for each controller
-
-
 
 Learn a controller for each of them and then somehow get the thing to fly on it (NOT FULLY RIGHT)
 $ ./run_mit_25001.sh "learnt_run_flown" "kinematic" "learned" "improved" "5" "-1 -2"

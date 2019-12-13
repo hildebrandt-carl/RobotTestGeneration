@@ -23,11 +23,11 @@ parser.add_argument('-d', '--drone',
                     type=str,
                     help='Select drone type (mit), (anafi)')
 parser.add_argument('-t', '--searchtype',
-                    default="maxvel",
+                    default="kinematic",
                     type=str,
                     help='Select search type (random), (maxvel), (kinematic)')
 parser.add_argument('-c', '--scoretype',
-                    default="random",
+                    default="edge90",
                     type=str,
                     help='Select the scoring type used (random), (edge), (edge90), (edge180) (learned)')
 parser.add_argument('-l', '--trajectorylength',
@@ -65,11 +65,11 @@ parser.add_argument('-s', '--savename',
                     default="",
                     type=str,
                     help='This name will be appended as a suffix to each of the files saved by test generation')
-parser.add_argument('-s', '--modeldirectory',
+parser.add_argument('-y', '--modeldirectory',
                     default="",
                     type=str,
                     help='This is the directory of the scoring model you are using if you are using the score type learned')
-parser.add_argument('-s', '--modelprefix',
+parser.add_argument('-m', '--modelprefix',
                     default="",
                     type=str,
                     help='This is the name of the scoring model you are using if you are using the score type learned')

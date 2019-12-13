@@ -669,6 +669,9 @@ class PRM:
                 positions = reachability_space_generator.calculate_reachable_area(
                     sample_resolution=kinematic_sample_resolution)
 
+                # Compute the maximum distance the drone can travel from this point
+                current_kinematic.calculate_maximum_velocity(positions)
+
                 # Used to save the x,y and z position of all next possible waypoints, i.e all waypoints not in the path
                 considered_x = []
                 considered_y = []

@@ -313,5 +313,5 @@ for system in system_types:
     if not os.path.exists("Models"):
         os.mkdir("Models")
 
-    np.save("Models/" + args.saveprefix + "_" + + str(system) + "poly_features" , poly_features)
+    np.save("Models/" + args.saveprefix + "_" + + str(system) + "_poly_features" , poly_features)
     np.save("Models/" + args.saveprefix + "_" + + str(system) + "_regression_model" , poly_reg)

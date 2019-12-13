@@ -7,7 +7,7 @@ import warnings
 
 class ScoringSystem:
 
-    def __init__(self, score_type="", modeldir=args.modeldirectory + args.modelprefix):
+    def __init__(self, score_type="", modeldir=""):
         # Set the type of scoring you want to use
         self.scoretype = score_type
         self.modeldir=modeldir
@@ -131,8 +131,7 @@ class ScoringSystem:
 
                 # Get the current and max velocity
                 max_velocities.append(w.get_maximum_velocity())
-                cur_vel = w.get_velocity()
-                velocities.append(sqrt(cur_vel[0] ** 2 + cur_vel[1] ** 2 + cur_vel[2] ** 2))
+                velocities.append(w.get_velocity())
                 
             # Used to save a score at each point
             waypoint_trajectory_score = []
@@ -142,16 +141,20 @@ class ScoringSystem:
                 
                 # get the outwards velocity
                 in_vec = velocities[i]
-                out_vel = velocities[i + 1]
+                if np.all(in_vec==0):
+                    in_vec = np.array([0, 0, 0.5])
+                out_vec = velocities[i + 1]
 
                 # Score is computed based on how close to the edge it was
-                vel_score = out_vel/ max_velocities[i]
+                out_mag = sqrt(out_vec[0] ** 2 + out_vec[1] ** 2 + out_vec[2] ** 2)
+                vel_score = out_mag / max_velocities[i]
 
                 # Get a score for the angle
-                ang_score = abs(angle_between_vectors(in_vec, out_vec)) / abs(radians(angle))
+                ang = self.angle_between_vectors(in_vec, out_vec)
+                ang_score = 1 - abs(ang - radians(angle)) / abs(radians(angle))
 
                 # Save the score as the velocity score / angular score
-                waypoint_trajectory_score.append(vel_score * ang_score)
+                waypoint_trajectory_score.append(vel_score + ang_score)
 
             # Save the scores
             trajectory_scores.append(sum(waypoint_trajectory_score))
