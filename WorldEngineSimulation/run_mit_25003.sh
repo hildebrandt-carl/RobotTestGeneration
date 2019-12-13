@@ -23,8 +23,8 @@ source devel/setup.zsh
 port=25003
 
 # Create a temporary unity folder #TODO
-mkdir -p ./tmp_dir/Build
-# cp -r ../Unity/Build ./tmp_dir/Build
+mkdir -p ./tmp_dir/
+cp -r ../Unity/Build ./tmp_dir/
 mv ./tmp_dir/Build ./tmp_dir/Build${port}
 
 # Go into the directory
@@ -48,6 +48,9 @@ nodes=250
 resolution=4
 seed=10
 totaltime=3600
+
+# Compute the simulation time
+simulationtime=$[trajlength*9]
 
 for minsnap in 1
 do
@@ -137,7 +140,7 @@ done
 
 echo "Done"
 
-Go back to the original dir
+# Go back to the original dir
 cd $current_dir
 cd ..
 
