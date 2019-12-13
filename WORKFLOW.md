@@ -92,6 +92,14 @@ Need to insert how to create graphs for RQ1 here
 
 
 
+
+
+
+
+
+
+
+
 TODO:
 This section needs major cleanup
 
@@ -113,6 +121,15 @@ $ cd ~/RobotTestGeneration/TestGeneration
 $ ./improved_lim_run.sh <modeldirectory> <model_prefix> <trajectorylength>
 ```
 
+
+
+
+
+
+RQ2 
+(WE WILL BE MISSING THE LEARNT BUT OH WELL)
+
+
 So for in our case we need to run:
 ```
 $ cd ~/RobotTestGeneration/TestGeneration
@@ -122,15 +139,43 @@ $ ./improved_lim_run.sh
 This will crate a set of handcrafted tests.
 
 Move the handcrafted tests into the results folder (DONT USE THESE COMMANDS YET) - BASICALLY MOVE EVERYTHING INTO handcrafted_run_flown)
+
+$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "improved" "5" "-1"
+$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "improved" "5" "-1"
+$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "improved" "5" "-1"
+$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "improved" "10" "-1"
+$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "improved" "10" "-1"
+$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "improved" "10" "-1"
+
+Now you need to process them using:
 ```
-$ mv Results FinalResults
-$ cd FinalResults
-$ mkdir handcrafted_run_flown
-$ mv `ls -A | grep -v initial_run_flown` ./handcrafted_run_flown
+maindir="~/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge --fileprefix "initial" --trajectorylength "5"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90 --fileprefix "initial" --trajectorylength "5"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180 --fileprefix "initial" --trajectorylength "5"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge --fileprefix "initial" --trajectorylength "10"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90 --fileprefix "initial" --trajectorylength "10"
+$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180 --fileprefix "initial" --trajectorylength "10"
 ```
 
-$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "improved" "5"
-$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "improved" "5"
+Plot the deviation
+(NEED TO FIGURE OUT)
 
-Then fly each of the tests
 
+
+RQ3
+
+Need to figure out how to generate a learned value for each controller
+
+
+Need to figure out how to then make a test set for each controller
+
+
+
+Learn a controller for each of them and then somehow get the thing to fly on it (NOT FULLY RIGHT)
+$ ./run_mit_25001.sh "learnt_run_flown" "kinematic" "learned" "improved" "5" "-1 -2"
+$ ./run_mit_25002.sh "learnt_run_flown" "kinematic" "learned" "improved" "5" "2 5"
+$ ./run_mit_25003.sh "learnt_run_flown" "kinematic" "learned" "improved" "5" "-42 10"
+$ ./run_mit_25001.sh "learnt_run_flown" "kinematic" "learned" "improved" "10" "-1 -2"
+$ ./run_mit_25002.sh "learnt_run_flown" "kinematic" "learned" "improved" "10" 2 5"
+$ ./run_mit_25003.sh "learnt_run_flown" "kinematic" "learned" "improved" "10" "-42 10"
