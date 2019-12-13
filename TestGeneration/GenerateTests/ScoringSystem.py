@@ -76,13 +76,86 @@ class ScoringSystem:
         return trajectory_scores
 
     # Defines a edge scoring function
-    def edge_score(self, traj=None, angle=None):
-        trajectory_scores = None
+    def edge_score(self, traj=None):
+        # Define the scores we want to return
+        trajectory_scores = []
+
+        # For each trajectory
+        for t in traj:
+
+            # Used to save the waypoint details
+            velocities = []
+            max_velocities = []
+
+            # For each waypoint in a trajectory
+            for w in t:
+
+                # Get the current and max velocity
+                max_velocities.append(w.get_maximum_velocity())
+                cur_vel = w.get_velocity()
+                velocities.append(sqrt(cur_vel[0] ** 2 + cur_vel[1] ** 2 + cur_vel[2] ** 2))
+                
+            # Used to save a score at each point
+            waypoint_trajectory_score = []
+
+            # Go through each of the waypoints and compute a score
+            for i in range(0, len(velocities) - 1) :
+                
+                # get the outwards velocity
+                out_vel = velocities[i + 1]
+
+                # Score is computed based on how close to the edge it was
+                waypoint_trajectory_score.append(out_vel/ max_velocities[i])
+
+            # Save the scores
+            trajectory_scores.append(sum(waypoint_trajectory_score))
+
+        # Return the score
         return trajectory_scores
 
     # Defines an edge scoring function which considers angles
     def edge_angle_score(self, traj=None, angle=None):
-        trajectory_scores = None
+        # Define the scores we want to return
+        trajectory_scores = []
+
+        # For each trajectory
+        for t in traj:
+
+            # Used to save the waypoint details
+            velocities = []
+            max_velocities = []
+
+            # For each waypoint in a trajectory
+            for w in t:
+
+                # Get the current and max velocity
+                max_velocities.append(w.get_maximum_velocity())
+                cur_vel = w.get_velocity()
+                velocities.append(sqrt(cur_vel[0] ** 2 + cur_vel[1] ** 2 + cur_vel[2] ** 2))
+                
+            # Used to save a score at each point
+            waypoint_trajectory_score = []
+
+            # Go through each of the waypoints and compute a score
+            for i in range(0, len(velocities) - 1) :
+                
+                # get the outwards velocity
+                in_vec = velocities[i]
+                out_vel = velocities[i + 1]
+
+                # Score is computed based on how close to the edge it was
+                vel_score = out_vel/ max_velocities[i]
+
+                # Get a score for the angle
+                ang_score = abs(angle_between_vectors(in_vec, out_vec)) / abs(radians(angle))
+
+                # Save the score as the velocity score / angular score
+                waypoint_trajectory_score.append(vel_score * ang_score)
+
+            # Save the scores
+            trajectory_scores.append(sum(waypoint_trajectory_score))
+
+        # Return the score
         return trajectory_scores
 
     ## Defines a learned scoring function

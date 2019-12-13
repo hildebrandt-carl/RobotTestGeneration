@@ -88,9 +88,9 @@ for f in all_folders:
             velocties_out = copy.deepcopy(velocties_all[3:])
             velocties_in = copy.deepcopy(velocties_all[:-3])
 
-            # Remove the first euler angle as that is with regards to it hoevering
-            euler_angles = euler_angles[3:]
-            print(euler_angles)
+            # # Remove the first euler angle as that is with regards to it hoevering
+            # euler_angles = euler_angles[3:]
+
 
             assert (len(velocties_out) == len(velocties_in))
 
@@ -134,27 +134,6 @@ for f in all_folders:
                 print(len(dev_per_waypoint[0]))
                 print(len(x_angle))
                 continue
-
-            print(flight_details_file)
-            print("x angle")
-            print(x_angle)
-            print("y angle")
-            print(y_angle)
-            print("z angle")
-            print(z_angle)
-            print("x vel out")
-            print(x_vel_out)
-            print("y vel out")
-            print(y_vel_out)
-            print("z vel out")
-            print(z_vel_out)
-            print("x vel in")
-            print(x_vel_in)
-            print("y vel in")
-            print(y_vel_in)
-            print("z vel in")
-            print(z_vel_in)
-            exit()
 
             system_dev.extend(dev_per_waypoint[0])
             system_xangles.extend(x_angle)
@@ -292,7 +271,6 @@ for f in all_folders:
         plt.title("Best degree for: " + str(system))
         plt.show()
 
-
         # Train features
         poly_features = PolynomialFeatures(degree=min_deg_con, include_bias=False)
         x_poly_train = poly_features.fit_transform(x_data)
@@ -301,6 +279,7 @@ for f in all_folders:
         poly_reg = LinearRegression()
         model = poly_reg.fit(x_poly_train, y_data)
         r_sq = model.score(x_poly_train, y_data)
+
         print("Constant Controller")
         print('coefficient of determination:', r_sq)
         print("Degree: " + str(min_deg_con))
@@ -308,9 +287,8 @@ for f in all_folders:
         print("Intercepts: " + str(poly_reg.intercept_))
         print("Saving the intercept and the coefficients")
 
-        try:
+        if not os.path.exists("Models"):
             os.mkdir("Models")
-        except:
-            pass
+
         np.save("Models/poly_features_" + str(system), poly_features)
         np.save("Models/regression_model_" + str(system), poly_reg)
