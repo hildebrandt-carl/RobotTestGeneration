@@ -28,45 +28,31 @@ def add_values(bp, ax, left=False):
                         verticalalignment='center', # Centered vertically with line
                         fontsize=10, backgroundcolor="white")
 
-# This has the tests when only the first 87 are considered
-# all_folders = ["./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/",
-#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
-#                "./Results/PolyRunFull/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/"]
-#
-#
-# all_folders = ["./Results/SameNumber/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_kinematic_waypoint/",
-#                "./Results/SameNumber/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_waypoint/",
-#                "./Results/SameNumber/MIT_seed10_depth10_nodes250_res4_beamwidth10_searchtime21600_score_constant/"]
+# For RQ2
+main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown/"
 
-# all_folders = ["./Results/PolySameTime2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
-#                "./Results/PolySameTime2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_waypoint/",
-#                "./Results/PolySameTime2/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_constant/"]
+# For the RQ2 length 5
+all_folders = ["/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge/",
+                "/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge90/",
+                "/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge180/"]
 
-all_folders = ["./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_kinematic_waypoint/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed10/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed5/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-2/",
-               "./Results/PolySameTimeFull3/MIT_seed10_depth10_nodes250_res4_beamwidth10_totaltime28800_simtime90_score_speed-1_minsnap1/"]
+# For the RQ2 length 10
+all_folders = ["/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge/",
+                "/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge90/",
+                "/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge180/"]
 
+# All the different system types which are generated using the WorldEngineSimulator
 system_types = ["speed-2_minsnap0",
                 "speed-1_minsnap0",
+                "speed2_minsnap0",
                 "speed5_minsnap0",
                 "speed10_minsnap0",
                 "speed-1_minsnap1"]
 
-ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Fast", "Min Snap"]
-
-# Coefficients of determination (can get from running FindTrends)
-# Make sure to turn the saving off when you do run it
-coefficients_of_determination = [0.48648857791186556,
-                                0.45916510608372396,
-                                0.6071376814038854,
-                                0.2362556661022981,
-                                0.44939513435675327]
+# System type names
+ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Normal", "Fixed Velocity Fast", "Min Snap"]
 
 failed_tests = 0
-
 beam_lengths = [10]
 depths = [10]
 res_numbers = [4]
@@ -193,125 +179,11 @@ for folder in all_folders:
 print("Failed tests: " + str(failed_tests))
 
 
-# Create the data from running on the kinematic set
-kin_max_dev = []
-kin_tot_time = []
-kin_tot_dev = []
-kin_avg_dev = []
-for sys in system_types:
-    for item in final_data:
-        if "kinematic" in item['test_set'] and sys == item['system_type']:
-            kin_max_dev.append(item['max_deviation'])
-            kin_tot_time.append(item['total_time'])
-            kin_tot_dev.append(item['total_deviation'])
-            kin_avg_dev.append(item['average_deviation'])
-
-
-our_max_dev = []
-our_tot_time = []
-our_tot_dev = []
-our_avg_dev = []
-for sys in system_types:
-    for item in final_data:
-        if (sys in item['test_set']) and (sys == item['system_type']):
-            # Check if there is nothing after sys in item['test_set']
-            if (len(item['test_set'][item['test_set'].find(sys):-1]) == len(sys)):
-                our_max_dev.append(item['max_deviation'])
-                our_tot_time.append(item['total_time'])
-                our_tot_dev.append(item['total_deviation'])
-                our_avg_dev.append(item['average_deviation'])
-    print("------------------------------")
 
 
 
+# Create a set of data which contains only a single type waypoint controller for RQ2
 
-def set_box_color(bp, color):
-    plt.setp(bp['boxes'], color=color, linewidth=3)
-    plt.setp(bp['whiskers'], linewidth=2)
-    plt.setp(bp['caps'], linewidth=2)
-    plt.setp(bp['medians'], linewidth=2)
-    # plt.setp(bp['fliers'], linewidth=3)
-    # plt.setp(bp['means'], linewidth=3)
-
-
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
-
-bpl = plt.boxplot(kin_max_dev, positions=1.5*np.arange(len(kin_max_dev)), showmeans=True)
-# bpr = plt.boxplot(our_max_dev, positions=1.5*np.arange(len(our_max_dev))+0.6, showmeans=True)
-
-# add_values(bpl, ax1)
-# add_values(bpr, ax1)
-set_box_color(bpl, '#2C7BB6')
-# set_box_color(bpr, '#D7191C')
-
-plt.plot([], c='#D7191C', label='Valid Stressfull Tests')
-plt.plot([], c='#2C7BB6', label='Valid Random Tests')
-plt.legend(fontsize=18)
-
-plt.xlim([-0.5, 1.5*len(kin_max_dev)-0.5])
-
-plt.yticks(fontsize=15)
-plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=10)
-
-plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
-plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
-
-# log scale
-from matplotlib.ticker import FormatStrFormatter
-plt.yscale('log')
-plt.tick_params(axis='y', which='minor', labelsize=15)
-ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
-ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
-
-plt.show()
-
-
-
-
-
-
-
-
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
-
-bpl = plt.boxplot(kin_avg_dev, positions=1.5*np.arange(len(kin_avg_dev)), showmeans=True)
-bpr = plt.boxplot(our_avg_dev, positions=1.5*np.arange(len(our_avg_dev))+0.6, showmeans=True)
-
-# add_values(bpl, ax1)
-# add_values(bpr, ax1)
-set_box_color(bpl, '#2C7BB6')
-set_box_color(bpr, '#D7191C')
-
-plt.plot([], c='#D7191C', label='Valid Stressfull Tests')
-plt.plot([], c='#2C7BB6', label='Valid Random Tests')
-plt.legend(fontsize=18)
-
-plt.xlim([-0.5, 1.5*len(our_avg_dev)-0.5])
-
-plt.yticks(fontsize=15)
-plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=10)
-
-plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
-plt.ylabel("Average Deviation", fontweight='bold', fontsize=20)
-
-# log scale
-from matplotlib.ticker import FormatStrFormatter
-plt.yscale('log')
-plt.tick_params(axis='y', which='minor', labelsize=15)
-ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
-ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
-
-plt.show()
-
-
-
-
-
-
-
-ticks = ["Max Dev", "Average Dev", "Total Time", "Avg Velocity", "Max Acceleration"]
-
-# Create the data for the waypoint controller
 waypoint_results = []
 sys = "speed-1_minsnap0"
 for item in final_data:
@@ -322,51 +194,202 @@ for item in final_data:
         waypoint_results.append(item['avg_velocity'])
         waypoint_results.append(item['max_acceleration'])
 
-fixed_vel_results = []
-sys = "speed5_minsnap0"
-for item in final_data:
-    if "kinematic" in item['test_set'] and sys == item['system_type']:
-        fixed_vel_results.append(item['max_deviation'])
-        fixed_vel_results.append(item['average_deviation'])
-        fixed_vel_results.append(item['total_time'])
-        fixed_vel_results.append(item['avg_velocity'])
-        fixed_vel_results.append(item['max_acceleration'])
 
-print(final_data)
+# Plot here
 
 
 
 
-fig2, ax2 = plt.subplots(1, 1, figsize=(10, 9))
 
-bpl = plt.boxplot(waypoint_results, positions=1.5*np.arange(len(waypoint_results)), showmeans=True)
-bpr = plt.boxplot(fixed_vel_results, positions=1.5*np.arange(len(fixed_vel_results))+0.6, showmeans=True)
 
-# add_values(bpl, ax1)
-# add_values(bpr, ax1)
-set_box_color(bpl, '#2C7BB6')
-set_box_color(bpr, '#D7191C')
 
-plt.plot([], c='#D7191C', label='Waypoint Controller')
-plt.plot([], c='#2C7BB6', label='Fixed Velocity Controller')
-plt.legend(fontsize=18)
 
-plt.xlim([-0.5, 1.5*len(waypoint_results)-0.5])
 
-plt.yticks(fontsize=15)
-plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=10)
 
-plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
-plt.ylabel("Average Deviation", fontweight='bold', fontsize=20)
 
-# log scale
-from matplotlib.ticker import FormatStrFormatter
-plt.yscale('log')
-plt.tick_params(axis='y', which='minor', labelsize=15)
-ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
-ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
 
-plt.show()
 
-print("Average Total Deviation: ")
-print(waypoint_results[2])
+
+
+
+
+
+
+
+# # Create the data from running on the kinematic set
+# kin_max_dev = []
+# kin_tot_time = []
+# kin_tot_dev = []
+# kin_avg_dev = []
+# for sys in system_types:
+#     for item in final_data:
+#         if "kinematic" in item['test_set'] and sys == item['system_type']:
+#             kin_max_dev.append(item['max_deviation'])
+#             kin_tot_time.append(item['total_time'])
+#             kin_tot_dev.append(item['total_deviation'])
+#             kin_avg_dev.append(item['average_deviation'])
+
+
+# our_max_dev = []
+# our_tot_time = []
+# our_tot_dev = []
+# our_avg_dev = []
+# for sys in system_types:
+#     for item in final_data:
+#         if (sys in item['test_set']) and (sys == item['system_type']):
+#             # Check if there is nothing after sys in item['test_set']
+#             if (len(item['test_set'][item['test_set'].find(sys):-1]) == len(sys)):
+#                 our_max_dev.append(item['max_deviation'])
+#                 our_tot_time.append(item['total_time'])
+#                 our_tot_dev.append(item['total_deviation'])
+#                 our_avg_dev.append(item['average_deviation'])
+#     print("------------------------------")
+
+
+
+
+# def set_box_color(bp, color):
+#     plt.setp(bp['boxes'], color=color, linewidth=3)
+#     plt.setp(bp['whiskers'], linewidth=2)
+#     plt.setp(bp['caps'], linewidth=2)
+#     plt.setp(bp['medians'], linewidth=2)
+#     # plt.setp(bp['fliers'], linewidth=3)
+#     # plt.setp(bp['means'], linewidth=3)
+
+
+# fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
+
+# bpl = plt.boxplot(kin_max_dev, positions=1.5*np.arange(len(kin_max_dev)), showmeans=True)
+# # bpr = plt.boxplot(our_max_dev, positions=1.5*np.arange(len(our_max_dev))+0.6, showmeans=True)
+
+# # add_values(bpl, ax1)
+# # add_values(bpr, ax1)
+# set_box_color(bpl, '#2C7BB6')
+# # set_box_color(bpr, '#D7191C')
+
+# plt.plot([], c='#D7191C', label='Valid Stressfull Tests')
+# plt.plot([], c='#2C7BB6', label='Valid Random Tests')
+# plt.legend(fontsize=18)
+
+# plt.xlim([-0.5, 1.5*len(kin_max_dev)-0.5])
+
+# plt.yticks(fontsize=15)
+# plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=10)
+
+# plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+# plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
+
+# # log scale
+# from matplotlib.ticker import FormatStrFormatter
+# plt.yscale('log')
+# plt.tick_params(axis='y', which='minor', labelsize=15)
+# ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+# ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
+# plt.show()
+
+
+
+
+
+
+
+
+# fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
+
+# bpl = plt.boxplot(kin_avg_dev, positions=1.5*np.arange(len(kin_avg_dev)), showmeans=True)
+# bpr = plt.boxplot(our_avg_dev, positions=1.5*np.arange(len(our_avg_dev))+0.6, showmeans=True)
+
+# # add_values(bpl, ax1)
+# # add_values(bpr, ax1)
+# set_box_color(bpl, '#2C7BB6')
+# set_box_color(bpr, '#D7191C')
+
+# plt.plot([], c='#D7191C', label='Valid Stressfull Tests')
+# plt.plot([], c='#2C7BB6', label='Valid Random Tests')
+# plt.legend(fontsize=18)
+
+# plt.xlim([-0.5, 1.5*len(our_avg_dev)-0.5])
+
+# plt.yticks(fontsize=15)
+# plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=10)
+
+# plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+# plt.ylabel("Average Deviation", fontweight='bold', fontsize=20)
+
+# # log scale
+# from matplotlib.ticker import FormatStrFormatter
+# plt.yscale('log')
+# plt.tick_params(axis='y', which='minor', labelsize=15)
+# ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+# ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
+# plt.show()
+
+
+
+
+
+
+
+# ticks = ["Max Dev", "Average Dev", "Total Time", "Avg Velocity", "Max Acceleration"]
+
+# # Create the data for the waypoint controller
+# waypoint_results = []
+# sys = "speed-1_minsnap0"
+# for item in final_data:
+#     if "kinematic" in item['test_set'] and sys == item['system_type']:
+#         waypoint_results.append(item['max_deviation'])
+#         waypoint_results.append(item['average_deviation'])
+#         waypoint_results.append(item['total_time'])
+#         waypoint_results.append(item['avg_velocity'])
+#         waypoint_results.append(item['max_acceleration'])
+
+# fixed_vel_results = []
+# sys = "speed5_minsnap0"
+# for item in final_data:
+#     if "kinematic" in item['test_set'] and sys == item['system_type']:
+#         fixed_vel_results.append(item['max_deviation'])
+#         fixed_vel_results.append(item['average_deviation'])
+#         fixed_vel_results.append(item['total_time'])
+#         fixed_vel_results.append(item['avg_velocity'])
+#         fixed_vel_results.append(item['max_acceleration'])
+
+# print(final_data)
+
+
+
+
+# fig2, ax2 = plt.subplots(1, 1, figsize=(10, 9))
+
+# bpl = plt.boxplot(waypoint_results, positions=1.5*np.arange(len(waypoint_results)), showmeans=True)
+# bpr = plt.boxplot(fixed_vel_results, positions=1.5*np.arange(len(fixed_vel_results))+0.6, showmeans=True)
+
+# # add_values(bpl, ax1)
+# # add_values(bpr, ax1)
+# set_box_color(bpl, '#2C7BB6')
+# set_box_color(bpr, '#D7191C')
+
+# plt.plot([], c='#D7191C', label='Waypoint Controller')
+# plt.plot([], c='#2C7BB6', label='Fixed Velocity Controller')
+# plt.legend(fontsize=18)
+
+# plt.xlim([-0.5, 1.5*len(waypoint_results)-0.5])
+
+# plt.yticks(fontsize=15)
+# plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=10)
+
+# plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+# plt.ylabel("Average Deviation", fontweight='bold', fontsize=20)
+
+# # log scale
+# from matplotlib.ticker import FormatStrFormatter
+# plt.yscale('log')
+# plt.tick_params(axis='y', which='minor', labelsize=15)
+# ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+# ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
+# plt.show()
+
+# print("Average Total Deviation: ")
+# print(waypoint_results[2])

@@ -85,8 +85,23 @@ $ python3 ProcessResults --main_directory ${maindir} --searchtype "maxvel" --sco
 $ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "random --fileprefix "initial" --trajectorylength "10"
 ```
 
-TODO:
-Need to insert how to create graphs for RQ1 here
+TODO: (NEED TO UPDATE THIS SO I CAN JUST PASS IN COMMANDS)
+You have to run
+```
+$ python3 graghGenerationStatistics.py
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -126,6 +141,24 @@ $ ./improved_lim_run.sh <modeldirectory> <model_prefix> <trajectorylength>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 RQ2 
 (WE WILL BE MISSING THE LEARNT BUT OH WELL)
 
@@ -159,8 +192,26 @@ $ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --
 $ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "10"
 ```
 
-Plot the deviation
-(NEED TO FIGURE OUT)
+You can use the graph deviation file for this:
+
+Plot the deviation (make sure to comment out the right sections)
+$ python3 graphDeviation.py
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

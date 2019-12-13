@@ -26,7 +26,7 @@ all_files = ["initial_searchtype_random_scoretype_random_dronetype_mit_trajector
             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_3600_simulationtime_45.txt",
             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_3600_simulationtime_45.txt"]
 
-tick_names = ["Random", "Max Velocity", "Kinematic"]
+tick_names = ["Random", "Approx Kinematic", "Full Kinematic"]
 
 # Used to save the results for each of the files
 explored_trajectories = []
@@ -179,7 +179,7 @@ for system_type in all_files:
     complete_trajectories.append(system_complete_traj)
     valid_trajectories.append(system_valid_traj)
 
-# At this point each system random, maxvel and kinematic have there data in the correct lists
+# At this point each system random, approx kinematic and kinematic have there data in the correct lists
 fig2, ax2 = plt.subplots(1, 1, figsize=(10, 6))
 
 x = np.arange(3, len(valid_trajectories[0]) + 3)
