@@ -65,19 +65,19 @@ def add_values(bp, ax, left=False):
 
 # # For RQ2
 # main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
-main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/"
+# main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/"
 
 # For the RQ2 length 5
-all_folders = ["initial_run_flown/initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random/",
-                "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge/",
-                "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge90/",
-                "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge180/",
-                "learned_run_flown/learned_speed-2_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
-                "learned_run_flown/learned_speed-1_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
-                "learned_run_flown/learned_speed2_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
-                "learned_run_flown/learned_speed5_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
-                "learned_run_flown/learned_speed10_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
-                "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/"]
+# all_folders = ["initial_run_flown/initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random/",
+#                 "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge/",
+#                 "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge90/",
+#                 "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge180/",
+#                 "learned_run_flown/learned_speed-2_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
+#                 "learned_run_flown/learned_speed-1_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
+#                 "learned_run_flown/learned_speed2_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
+#                 "learned_run_flown/learned_speed5_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
+#                 "learned_run_flown/learned_speed10_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
+#                 "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/"]
 
 # # For the RQ2 length 10
 # all_folders = ["initial_run_flown/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random/",
@@ -92,8 +92,8 @@ all_folders = ["initial_run_flown/initial_MIT_seed10_length5_nodes250_res4_beamw
 #                 "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
 
 
-# # # For RQ3
-# # main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
+# # For RQ3
+main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
 # main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/"
 
 # # For the RQ3 length 5
@@ -105,14 +105,14 @@ all_folders = ["initial_run_flown/initial_MIT_seed10_length5_nodes250_res4_beamw
 #                 "learned_run_flown/learned_speed10_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
 #                 "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/"]
 
-# # For the RQ3 length 10
-# all_folders = ["initial_run_flown/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random/",
-#                 "learned_run_flown/learned_speed-2_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-#                 "learned_run_flown/learned_speed-1_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-#                 "learned_run_flown/learned_speed2_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-#                 "learned_run_flown/learned_speed5_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-#                 "learned_run_flown/learned_speed10_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-#                 "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
+# # # For the RQ3 length 10
+all_folders = ["initial_run_flown/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random/",
+                "learned_run_flown/learned_speed-2_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
+                "learned_run_flown/learned_speed-1_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
+                "learned_run_flown/learned_speed2_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
+                "learned_run_flown/learned_speed5_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
+                "learned_run_flown/learned_speed10_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
+                "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
 
 
 
@@ -345,81 +345,81 @@ print("Failed tests: " + str(failed_tests))
 
 
 
-# RQ2) <------ Multiple Controllers
+# # RQ2) <------ Multiple Controllers
 
-selectedR2_systems = ["speed-1_minsnap0", "speed-1_minsnap1"]
-randomscore_results = []
-edgecore_results = []
-edge90score_results = []
-edge180score_results = []
-learnedscore_results = []
+# selectedR2_systems = ["speed-1_minsnap0", "speed-1_minsnap1"]
+# randomscore_results = []
+# edgecore_results = []
+# edge90score_results = []
+# edge180score_results = []
+# learnedscore_results = []
 
-for sys in selectedR2_systems:
-    for item in final_data:
-        if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
-            randomscore_results.append(item['max_deviation'])
+# for sys in selectedR2_systems:
+#     for item in final_data:
+#         if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
+#             randomscore_results.append(item['max_deviation'])
 
-    for item in final_data:
-        if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
-            edgecore_results.append(item['max_deviation'])
+#     for item in final_data:
+#         if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
+#             edgecore_results.append(item['max_deviation'])
 
-    for item in final_data:
-        if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
-            edge90score_results.append(item['max_deviation'])
+#     for item in final_data:
+#         if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
+#             edge90score_results.append(item['max_deviation'])
 
-    for item in final_data:
-        if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
-            edge180score_results.append(item['max_deviation'])
+#     for item in final_data:
+#         if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
+#             edge180score_results.append(item['max_deviation'])
 
-    for item in final_data:
-        if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
-            learnedscore_results.append(item['max_deviation'])
+#     for item in final_data:
+#         if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
+#             learnedscore_results.append(item['max_deviation'])
 
 
-ticks = ["Stable Waypoint Controller", "Minimum Snap Controller"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
+# ticks = ["Stable Waypoint Controller", "Minimum Snap Controller"]
+# fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
 
-bp1 = plt.boxplot(randomscore_results, positions=3.5*np.arange(len(randomscore_results)), showmeans=True)
-bp2 = plt.boxplot(edgecore_results, positions=3.5*np.arange(len(edgecore_results))+0.6, showmeans=True)
-bp3 = plt.boxplot(edge90score_results, positions=3.5*np.arange(len(edge90score_results))+1.2, showmeans=True)
-bp4 = plt.boxplot(edge180score_results, positions=3.5*np.arange(len(edge180score_results))+1.8, showmeans=True)
-bp5 = plt.boxplot(learnedscore_results, positions=3.5*np.arange(len(learnedscore_results))+2.4, showmeans=True)
+# bp1 = plt.boxplot(randomscore_results, positions=3.5*np.arange(len(randomscore_results)), showmeans=True)
+# bp2 = plt.boxplot(edgecore_results, positions=3.5*np.arange(len(edgecore_results))+0.6, showmeans=True)
+# bp3 = plt.boxplot(edge90score_results, positions=3.5*np.arange(len(edge90score_results))+1.2, showmeans=True)
+# bp4 = plt.boxplot(edge180score_results, positions=3.5*np.arange(len(edge180score_results))+1.8, showmeans=True)
+# bp5 = plt.boxplot(learnedscore_results, positions=3.5*np.arange(len(learnedscore_results))+2.4, showmeans=True)
 
-ax1.grid()
-ax1.grid(which='minor', linestyle='--', linewidth=0.5)
+# ax1.grid()
+# ax1.grid(which='minor', linestyle='--', linewidth=0.5)
 
-# add_values(bpl, ax1)
-# add_values(bpr, ax1)
-set_box_color(bp1, 'C0')
-set_box_color(bp2, 'C5')
-set_box_color(bp3, 'C2')
-set_box_color(bp4, 'C6')
-set_box_color(bp5, 'C3')
+# # add_values(bpl, ax1)
+# # add_values(bpr, ax1)
+# set_box_color(bp1, 'C0')
+# set_box_color(bp2, 'C5')
+# set_box_color(bp3, 'C2')
+# set_box_color(bp4, 'C6')
+# set_box_color(bp5, 'C3')
 
-plt.plot([], c='C0', linewidth=3, label='No Scoring')
-plt.plot([], c='C5', linewidth=3, label='Edge of Reachable Set')
-plt.plot([], c='C2', linewidth=3, label='Edge of Reachable Set + 90 Deg')
-plt.plot([], c='C6', linewidth=3, label='Edge of Reachable Set + 180 Deg')
-plt.plot([], c='C3', linewidth=3, label='Learned Model')
-ax1.legend(loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=2, fontsize=18)
-plt.subplots_adjust(top=0.8)
+# plt.plot([], c='C0', linewidth=3, label='No Scoring')
+# plt.plot([], c='C5', linewidth=3, label='Edge of Reachable Set')
+# plt.plot([], c='C2', linewidth=3, label='Edge of Reachable Set + 90 Deg')
+# plt.plot([], c='C6', linewidth=3, label='Edge of Reachable Set + 180 Deg')
+# plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
+# ax1.legend(loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=2, fontsize=18)
+# plt.subplots_adjust(top=0.8)
 
-plt.xlim([-0.5, 3.5*len(randomscore_results)-0.5])
+# plt.xlim([-0.5, 3.5*len(randomscore_results)-0.5])
 
-plt.yticks(fontsize=15)
-plt.xticks(3.5 * np.arange(len(ticks)) + 1.2, ticks, fontsize=15, rotation=0)
+# plt.yticks(fontsize=15)
+# plt.xticks(3.5 * np.arange(len(ticks)) + 1.2, ticks, fontsize=15, rotation=0)
 
-plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
-plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
+# plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+# plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
 
-# log scale
-from matplotlib.ticker import FormatStrFormatter
-plt.yscale('log')
-plt.tick_params(axis='y', which='minor', labelsize=15)
-ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
-ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+# # log scale
+# from matplotlib.ticker import FormatStrFormatter
+# plt.yscale('log')
+# plt.tick_params(axis='y', which='minor', labelsize=15)
+# ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+# ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
 
-plt.show()
+# plt.show()
 
 
 # # RQ2) <------ Multiple Metrics
@@ -533,52 +533,52 @@ plt.show()
 
 
 
-# # RQ3)
+# RQ3)
 
-# randomscore_results = []
-# learnedscore_results = []
+randomscore_results = []
+learnedscore_results = []
 
-# for sys in system_types:
-#     for item in final_data:
-#         if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
-#             randomscore_results.append(item['max_deviation'])
+for sys in system_types:
+    for item in final_data:
+        if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
+            randomscore_results.append(item['max_deviation'])
 
-#     for item in final_data:
-#         if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
-#             learnedscore_results.append(item['max_deviation'])
+    for item in final_data:
+        if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
+            learnedscore_results.append(item['max_deviation'])
 
-# ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Normal", "Fixed Velocity Fast", "Minimum Snap"]
-# fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
+ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Fast", "Minimum Snap"]
+fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
 
-# bp1 = plt.boxplot(randomscore_results, positions=1.5*np.arange(len(randomscore_results)), showmeans=True)
-# bp2 = plt.boxplot(learnedscore_results, positions=1.5*np.arange(len(learnedscore_results))+0.6, showmeans=True)
+bp1 = plt.boxplot(randomscore_results, positions=1.5*np.arange(len(randomscore_results)), showmeans=True)
+bp2 = plt.boxplot(learnedscore_results, positions=1.5*np.arange(len(learnedscore_results))+0.6, showmeans=True)
 
-# ax1.grid()
-# ax1.grid(which='minor', linestyle='--', linewidth=0.5)
+ax1.grid()
+ax1.grid(which='minor', linestyle='--', linewidth=0.5)
 
-# # add_values(bpl, ax1)
-# # add_values(bpr, ax1)
-# set_box_color(bp1, 'C0')
-# set_box_color(bp2, 'C3')
+# add_values(bpl, ax1)
+# add_values(bpr, ax1)
+set_box_color(bp1, 'C0')
+set_box_color(bp2, 'C3')
 
-# plt.plot([], c='C0', label='Random Scoring')
-# plt.plot([], c='C3', label='Learned Scoring')
-# plt.legend(fontsize=18)
+plt.plot([], c='C0', linewidth=3, label='Random Scoring')
+plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
+plt.legend(fontsize=18)
 
-# plt.xlim([-0.5, 1.5*len(randomscore_results)-0.5])
+plt.xlim([-0.5, 1.5*len(randomscore_results)-0.5])
 
-# plt.yticks(fontsize=15)
-# plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=15)
+plt.yticks(fontsize=15)
+plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=15)
 
-# plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
-# plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
+plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
 
-# # log scale
-# from matplotlib.ticker import FormatStrFormatter
-# plt.yscale('log')
-# plt.tick_params(axis='y', which='minor', labelsize=15)
-# ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
-# ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+# log scale
+from matplotlib.ticker import FormatStrFormatter
+plt.yscale('log')
+plt.tick_params(axis='y', which='minor', labelsize=15)
+ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
 
-# plt.show()
+plt.show()
 

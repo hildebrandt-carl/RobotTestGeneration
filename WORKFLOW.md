@@ -202,7 +202,7 @@ $ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted"
 Now you need to process them using:
 ```
 maindir="/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown/"
-maindir="~/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown"
+maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown/"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "5"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "5"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "5"
@@ -282,11 +282,13 @@ $ ./run_mit_25001.sh "learned_run_flown" "kinematic" "learned" "learned_speed-1_
 $ ./run_mit_25002.sh "learned_run_flown" "kinematic" "learned" "learned_speed-1_minsnap0" "10" "-1"
 $ ./run_mit_25003.sh "learned_run_flown" "kinematic" "learned" "learned_speed5_minsnap0" "10" "5"
 ```
+./run_mit_25003.sh "learned_run_flown" "kinematic" "learned" "learned_speed5_minsnap0" "10" "5"
+./run_mit_25001.sh "learned_run_flown" "kinematic" "learned" "learned_speed10_minsnap0" "10" "10"
 
-
-Now that you have generated all the execution files we need to analyze them to get the perfromance metrics
+Now that you have generated all the execution files we need to analyze them to get the performance metrics
 ```
 maindir="/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/learned_run_flown/"
+maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/learned_run_flown/"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_speed-1_minsnap0" --trajectorylength "5"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_speed-2_minsnap0" --trajectorylength "5"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_speed2_minsnap0" --trajectorylength "5"

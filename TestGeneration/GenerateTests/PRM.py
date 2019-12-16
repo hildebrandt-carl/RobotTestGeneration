@@ -805,12 +805,15 @@ class PRM:
                 # Get the scores for each of the trajectories
                 scores = ranking_obj.calculate_scores(trajectories=frontier)
 
+                # Create a list of unique values. This list will be used to sort scores which have the same value
+                unique_list = np.arange(0, len(scores), 1)
+
                 # Sort the frontier based on trajectory score
                 # Save them from smallest to largest as we take the item from the back of the queue
-                sorted_zipped_list = sorted(zip(scores, frontier))
+                sorted_zipped_list = sorted(zip(scores, unique_list, frontier))
 
                 # Unzip the sorted list
-                [scores, frontier] = list(zip(*sorted_zipped_list))
+                [scores, _, frontier] = list(zip(*sorted_zipped_list))
                 scores = list(scores)
                 frontier = list(frontier)
 
