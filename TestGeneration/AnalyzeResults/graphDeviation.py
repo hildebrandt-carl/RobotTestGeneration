@@ -92,16 +92,6 @@ all_folders = ["initial_run_flown/initial_MIT_seed10_length5_nodes250_res4_beamw
 #                 "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
 
 
-
-
-
-
-
-
-
-
-
-
 # # # For RQ3
 # # main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
 # main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/"
@@ -406,12 +396,13 @@ set_box_color(bp3, 'C2')
 set_box_color(bp4, 'C6')
 set_box_color(bp5, 'C3')
 
-plt.plot([], c='C0', label='No Scoring')
-plt.plot([], c='C5', label='Edge of Reachable Set')
-plt.plot([], c='C2', label='Edge of Reachable Set + 90 Deg')
-plt.plot([], c='C6', label='Edge of Reachable Set + 180 Deg')
-plt.plot([], c='C3', label='Learned Model')
-plt.legend(fontsize=18)
+plt.plot([], c='C0', linewidth=3, label='No Scoring')
+plt.plot([], c='C5', linewidth=3, label='Edge of Reachable Set')
+plt.plot([], c='C2', linewidth=3, label='Edge of Reachable Set + 90 Deg')
+plt.plot([], c='C6', linewidth=3, label='Edge of Reachable Set + 180 Deg')
+plt.plot([], c='C3', linewidth=3, label='Learned Model')
+ax1.legend(loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=2, fontsize=18)
+plt.subplots_adjust(top=0.8)
 
 plt.xlim([-0.5, 3.5*len(randomscore_results)-0.5])
 
@@ -492,11 +483,11 @@ plt.show()
 # set_box_color(bp4, 'C6')
 # set_box_color(bp5, 'C3')
 
-# plt.plot([], c='C0', label='No Scoring')
-# plt.plot([], c='C5', label='Edge of Reachable Set')
-# plt.plot([], c='C2', label='Edge of Reachable Set + 90 Deg')
-# plt.plot([], c='C6', label='Edge of Reachable Set + 180 Deg')
-# plt.plot([], c='C3', label='Learned Model')
+# plt.plot([], c='C0', linewidth=3, label='No Scoring')
+# plt.plot([], c='C5', linewidth=3, label='Edge of Reachable Set')
+# plt.plot([], c='C2', linewidth=3, label='Edge of Reachable Set + 90 Deg')
+# plt.plot([], c='C6', linewidth=3, label='Edge of Reachable Set + 180 Deg')
+# plt.plot([], c='C3', linewidth=3, label='Learned Model')
 # plt.legend(fontsize=18)
 
 # plt.xlim([-0.5, 3.5*len(randomscore_results)-0.5])

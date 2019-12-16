@@ -201,6 +201,7 @@ $ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted"
 
 Now you need to process them using:
 ```
+maindir="/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown/"
 maindir="~/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "5"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "5"
