@@ -10,7 +10,7 @@ from math import sqrt, pow
 from processResultsUtils import get_numbers_from_string
 from processResultsUtils import lineseg_dist
 
-Parse the input arguments
+# Parse the input arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--main_directory',
                     type=str,
