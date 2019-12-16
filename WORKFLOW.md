@@ -77,12 +77,12 @@ First we want to parse the resulting data to extract high level metrics from it.
 
 ```
 maindir="~/RobotTestGeneration/TestGeneration/FinalResults/<your_directory>
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "random" --scoretype "random" --fileprefix "initial" --trajectorylength "5"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "maxvel" --scoretype "random" --fileprefix "initial" --trajectorylength "5"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "5"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "random" --scoretype "random" --fileprefix "initial" --trajectorylength "10"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "maxvel" --scoretype "random" --fileprefix "initial" --trajectorylength "10"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "10"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "random" --scoretype "random" --fileprefix "initial" --trajectorylength "5"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "maxvel" --scoretype "random" --fileprefix "initial" --trajectorylength "5"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "5"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "random" --scoretype "random" --fileprefix "initial" --trajectorylength "10"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "maxvel" --scoretype "random" --fileprefix "initial" --trajectorylength "10"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "10"
 ```
 
 TODO: (NEED TO UPDATE THIS SO I CAN JUST PASS IN COMMANDS)
@@ -190,12 +190,12 @@ $ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted"
 Now you need to process them using:
 ```
 maindir="~/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "5"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "5"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "5"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "10"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "10"
-$ python3 ProcessResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "10"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "5"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "5"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "5"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge" --fileprefix "handcrafted" --trajectorylength "10"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge90" --fileprefix "handcrafted" --trajectorylength "10"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "edge180" --fileprefix "handcrafted" --trajectorylength "10"
 ```
 
 You can use the graph deviation file for this:
@@ -232,8 +232,8 @@ initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_sea
 We need to generate a model for each of the types in here. To generate a model we run:
 ```
 maindir="~/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown"
-$ python3 FindTrends --main_directory --searchtype "kinematic" -- scoretype "random" --fileprefix "initial" --trajectorylength 5 --saveprefix "len5"
-$ python3 FindTrends --main_directory --searchtype "kinematic" -- scoretype "random" --fileprefix "initial" --trajectorylength 10 --saveprefix "len10"
+$ python3 FindTrends.py --maindirectory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "5" --saveprefix "len5"
+$ python3 FindTrends.py --maindirectory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "10" --saveprefix "len10"
 ```
 
 This will produce a set of models in the models directory named:
@@ -246,11 +246,26 @@ This will produce a set of models in the models directory named:
 * len5_speed10_minsnap0_poly_features.npy && len5_speed10_minsnap0_regression_mode.npy
 
 Need to figure out how to then make a test set for each controller
+Then we generate a test for each of the system types to do that run:
+```
+./learned_model_run.sh
+```
 
 Learn a controller for each of them and then somehow get the thing to fly on it (NOT FULLY RIGHT)
-$ ./run_mit_25001.sh "learnt_run_flown" "kinematic" "learned" "improved" "5" "-1 -2"
-$ ./run_mit_25002.sh "learnt_run_flown" "kinematic" "learned" "improved" "5" "2 5"
-$ ./run_mit_25003.sh "learnt_run_flown" "kinematic" "learned" "improved" "5" "-42 10"
-$ ./run_mit_25001.sh "learnt_run_flown" "kinematic" "learned" "improved" "10" "-1 -2"
-$ ./run_mit_25002.sh "learnt_run_flown" "kinematic" "learned" "improved" "10" 2 5"
-$ ./run_mit_25003.sh "learnt_run_flown" "kinematic" "learned" "improved" "10" "-42 10"
+$ ./run_mit_25001.sh "learned_run_flown" "kinematic" "learned" "learned_speed10_minsnap0" "5" "10"
+$ ./run_mit_25002.sh "learned_run_flown" "kinematic" "learned" "learned_speed2_minsnap0" "5" "2"
+$ ./run_mit_25003.sh "learned_run_flown" "kinematic" "learned" "learned_speed-2_minsnap0" "5" "-2"
+
+$ ./run_mit_25001.sh "learned_run_flown" "kinematic" "learned" "learned_speed-1_minsnap1" "5" "-42"
+$ ./run_mit_25002.sh "learned_run_flown" "kinematic" "learned" "learned_speed-1_minsnap0" "5" "-1"
+$ ./run_mit_25003.sh "learned_run_flown" "kinematic" "learned" "learned_speed5_minsnap0" "5" "5"
+
+
+
+$ ./run_mit_25001.sh "learned_run_flown" "kinematic" "learned" "learned_speed10_minsnap0" "10" "10"
+$ ./run_mit_25002.sh "learned_run_flown" "kinematic" "learned" "learned_speed2_minsnap0" "10" "2"
+$ ./run_mit_25003.sh "learned_run_flown" "kinematic" "learned" "learned_speed-2_minsnap0" "10" "-2"
+
+$ ./run_mit_25001.sh "learned_run_flown" "kinematic" "learned" "learned_speed-1_minsnap1" "10" "-42"
+$ ./run_mit_25002.sh "learned_run_flown" "kinematic" "learned" "learned_speed-1_minsnap0" "10" "-1"
+$ ./run_mit_25003.sh "learned_run_flown" "kinematic" "learned" "learned_speed5_minsnap0" "10" "5"

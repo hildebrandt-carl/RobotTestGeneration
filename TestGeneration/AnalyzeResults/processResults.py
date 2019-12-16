@@ -10,7 +10,7 @@ from math import sqrt, pow
 from processResultsUtils import get_numbers_from_string
 from processResultsUtils import lineseg_dist
 
-# Parse the input arguments
+Parse the input arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-m', '--main_directory',
                     type=str,
@@ -46,7 +46,7 @@ system_types = ["speed-2_minsnap0",
                 "speed10_minsnap0",
                 "speed-1_minsnap1"]
 
-# For each of the systems 
+# For each of the systems
 for stype in system_types:
     file_location = args.main_directory + folder
     file_names = glob.glob(file_location + "/maps/map*/performance_" + stype + ".txt")
@@ -77,6 +77,7 @@ for stype in system_types:
 
     file_counter = 0
     for file_name in file_names:
+
         # keep track of the file percentage complete
         file_counter += 1
         percentage_complete = round((float(file_counter) / len(file_names)) * 100 , 2)

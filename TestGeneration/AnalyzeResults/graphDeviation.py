@@ -46,8 +46,8 @@ def add_values(bp, ax, left=False):
 # main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
 
 # # For RQ2
-# main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/handcrafted_run_flown/"
-main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/"
+main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
+# main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/"
 
 
 
@@ -62,15 +62,16 @@ main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGenerat
 
 
 # For the RQ2 length 5
-all_folders = ["initial_run_flown/initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random/",
-                "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge/",
-                "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge90/",
-                "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge180/"]
+# all_folders = ["initial_run_flown/initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random/",
+#                 "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge/",
+#                 "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge90/",
+#                 "handcrafted_run_flown/handcrafted_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_edge180/"]
 
-# # For the RQ2 length 10
-# all_folders = ["/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge/",
-#                 "/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge90/",
-#                 "/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge180/"]
+# For the RQ2 length 10
+all_folders = ["initial_run_flown/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random/",
+                "handcrafted_run_flown/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge/",
+                "handcrafted_run_flown/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge90/",
+                "handcrafted_run_flown/handcrafted_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_edge180/"]
 
 
 
@@ -222,6 +223,13 @@ print("Failed tests: " + str(failed_tests))
 
 
 
+
+
+
+
+
+
+
 # # RQ1
 
 # # Create a set of data which contains only a single type waypoint controller for RQ2
@@ -333,7 +341,7 @@ for item in final_data:
 # Plot here
 
 ticks = ["Max Deviation", "Avg Deviation", "Total Time", "Avg Velocity", "Max Acceleration"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
+fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
 
 bp1 = plt.boxplot(randomscore_results, positions=3*np.arange(len(randomscore_results)), showmeans=True)
 bp2 = plt.boxplot(edgecore_results, positions=3*np.arange(len(edgecore_results))+0.6, showmeans=True)

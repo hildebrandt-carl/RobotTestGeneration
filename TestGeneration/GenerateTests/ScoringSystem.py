@@ -166,7 +166,7 @@ class ScoringSystem:
     def learned_score(self, traj=None):
         # Load in your feature vector and polynomial regression model
         poly_features = np.load(self.modeldir + "_poly_features.npy", allow_pickle=True).item()
-        poly_reg = np.load(self.modeldir + "_regression_model.npy", allow_pickle=True).item()
+        poly_reg = np.load(self.modeldir + "_ridgecv_model.npy", allow_pickle=True).item()
 
         # Used to save the trajectory score
         trajectory_scores = []
@@ -209,6 +209,7 @@ class ScoringSystem:
 
                 # Calculate the angle
                 euler_angles = self.euler_angles_between_vectors(in_vec, out_vec)
+                main_angle = self.angle_between_vectors(in_vec, out_vec)
 
                 # Used to create our sample input
                 vel_x_out = out_vec[0]
@@ -217,12 +218,9 @@ class ScoringSystem:
                 vel_x_in = in_vec[0]
                 vel_y_in = in_vec[1]
                 vel_z_in = in_vec[2]
-                ang_x = euler_angles[0]
-                ang_y = euler_angles[1]
-                ang_z = euler_angles[2]
 
                 # Create the sample data
-                sample_data = np.array([ang_x, ang_y, ang_z, vel_x_out, vel_y_out, vel_z_out, vel_x_in, vel_y_in, vel_z_in]).reshape(1, -1)
+                sample_data = np.array([vel_x_out, vel_y_out, vel_z_out, vel_x_in, vel_y_in, vel_z_in]).reshape(1, -1)
                 sample_data_poly = poly_features.fit_transform(sample_data)
 
                 # Predict what this sample would do
@@ -232,7 +230,7 @@ class ScoringSystem:
                 waypoint_score.append(poly_predict.item())
 
             # Save the scores
-            scores.append(sum(waypoint_score))
+            trajectory_scores.append(sum(waypoint_score))
 
         # Return the score
         return trajectory_scores

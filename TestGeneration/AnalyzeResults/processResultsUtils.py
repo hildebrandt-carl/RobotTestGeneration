@@ -41,7 +41,7 @@ def lineseg_dist(p, a, b):
     return np.hypot(h, np.linalg.norm(c))
 
 
-def get_numbers_after_string(file_name, the_string):
+def get_numbers_after_string(file_name, the_string, start=False):
 
     nums = []
 
@@ -56,7 +56,11 @@ def get_numbers_after_string(file_name, the_string):
     for line in file:
         # Find the total time
         if the_string.upper() in line.upper():
-            nums.append(get_numbers_from_string(line))
+            if not start:
+                nums.append(get_numbers_from_string(line))
+            else:
+                if line.upper()[0:len(the_string)] == the_string.upper():
+                    nums.append(get_numbers_from_string(line))
     file.close()
 
     return nums

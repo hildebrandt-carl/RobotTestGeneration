@@ -4,45 +4,67 @@ import os
 import argparse
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from processResultsUtils import get_numbers_after_string
-from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import train_test_split
+from sklearn.linear_model import RidgeCV
+from sklearn.model_selection import KFold
 
 
 # Parse the input arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('-m', '--main_directory',
-                    type=str,
-                    required=True,
-                    help='This is the full directory where all the results are saved')
-parser.add_argument('-e', '--searchtype',
-                    type=str,
-                    required=True,
-                    help='Select search type (random), (maxvel), (kinematic)')
-parser.add_argument('-c', '--scoretype',
-                    type=str,
-                    required=True,
-                    help='Select score type used (random), (edge), (edge90), (edge180) (learned)')
-parser.add_argument('-p', '--fileprefix',
-                    type=str,
-                    required=True,
-                    help='What was the save prefix for the test runs')
-parser.add_argument('-l', '--trajectorylength',
-                    type=str,
-                    required=True,
-                    help='Please give the trajectory length for the system')
-parser.add_argument('-s', '--saveprefix',
-                    type=str,
-                    required=True,
-                    help='Please give the model a save prefix')
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument('-m', '--maindirectory',
+#                     type=str,
+#                     required=True,
+#                     help='This is the full directory where all the results are saved')
+# parser.add_argument('-e', '--searchtype',
+#                     type=str,
+#                     required=True,
+#                     help='Select search type (random), (maxvel), (kinematic)')
+# parser.add_argument('-c', '--scoretype',
+#                     type=str,
+#                     required=True,
+#                     help='Select score type used (random), (edge), (edge90), (edge180) (learned)')
+# parser.add_argument('-p', '--fileprefix',
+#                     type=str,
+#                     required=True,
+#                     help='What was the save prefix for the test runs')
+# parser.add_argument('-l', '--trajectorylength',
+#                     type=str,
+#                     required=True,
+#                     help='Please give the trajectory length for the system')
+# parser.add_argument('-s', '--saveprefix',
+#                     type=str,
+#                     required=True,
+#                     help='Please give the model a save prefix')
+# args = parser.parse_args()
 
-# Creat the folder based on the passed arguments
-folder = args.saveprefix + "_MIT_seed10_length" + args.saveprefix + "_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
+# DELETE LATER
+# --------------------------------------------------------
+class BLA:
+    maindirectory="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+    searchtype="kinematic"
+    scoretype="random"
+    fileprefix="initial"
+    trajectorylength="len5"
+    saveprefix="len5"
+
+    def __init__(self):
+      pass
+args = BLA()
+args.maindirectory="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+args.searchtype="kinematic"
+args.scoretype="random"
+args.fileprefix="initial"
+args.trajectorylength="10"
+args.saveprefix="len10"
+# --------------------------------------------------------
+
+
+# Creat3 the folder based on the passed arguments
+simtime = str(int(args.trajectorylength) * 9)
+folder = args.fileprefix + "_MIT_seed10_length" + args.trajectorylength + "_nodes250_res4_beamwidth5_totaltime3600_simtime" + simtime + "_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
 
 # All the different system types which are generated using the WorldEngineSimulator
 system_types = ["speed-2_minsnap0",
@@ -52,9 +74,12 @@ system_types = ["speed-2_minsnap0",
                 "speed10_minsnap0",
                 "speed-1_minsnap1"]
 
+
+
+# Get the data from the analysis files from execution
+folder = args.maindirectory + folder
 for system in system_types:
 
-    folder = args.main_directory + folder
     analysis_file_names = glob.glob(folder + "/maps/map*/analysis_" + system + ".txt")
     # Make sure we go in order from highest score to lowest score
     total_files = len(analysis_file_names)
@@ -69,6 +94,11 @@ for system in system_types:
     system_xvel_in = []
     system_yvel_in = []
     system_zvel_in = []
+    system_mainangle = []
+
+    if total_files == 0:
+        print("No Files Found in: " + str(folder + "/maps/map*/analysis_" + system + ".txt"))
+        exit()
 
     file_counter = 0
     for file_counter in range(1, total_files + 1):
@@ -87,15 +117,10 @@ for system in system_types:
         velocty = get_numbers_after_string(file_name=flight_details_file,
                                             the_string="Velocity")
         flight_angles = get_numbers_after_string(file_name=flight_details_file,
-                                                    the_string="Angles:")
+                                                    the_string="Angles:",
+                                                    start=True)
         flight_magnitudes = get_numbers_after_string(file_name=flight_details_file,
                                                         the_string="Out Vector Magnitude:")
-
-
-        # Count how many minsnap corridor failed
-        if dev_per_waypoint[0][0] > 12 and system == "speed-1_minsnap2":
-            print("Maximum Deviation over 5m (" + str(dev_per_waypoint[0][0]) + "m): " + str(flight_log_file))
-            continue
 
         # Get the euler angles
         x_angle = []
@@ -107,16 +132,16 @@ for system in system_types:
         x_vel_in = []
         y_vel_in = []
         z_vel_in = []
+        main_angle = []
+
         euler_angles = euler_angles[0]
         velocties_all = velocty[0]
 
         # We want out going velocities (remove the first three)
         velocties_out = copy.deepcopy(velocties_all[3:])
         velocties_in = copy.deepcopy(velocties_all[:-3])
-
-        # # Remove the first euler angle as that is with regards to it hoevering
-        # euler_angles = euler_angles[3:]
-
+        euler_angles = copy.deepcopy(euler_angles[3:])
+        flight_angles = copy.deepcopy(flight_angles[0][1:])
 
         assert (len(velocties_out) == len(velocties_in))
 
@@ -143,6 +168,8 @@ for system in system_types:
             velocties_in = velocties_in[1:]
             z_vel_in.append(velocties_in[0])
             velocties_in = velocties_in[1:]
+            main_angle.append(flight_angles[0])
+            flight_angles = flight_angles[1:]
 
         # Check if there is any errors
         e1 = len(dev_per_waypoint[0]) != len(x_angle)
@@ -165,6 +192,7 @@ for system in system_types:
         system_xangles.extend(x_angle)
         system_yangles.extend(y_angle)
         system_zangles.extend(z_angle)
+        system_mainangle.extend(main_angle)
         system_xvel_out.extend([(temp) for temp in x_vel_out])
         system_yvel_out.extend([(temp) for temp in y_vel_out])
         system_zvel_out.extend([(temp) for temp in z_vel_out])
@@ -182,9 +210,8 @@ for system in system_types:
     system_xvel_in = np.asarray(system_xvel_in)
     system_yvel_in = np.asarray(system_yvel_in)
     system_zvel_in = np.asarray(system_zvel_in)
+    system_mainangle = np.asarray(system_mainangle)
     system_dev = np.asarray(system_dev)
-
-    
 
     # Remove all nan values from the list
     nan_values = np.isnan(system_zangles)
@@ -197,6 +224,7 @@ for system in system_types:
     system_xvel_in = system_xvel_in[~nan_values]
     system_yvel_in = system_yvel_in[~nan_values]
     system_zvel_in = system_zvel_in[~nan_values]
+    system_mainangle = system_mainangle[~nan_values]
     system_dev = system_dev[~nan_values]
 
     # Reshape into a 2D array as linear regresion expects 2D array
@@ -209,112 +237,96 @@ for system in system_types:
     system_xvel_in = system_xvel_in.reshape(-1, 1)
     system_yvel_in = system_yvel_in.reshape(-1, 1)
     system_zvel_in = system_zvel_in.reshape(-1, 1)
+    system_mainangle = system_mainangle.reshape(-1, 1)
     system_dev = system_dev.reshape(-1, 1)
 
-    print("")
-    print("")
-    print("Fitting the following to a multi linear regression problem")
-    print("Training data consists of:")
-    print("X Angle")
-    print("Y Angle")
-    print("Z Angle")
-    print("X Velocity Out")
-    print("Y Velocity Out")
-    print("Z Velocity Out")
-    print("X Velocity In")
-    print("Y Velocity In")
-    print("Z Velocity In")
-    print("The label is the absolute deviation")
-
+    # Init the data
     x_data = []
     y_data = []
 
     # Build the training data
     for i in range(0, len(system_dev)):
         # Create the training point
-        train = [system_xangles[i][0], system_yangles[i][0], system_zangles[i][0],
-                    system_xvel_out[i][0], system_yvel_out[i][0], system_zvel_out[i][0],
-                    system_xvel_in[i][0], system_yvel_in[i][0], system_zvel_in[i][0]]
+        train = [system_xvel_out[i][0], system_yvel_out[i][0], system_zvel_out[i][0],
+            system_xvel_in[i][0], system_yvel_in[i][0], system_zvel_in[i][0]]   
 
         # Save the data
         x_data.append(train)
         y_data.append(system_dev[i])
 
-    print("Linear Regression")
-    print("")
-    print("")
-    print("Controller: " + str(system))
-    print("Coe: XAng, YAng, ZAng, XVel Out, YVel Out, ZVel Out, XVel In, YVel In, ZVel In")
-    x_data, y_data = np.array(x_data), np.array(y_data)
-    model = LinearRegression().fit(x_data, y_data)
-    r_sq = model.score(x_data, y_data)
-    print('coefficient of determination:', r_sq)
-    print('intercept:', model.intercept_)
-    print('slope:', model.coef_)
-    y_pred = model.predict(x_data)
+    # Convert the data to np arrays
+    x_data = np.array(x_data)
+    y_data = np.array(y_data).reshape(-1)
 
+    # Define the number of folds
+    k = 10
 
-    print("Polynomial Regression")
-    print("Finding the best degree")
+    # K-Fold Cross Validation
+    kf = KFold(n_splits=k, random_state=None, shuffle=False)
 
-    x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.3)
+    # Print the system we are working on
+    print(system)
 
-    rmses = []
-    degrees = np.arange(1, 5)
-    min_rmse, min_deg_con = 1e10, 0
+    # Use this to keep track of the best model
+    best_poly_feature = None
+    best_ridgecv = None
+    lowest_val_loss = np.inf
+    best_deg = 0
 
-    for deg in degrees:
+    # Find the best degree
+    for deg in range(1, 5):
+        # init the validation loss
+        validation_loss = 0
 
-        # Train features
-        poly_features = PolynomialFeatures(degree=deg, include_bias=False)
-        x_poly_train = poly_features.fit_transform(x_train)
+        # PolynomialFeatures (prepreprocessing)
+        poly = PolynomialFeatures(degree=deg)
+        poly_x_data = poly.fit_transform(x_data)
 
-        # Linear regression
-        poly_reg = LinearRegression()
-        poly_reg.fit(x_poly_train, y_train)
+        # Get training and testing data from kfold
+        for train_index, test_index in kf.split(x_data):
 
-        # Compare with test data
-        x_poly_test = poly_features.fit_transform(x_test)
-        poly_predict = poly_reg.predict(x_poly_test)
-        poly_mse = mean_squared_error(y_test, poly_predict)
-        poly_rmse = np.sqrt(poly_mse)
-        rmses.append(poly_rmse)
+            # Get the new data split
+            X_train, X_test = poly_x_data[train_index], poly_x_data[test_index]
+            y_train, y_test = y_data[train_index], y_data[test_index]
 
-        # Cross-validation of degree
-        if min_rmse > poly_rmse:
-            min_rmse = poly_rmse
-            min_deg_con = deg
+            # Fit a ridge regression on the training data
+            regressor = RidgeCV()
+            regressor.fit(X_train, y_train)
 
-    # Plot and present results
-    print('Best degree {} with RMSE {}'.format(min_deg_con, min_rmse))
+            # Get the predictions for the test
+            y_predict = regressor.predict(X_test)
 
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.plot(degrees, rmses)
-    ax.set_yscale('log')
-    ax.set_xlabel('Degree')
-    ax.set_ylabel('RMSE')
-    plt.title("Best degree for: " + str(system))
-    plt.show()
+            # Get the mean squared error
+            mse = mean_squared_error(y_test, y_predict)
+            
+            # Add the MSE to the validation loss
+            validation_loss += mse
 
-    # Train features
-    poly_features = PolynomialFeatures(degree=min_deg_con, include_bias=False)
-    x_poly_train = poly_features.fit_transform(x_data)
+        # Average the validation loss
+        validation_loss /= k
 
-    # Linear regression
-    poly_reg = LinearRegression()
-    model = poly_reg.fit(x_poly_train, y_data)
-    r_sq = model.score(x_poly_train, y_data)
+        # Train on all data
+        regressor = RidgeCV()
+        regressor.fit(poly_x_data, y_data)
+        score = regressor.score(poly_x_data, y_data)
 
-    print("Constant Controller")
-    print('coefficient of determination:', r_sq)
-    print("Degree: " + str(min_deg_con))
-    print("Coefficients shape: " + str(np.shape(poly_reg.coef_)))
-    print("Intercepts: " + str(poly_reg.intercept_))
-    print("Saving the intercept and the coefficients")
+        # Save the best model and poly features
+        if lowest_val_loss > validation_loss:
+            best_poly_feature = copy.deepcopy(poly)
+            best_ridgecv = copy.deepcopy(regressor)
+            lowest_val_loss = validation_loss
+            best_deg = deg
 
+        # Print out the validation loss for this degree
+        print("Validation loss (degree=" + str(deg) + "): " + str(validation_loss) + "- score: " + str(score))
+
+    print("Best Degree: " + str(best_deg) + " - Validation Loss: " + str(lowest_val_loss))
+    print("Saving Model")
+
+    print("-----------------------------------------------------------------------------")
+    
     if not os.path.exists("Models"):
         os.mkdir("Models")
 
-    np.save("Models/" + args.saveprefix + "_" + + str(system) + "_poly_features" , poly_features)
-    np.save("Models/" + args.saveprefix + "_" + + str(system) + "_regression_model" , poly_reg)
+    np.save("Models/" + args.saveprefix + "_" + str(system) + "_poly_features", best_poly_feature)
+    np.save("Models/" + args.saveprefix + "_" + str(system) + "_ridgecv_model", best_ridgecv)

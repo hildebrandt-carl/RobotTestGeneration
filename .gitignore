@@ -45,3 +45,7 @@
 
 # Ignore the tempory files used for simulation
 **/tmp_dir/*
+
+# Ignore the model files used for generation
+**/Models/*
+**/FinalModels/*
