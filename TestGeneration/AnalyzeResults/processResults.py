@@ -32,11 +32,15 @@ parser.add_argument('-l', '--trajectorylength',
                     type=str,
                     required=True,
                     help='Please give the trajectory length for the system')
+parser.add_argument('-t', '--searchtime',
+                    type=int,
+                    required=True,
+                    help='Please give the searchtime used for the system')
 args = parser.parse_args()
 
 # Creat the folder based on the passed arguments
 simtime = str(int(args.trajectorylength) * 9)
-folder = args.fileprefix + "_MIT_seed10_length" + args.trajectorylength + "_nodes250_res4_beamwidth5_totaltime3600_simtime" + simtime + "_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
+folder = args.fileprefix + "_MIT_seed10_length" + args.trajectorylength + "_nodes250_res4_beamwidth5_totaltime" + str(args.searchtime) + "_simtime" + simtime + "_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
 
 # All the different system types which are generated using the WorldEngineSimulator
 system_types = ["speed-2_minsnap0",

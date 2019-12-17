@@ -13,58 +13,40 @@ from sklearn.model_selection import KFold
 
 
 # Parse the input arguments
-# parser = argparse.ArgumentParser()
-# parser.add_argument('-m', '--maindirectory',
-#                     type=str,
-#                     required=True,
-#                     help='This is the full directory where all the results are saved')
-# parser.add_argument('-e', '--searchtype',
-#                     type=str,
-#                     required=True,
-#                     help='Select search type (random), (maxvel), (kinematic)')
-# parser.add_argument('-c', '--scoretype',
-#                     type=str,
-#                     required=True,
-#                     help='Select score type used (random), (edge), (edge90), (edge180) (learned)')
-# parser.add_argument('-p', '--fileprefix',
-#                     type=str,
-#                     required=True,
-#                     help='What was the save prefix for the test runs')
-# parser.add_argument('-l', '--trajectorylength',
-#                     type=str,
-#                     required=True,
-#                     help='Please give the trajectory length for the system')
-# parser.add_argument('-s', '--saveprefix',
-#                     type=str,
-#                     required=True,
-#                     help='Please give the model a save prefix')
-# args = parser.parse_args()
-
-# DELETE LATER
-# --------------------------------------------------------
-class BLA:
-    maindirectory="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
-    searchtype="kinematic"
-    scoretype="random"
-    fileprefix="initial"
-    trajectorylength="len5"
-    saveprefix="len5"
-
-    def __init__(self):
-      pass
-args = BLA()
-args.maindirectory="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
-args.searchtype="kinematic"
-args.scoretype="random"
-args.fileprefix="initial"
-args.trajectorylength="10"
-args.saveprefix="len10"
-# --------------------------------------------------------
-
+parser = argparse.ArgumentParser()
+parser.add_argument('-m', '--maindirectory',
+                    type=str,
+                    required=True,
+                    help='This is the full directory where all the results are saved')
+parser.add_argument('-e', '--searchtype',
+                    type=str,
+                    required=True,
+                    help='Select search type (random), (maxvel), (kinematic)')
+parser.add_argument('-c', '--scoretype',
+                    type=str,
+                    required=True,
+                    help='Select score type used (random), (edge), (edge90), (edge180) (learned)')
+parser.add_argument('-p', '--fileprefix',
+                    type=str,
+                    required=True,
+                    help='What was the save prefix for the test runs')
+parser.add_argument('-l', '--trajectorylength',
+                    type=str,
+                    required=True,
+                    help='Please give the trajectory length for the system')
+parser.add_argument('-t', '--searchtime',
+                    type=int,
+                    required=True,
+                    help='Please give the searchtime used for the system')
+parser.add_argument('-s', '--saveprefix',
+                    type=str,
+                    required=True,
+                    help='Please give the model a save prefix')
+args = parser.parse_args()
 
 # Creat3 the folder based on the passed arguments
 simtime = str(int(args.trajectorylength) * 9)
-folder = args.fileprefix + "_MIT_seed10_length" + args.trajectorylength + "_nodes250_res4_beamwidth5_totaltime3600_simtime" + simtime + "_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
+folder = args.fileprefix + "_MIT_seed10_length" + args.trajectorylength + "_nodes250_res4_beamwidth5_totaltime" + str(args.searchtime) + "_simtime" + simtime + "_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
 
 # All the different system types which are generated using the WorldEngineSimulator
 system_types = ["speed-2_minsnap0",
@@ -73,8 +55,6 @@ system_types = ["speed-2_minsnap0",
                 "speed5_minsnap0",
                 "speed10_minsnap0",
                 "speed-1_minsnap1"]
-
-
 
 # Get the data from the analysis files from execution
 folder = args.maindirectory + folder
@@ -272,6 +252,7 @@ for system in system_types:
     best_ridgecv = None
     lowest_val_loss = np.inf
     best_deg = 0
+    best_score = 0
 
     # Find the best degree
     for deg in range(1, 5):
@@ -316,11 +297,12 @@ for system in system_types:
             best_ridgecv = copy.deepcopy(regressor)
             lowest_val_loss = validation_loss
             best_deg = deg
+            best_score = score
 
         # Print out the validation loss for this degree
         print("Validation loss (degree=" + str(deg) + "): " + str(validation_loss) + "- score: " + str(score))
 
-    print("Best Degree: " + str(best_deg) + " - Validation Loss: " + str(lowest_val_loss))
+    print("Best Degree: " + str(best_deg) + " - Validation Loss: " + str(lowest_val_loss) + " - Score: " + str(best_score))
     print("Saving Model")
 
     print("-----------------------------------------------------------------------------")

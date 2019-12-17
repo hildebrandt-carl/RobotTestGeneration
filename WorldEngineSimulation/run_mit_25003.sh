@@ -6,7 +6,8 @@ searchtype=$2
 scoretype=$3
 saveprefix=$4
 trajlength=$5
-controllertype=$6
+searchtime=$6
+controllertype=$7
 
 if [ -z "$savedirectory" ] || [ -z "$searchtype" ]  || [ -z "$scoretype" ]  || [ -z "$saveprefix" ] || [ -z "$trajlength" ] 
 then
@@ -22,6 +23,13 @@ source devel/setup.zsh
 
 # # Used to save the port number
 port=25003
+
+if [ -z "$searchtime" ]
+then
+	totaltime=3600
+else
+	totaltime=($searchtime)
+fi
 
 # Create a temporary unity folder #TODO
 mkdir -p ./tmp_dir/
@@ -48,11 +56,9 @@ beamwidth=5
 nodes=250
 resolution=4
 seed=10
-totaltime=3600
 
 # Compute the simulation time
 simulationtime=$[trajlength*9]
-
 
 # Get the folder
 folder=${results_dir}/${saveprefix}_MIT_seed${seed}_length${trajlength}_nodes${nodes}_res${resolution}_beamwidth${beamwidth}_totaltime${totaltime}_simtime${simulationtime}_searchtype_${searchtype}_scoretype_${scoretype}
