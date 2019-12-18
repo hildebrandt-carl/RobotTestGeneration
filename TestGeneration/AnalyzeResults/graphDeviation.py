@@ -561,7 +561,7 @@ ax1.grid(which='minor', linestyle='--', linewidth=0.5)
 set_box_color(bp1, 'C0')
 set_box_color(bp2, 'C3')
 
-plt.plot([], c='C0', linewidth=3, label='Random Scoring')
+plt.plot([], c='C0', linewidth=3, label='No Scoring')
 plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
 plt.legend(fontsize=18)
 
