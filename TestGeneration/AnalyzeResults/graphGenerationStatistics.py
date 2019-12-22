@@ -16,17 +16,17 @@ folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResu
 #             "initial_searchtype_maxvel_scoretype_random_dronetype_anafi_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt",
 #             "initial_searchtype_kinematic_scoretype_random_dronetype_anafi_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt"]
 
-# # MIT Length 10
-# all_files = ["initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt",
-#             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt",
-#             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt"]
+# MIT Length 10
+all_files = ["initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt",
+            "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt",
+            "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt"]
 
-# MIT Length 5
-all_files = ["initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt",
-            "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt",
-            "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt"]
+# # MIT Length 5
+# all_files = ["initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt",
+#             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt",
+#             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt"]
 
-tick_names = ["Random", "Approx Kinematic", "Full Kinematic"]
+tick_names = ["No Kinematic", "Approx Kinematic", "Full Kinematic"]
 
 # Used to save the results for each of the files
 explored_trajectories = []
@@ -178,7 +178,7 @@ xp = np.linspace(3, 15, 100)
 
 # randp = np.poly1d(np.polyfit(x, valid_trajectories[0], 5))
 # plt.plot(xp, randp(xp), linestyle="--", color='C0', linewidth=0.75)
-plt.plot(x, valid_trajectories[0], linestyle="--", label="Random", marker="o", markersize=10)
+plt.plot(x, valid_trajectories[0], linestyle="--", label="No Kinematic", marker="o", markersize=10)
 
 # maxvp = np.poly1d(np.polyfit(x, valid_trajectories[1], 5))
 # plt.plot(xp, maxvp(xp), linestyle="--", color='C1', linewidth=0.75)
