@@ -309,3 +309,37 @@ $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_speed10_minsnap0" --trajectorylength "10" --searchtime "3600"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_speed-1_minsnap1" --trajectorylength "10" --searchtime "3600"
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+We want to also be able to run the Anafi on the initial test set to do that we can run the following command:
+
+First load the data you want to run into the "~/RobotTestGeneration/AnafiSimulation/TestingAnafi/Outdoor" folder. Next you want to then run the command:
+
+```
+python3 runtestwithpos.py
+```
+
+You have to manually go and change everything

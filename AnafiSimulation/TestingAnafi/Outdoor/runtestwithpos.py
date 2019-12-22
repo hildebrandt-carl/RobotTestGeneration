@@ -14,7 +14,7 @@ from olympe.messages.ardrone3.Piloting import TakeOff
 from olympe.messages.ardrone3.GPSSettingsState import HomeChanged
 import time
 
-test_number = 3
+test_number = 1
 
 PHYSICAL_IP = "192.168.42.1"
 SIMULATED_IP = "10.202.0.1"
