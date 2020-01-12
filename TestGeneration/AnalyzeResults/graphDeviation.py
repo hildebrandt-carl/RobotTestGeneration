@@ -41,18 +41,18 @@ def add_values(bp, ax, left=False):
 
 
 
+#----------------------------------------------------------------------------------
 
 
+# # # For RQ1
+# main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+# # main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
 
-# # For RQ1
-main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
-# main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+# # # # For the RQ1 length 5
+# # # all_folders = ["initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random/"]
 
-# # # For the RQ1 length 5
-# # all_folders = ["initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random/"]
-
-# For the RQ1 length 10
-all_folders = ["/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime7200_simtime90_searchtype_kinematic_scoretype_random/"]
+# # For the RQ1 length 10
+# all_folders = ["/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime7200_simtime90_searchtype_kinematic_scoretype_random/"]
 
 
 
@@ -92,8 +92,13 @@ all_folders = ["/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime7
 #                 "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
 
 
+
+
+
+
+
 # # For RQ3
-# main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
+main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
 # # main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/"
 
 # # # For the RQ3 length 5
@@ -105,14 +110,14 @@ all_folders = ["/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime7
 # #                 "learned_run_flown/learned_speed10_minsnap0_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/",
 # #                 "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_learned/"]
 
-# # # # For the RQ3 length 10
-# all_folders = ["initial_run_flown/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime7200_simtime90_searchtype_kinematic_scoretype_random/",
-#                 "learned_run_flown/learned_speed-2_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-#                 "learned_run_flown/learned_speed-1_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-#                 "learned_run_flown/learned_speed2_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-#                 "learned_run_flown/learned_speed5_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-#                 "learned_run_flown/learned_speed10_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-#                 "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
+# # # For the RQ3 length 10
+all_folders = ["initial_run_flown/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime7200_simtime90_searchtype_kinematic_scoretype_random/",
+                "learned_run_flown/learned_speed-2_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
+                "learned_run_flown/learned_speed-1_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
+                "learned_run_flown/learned_speed2_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
+                "learned_run_flown/learned_speed5_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
+                "learned_run_flown/learned_speed10_minsnap0_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
+                "learned_run_flown/learned_speed-1_minsnap1_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
 
 
 
@@ -128,8 +133,64 @@ system_types = ["speed-2_minsnap0",
                 "speed5_minsnap0",
                 "speed-1_minsnap1"]
 
+
 # System type names
 ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity Slow", "Fixed Velocity Normal", "Fixed Velocity Fast", "Min Snap"]
+
+
+
+
+#----------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+#----------------------------------------------------------------------------------
+
+
+
+
+
+
+
+# For outdoor outdoor
+# # # For the RQ3 length 10
+all_folders = ["initial_run_flown//initial_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime7200_simtime90_searchtype_kinematic_scoretype_random/"]
+               #Also add the learned_run_flown
+
+
+# All the different system types which are generated using the WorldEngineSimulator
+system_types = ["anafi_sim",
+                "anafi_outdoor"]
+
+# System type names
+ticks = ["Simulation", "Outdoor"]
+
+
+
+
+
+
+
+
+
+#----------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
 failed_tests = 0
 beam_lengths = [10]
@@ -275,49 +336,49 @@ print("Failed tests: " + str(failed_tests))
 
 
 
-# RQ1
+# # RQ1
 
-# Create a set of data which contains only a single type waypoint controller for RQ2
+# # Create a set of data which contains only a single type waypoint controller for RQ2
 
-waypoint_results = []
-sys = "speed-1_minsnap0"
-for item in final_data:
-    if "kinematic" in item['test_set'] and sys == item['system_type']:
-        waypoint_results.append(item['max_deviation'])
-        waypoint_results.append(item['average_deviation'])
-        waypoint_results.append(item['total_time'])
-        waypoint_results.append(item['avg_velocity'])
-        waypoint_results.append(item['max_acceleration'])
-
-
-# Plot here
+# waypoint_results = []
+# sys = "speed-1_minsnap0"
+# for item in final_data:
+#     if "kinematic" in item['test_set'] and sys == item['system_type']:
+#         waypoint_results.append(item['max_deviation'])
+#         waypoint_results.append(item['average_deviation'])
+#         waypoint_results.append(item['total_time'])
+#         waypoint_results.append(item['avg_velocity'])
+#         waypoint_results.append(item['max_acceleration'])
 
 
-ticks = ["Max Deviation", "Avg Deviation", "Total Time", "Avg Velocity", "Max Acceleration"]
+# # Plot here
 
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
 
-ax1.grid()
-ax1.grid(which='minor', linestyle='--', linewidth=0.5)
+# ticks = ["Max Deviation", "Avg Deviation", "Total Time", "Avg Velocity", "Max Acceleration"]
 
-bpl = plt.boxplot(waypoint_results, showmeans=True)
+# fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
 
-set_box_color(bpl, '#000000')
+# ax1.grid()
+# ax1.grid(which='minor', linestyle='--', linewidth=0.5)
 
-plt.yticks(fontsize=15)
-plt.xticks(1 + np.arange(len(ticks)), ticks, fontsize=15, rotation=10)
+# bpl = plt.boxplot(waypoint_results, showmeans=True)
 
-plt.xlabel("Performance Metric", fontweight='bold', fontsize=20)
-plt.ylabel("Measured Value", fontweight='bold', fontsize=20)
+# set_box_color(bpl, '#000000')
 
-# log scale
-from matplotlib.ticker import FormatStrFormatter
-plt.yscale('log')
-plt.tick_params(axis='y', which='minor', labelsize=15)
-ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
-ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+# plt.yticks(fontsize=15)
+# plt.xticks(1 + np.arange(len(ticks)), ticks, fontsize=15, rotation=10)
 
-plt.show()
+# plt.xlabel("Performance Metric", fontweight='bold', fontsize=20)
+# plt.ylabel("Measured Value", fontweight='bold', fontsize=20)
+
+# # log scale
+# from matplotlib.ticker import FormatStrFormatter
+# plt.yscale('log')
+# plt.tick_params(axis='y', which='minor', labelsize=15)
+# ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+# ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
+# plt.show()
 
 
 
@@ -581,4 +642,75 @@ plt.show()
 # ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
 
 # plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Outdoor!
+
+randomscore_results = []
+learnedscore_results = []
+
+for sys in system_types:
+    for item in final_data:
+        if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
+            randomscore_results.append(item['max_deviation'])
+
+        if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
+            learnedscore_results.append(item['max_deviation'])
+
+    # for item in final_data:
+    #     if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
+    #         learnedscore_results.append(item['max_deviation'])
+
+
+ticks = ["Simulation", "Outdoor"]
+fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
+
+bp1 = plt.boxplot(randomscore_results, positions=1.5*np.arange(len(randomscore_results)), showmeans=True)
+bp2 = plt.boxplot(learnedscore_results, positions=1.5*np.arange(len(learnedscore_results))+0.6, showmeans=True)
+
+ax1.grid()
+ax1.grid(which='minor', linestyle='--', linewidth=0.5)
+
+# add_values(bpl, ax1)
+# add_values(bpr, ax1)
+set_box_color(bp1, 'C0')
+set_box_color(bp2, 'C3')
+
+plt.plot([], c='C0', linewidth=3, label='No Scoring')
+plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
+plt.legend(fontsize=18)
+
+plt.xlim([-0.5, 1.5*len(randomscore_results)-0.5])
+
+plt.yticks(fontsize=15)
+plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=15)
+
+plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
+
+# log scale
+from matplotlib.ticker import FormatStrFormatter
+plt.yscale('log')
+plt.tick_params(axis='y', which='minor', labelsize=15)
+ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
+plt.show()
 

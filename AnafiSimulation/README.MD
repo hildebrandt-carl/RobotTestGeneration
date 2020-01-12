@@ -1,3 +1,140 @@
+Installing Anafi:
+
+To install anafi you need to run the following:
+```
+$ echo "deb http://plf.parrot.com/sphinx/binary `lsb_release -cs`/" | sudo tee /etc/apt/sources.list.d/sphinx.list > /dev/null
+$ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 508B1AE5
+$ sudo apt-get update
+$ sudo apt-get install parrot-sphinx
+```
+
+Make sure you put your computers username into when prompted. Next we are going to make a udev rule to make sure you wifi card names arent changed after each run. To do that you can run:
+```
+sudo nano /etc/udev/rules.d/76-netnames.rules
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0c", NAME="enp2f0"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0d", NAME="enp2f1"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0e", NAME="enp2f2"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="00:1b:21:a7:54:0f", NAME="enp2f3"
+>>> SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="e0:d5:5e:25:d4:6a", NAME="enp1f0"
+```
+
+Now we have to launch the drone firmware. First start the firmware
+```
+$ sudo systemctl start firmwared.service
+```
+
+If you want to check if the firmware is working:
+```
+$ fdc ping
+```
+
+Make sure to add your mac address for each of the cards. You can then launch the sphinx simulator using:
+```
+$ sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone::stolen_interface=enp2f0:eth0:192.168.42.1/24 /home/autosoftlab/Desktop/RobotTestGeneration/AnafiSimulation/sphinxfiles/worlds/empty.world
+```
+
+Make sure to add your ethernets name instead of `enp2f0`.
+
+
+Next we need to install Olympe so that we can run the python code to fly the drone. To do that you can run
+```
+$ sudo apt-get install repo -y
+$ cd $HOME
+$ mkdir -p code/parrot-groundsdk
+$ cd code/parrot-groundsdk
+$ pwd
+$ repo init -u https://github.com/Parrot-Developers/groundsdk-manifest.git
+$ repo sync
+```
+
+Install the parrot dependencies using:
+```
+$ cd ~/code/parrot-groundsdk
+$ ./products/olympe/linux/env/postinst
+```
+
+Finally we need to build the repo. To do that you can run:
+```
+$ cd ~/code/parrot-groundsdk
+$ ./build.sh -p olympe-linux -A all final -j
+```
+
+To run Olympe code you can type:
+```
+$ source ~/code/parrot-groundsdk/./products/olympe/linux/env/shell
+```
+
+Then run the python code you want to run. For instanec
+```
+python3 joycontoller.py
+```
+
+
+## After Setup
+
+Once everything is setup however all you need to do to run the drone is to type:
+Terminal 1:
+```
+$ sudo systemctl start firmwared.service
+$ sphinx /opt/parrot-sphinx/usr/share/sphinx/drones/anafi4k.drone::stolen_interface=enp2f0:eth0:192.168.42.1/24 /home/autosoftlab/Desktop/RobotTestGeneration/AnafiSimulation/sphinxfiles/worlds/empty.world
+```
+
+Terminal 2:
+```
+$ cd ~/Desktop/RobotTestGeneration/AnafiSimulation
+$ source ~/code/parrot-groundsdk/./products/olympe/linux/env/shell
+$ python3 joycontoller.py
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 First start the firmware
 $ sudo systemctl start firmwared.service
 

@@ -42,6 +42,9 @@ cd ./tmp_dir/Build${port}
 # Get current directory
 current_dir="$PWD"
 
+# Copy the config file from Unity
+cp ../../../Unity/config.txt ./config.txt
+
 # Get the directory of the final results
 cd ../../../TestGeneration/FinalResults/${savedirectory}
 results_dir="$PWD"

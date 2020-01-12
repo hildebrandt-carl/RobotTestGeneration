@@ -21,7 +21,7 @@ class JoystickTeleop:
     SIMULATED_IP = "10.202.0.1"
     LAND_TAKEOFF_TIME = 4.0
 
-    def __init__(self, drone=None, speed=65, refresh_move=0.1):
+    def __init__(self, drone=None, speed=65, refresh_move=0.2):
         """"""
         try:
             self._quit_pressed = None

@@ -3,22 +3,17 @@
 import time
 import olympe
 import re
+import argparse
+import signal
+import sys
+
 from olympe.messages.ardrone3.Piloting import TakeOff, moveBy, Landing
 from olympe.messages.ardrone3.PilotingState import FlyingStateChanged, PositionChanged
 from olympe.messages.ardrone3.GPSSettingsState import HomeChanged, GPSFixStateChanged
-import signal
-import sys
 from olympe.messages.ardrone3.PilotingState import PositionChanged
 from olympe.messages.ardrone3.GPSSettingsState import GPSFixStateChanged
 from olympe.messages.ardrone3.Piloting import TakeOff
 from olympe.messages.ardrone3.GPSSettingsState import HomeChanged
-import time
-
-test_number = 1
-
-PHYSICAL_IP = "192.168.42.1"
-SIMULATED_IP = "10.202.0.1"
-DRONE_IP = PHYSICAL_IP
 
 def signal_handler(sig, frame):
         print('You pressed Ctrl+C!')
@@ -27,13 +22,42 @@ def signal_handler(sig, frame):
         sf.close()
         sys.exit(0)
 
+# Parse the input arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('-n', '--test_number',
+                    type=int,
+                    required=True,
+                    help='Select the test you want to run')
+parser.add_argument('-t', '--test_type',
+                    type=str,
+                    required=True,
+                    help='Select score type used (simulation), (outdoor)')
+args = parser.parse_args()
+
+# Get the test number
+test_number = args.test_number
+
+# Declare the drone IP
+PHYSICAL_IP = "192.168.42.1"
+SIMULATED_IP = "10.202.0.1"
+DRONE_IP = None
+if args.test_type == "simulation":
+    DRONE_IP = SIMULATED_IP
+elif args.test_type == "outdoor":
+    DRONE_IP = PHYSICAL_IP
+else:
+    print("Drone type not known")
+    exit()
+
+# If you get signal.SIGINT send that to our singal_handler function
 signal.signal(signal.SIGINT, signal_handler)
 
+# Get the test name
 testname = "./test/maps/map" +str(test_number)+ "/test.txt"
 if DRONE_IP == SIMULATED_IP:
     savename = "./test/maps/map" +str(test_number)+ "/simulation_output.txt"
 else:
-    savename = "./test/maps/map" +str(test_number)+ "/outdoorEast_output.txt"
+    savename = "./test/maps/map" +str(test_number)+ "/outdoor_output.txt"
 
 # Read the test file to get the positions
 with open(testname, "r") as f:
@@ -114,11 +138,16 @@ with olympe.Drone(DRONE_IP) as drone:
 
     print(-1*rp[9][2])
 
+    # Get the current time
+    start_time = time.time()
+
+    # Print out the drone details
     while 1:
         print("GPS position after take-off : ", drone.get_state(PositionChanged))
         sf.write("Latitude: " + str(drone.get_state(PositionChanged)['latitude']) + "\n")
         sf.write("Longitude: " + str(drone.get_state(PositionChanged)['longitude']) + "\n")
         sf.write("Altitude: " + str(drone.get_state(PositionChanged)['altitude']) + "\n")
+        sf.write("Time: " + str(time.time() - start_time) + "\n")
         sf.write("-------------------------------------------\n")
         time.sleep(0.25)
 

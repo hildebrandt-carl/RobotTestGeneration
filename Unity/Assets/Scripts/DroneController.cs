@@ -69,6 +69,7 @@ public class DroneController : MonoBehaviour
 	void loadConfigFile()
 	{
 		StreamReader inp_stm = new StreamReader("config.txt");
+        Debug.Log("HERE");
 		while (!inp_stm.EndOfStream)
 		{
 			string inp_ln = inp_stm.ReadLine();
@@ -97,7 +98,7 @@ public class DroneController : MonoBehaviour
                         Debug.Log(connectionIP);
 						break;
 					default:
-						//Debug.Log("Not Found");
+						Debug.Log("Not Found");
 						break;
 				}
 			}

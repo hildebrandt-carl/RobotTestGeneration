@@ -13,7 +13,7 @@ public class LoadEnvironment : MonoBehaviour
 
 	public GameObject sun;
 	public GameObject floor;
-	public GameObject[] cage_walls;
+	// public GameObject[] cage_walls;
 
 	public bool Day = false;
 	public bool Raining = false;
@@ -114,23 +114,23 @@ public class LoadEnvironment : MonoBehaviour
 						break;
 					// Cage Walls
 					case "C":
-						Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
-						if (Value == "0")
-						{
-							foreach(GameObject cage_wall in cage_walls)
-							{
-								// Remove the cage walls
-								cage_wall.GetComponent<MeshRenderer>().enabled = false;
-								cage_wall.GetComponent<BoxCollider>().enabled = false;
+						// Value = Regex.Match(inp_ln, @"\(([^)]*)\)").Groups[1].Value;
+						// if (Value == "0")
+						// {
+						// 	foreach(GameObject cage_wall in cage_walls)
+						// 	{
+						// 		// Remove the cage walls
+						// 		cage_wall.GetComponent<MeshRenderer>().enabled = false;
+						// 		cage_wall.GetComponent<BoxCollider>().enabled = false;
 
-								// Stop collisions with the floor
-								floor.GetComponent<MeshCollider>().enabled = false;
+						// 		// Stop collisions with the floor
+						// 		floor.GetComponent<MeshCollider>().enabled = false;
 							
-								// Move it down
-								floor.transform.position = new Vector3(0, -100, 0);
-							}
-						}
-						sun.SetActive(Day);
+						// 		// Move it down
+						// 		floor.transform.position = new Vector3(0, -100, 0);
+						// 	}
+						// }
+						// sun.SetActive(Day);
 						break;
 					default:
 						//Debug.Log("Not Found");
