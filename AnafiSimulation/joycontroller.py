@@ -133,7 +133,7 @@ class JoystickTeleop:
 
 
 if __name__ == "__main__":
-    drone = olympe.Drone(JoystickTeleop.SIMULATED_IP, loglevel=0)
+    drone = olympe.Drone(JoystickTeleop.PHYSICAL_IP, loglevel=0)
 
     try:
         x = JoystickTeleop(drone)
