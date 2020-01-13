@@ -74,9 +74,8 @@ def find_best_rotation(original_line, rotation_line):
             rotate_amount = r
             min_distance = dist
 
-        print("Optimal Rotation: " + str(rotate_amount) + " degrees")
-
-        return rotate_amount
+    print("Optimal Rotation: " + str(rotate_amount) + " degrees")
+    return rotate_amount
 
 
 # Match two lines endpoints by rotating the rotation_line
@@ -101,15 +100,16 @@ def rotate_line(rotation_line, rotation):
 
 
 # Parse the input arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('-m', '--test_directory',
-                    type=str,
-                    required=True,
-                    help='This is the directory where the tests are saved')
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument('-m', '--test_directory',
+#                     type=str,
+#                     required=True,
+#                     help='This is the directory where the tests are saved')
+# args = parser.parse_args()
 
 # Define where the tests are stored
-file_location = args.test_directory
+# file_location = args.test_directory
+file_location = "/home/autosoftlab/Desktop/RobotTestGeneration/AnafiSimulation/TestingAnafi/Outdoor/"
 print("Searching for files in: " + file_location + "test/maps/map*/")
 
 # Find all the flight files
@@ -117,10 +117,11 @@ outdoor_files = glob.glob(file_location + "test/maps/map*/outdoor_output.txt")
 sim_files = glob.glob(file_location + "test/maps/map*/simulation_output.txt")
 all_files = outdoor_files + sim_files
 
-# Used to controll plotting
-plotting_individual = True
-potting_deviation = True
-plot_distance_to_goal = True
+# Used to control plotting
+plotting_individual = False
+potting_deviation = False
+plot_distance_to_goal = False
+plot_goals = False
 
 # This saves the data per test
 all_data = []
@@ -128,13 +129,14 @@ all_data = []
 # Go through all the files
 for i in range(0, len(all_files)):
 
+    # Load the test
+    file_name = all_files[i]
+
     if plotting_individual:
         fig = plt.figure(i)
         ax = Axes3D(fig)
 
-    # Load the test
-    file_name = all_files[i]
-    # Get the test file it is ossciated with
+    # Get the test file it is associated with
     slash_locations = findOccurrences(file_name, '/')
     base_location = file_name[:slash_locations[-1]]
     test_file_name = base_location + '/test.txt'
@@ -169,7 +171,7 @@ for i in range(0, len(all_files)):
             expected_x.append(float(goals[0]))
             expected_y.append(float(goals[1]))
             # Add 1 because the drone always starts 1m off the ground
-            expected_z.append(float(goals[2]) + 0.75)
+            expected_z.append(float(goals[2]) + 1)
 
     # Close the file    
     file.close()
@@ -257,14 +259,16 @@ for i in range(0, len(all_files)):
     print("Best line shape (rotated x y z):\t" + str(np.shape(best_fit_line)))
     print("Time data shape (raw total time):\t" + str(np.shape(time)))
     
-    # Save this to the data file
-    data["actual_line"] = copy.deepcopy(actual_line)
-    data["best_fit_line"] = copy.deepcopy(best_fit_line)
-    data["time"] = copy.deepcopy(time)
+    # Convert to numpy array for better indexing
+    expected_line = np.array(expected_line)
+    raw_line = np.array(raw_line)
+    actual_line = np.array(actual_line)
+    best_fit_line = np.array(best_fit_line)
+    time = np.array(time)
 
     # Plot the data
     if plotting_individual:
-        ax.plot3D(best_fit_line[0], best_fit_line[1], best_fit_line[2], label="Test Data")
+        ax.plot3D(best_fit_line[0, :], best_fit_line[1, :], best_fit_line[2, :], label="Test Data")
         ax.set_xlabel('X-axis')
         ax.set_ylabel('Y-axis')
         ax.set_zlabel('Z-axis')
@@ -277,15 +281,13 @@ for i in range(0, len(all_files)):
     current_index = 0
     goal_x, goal_y, goal_z = [], [], []
 
-    # Convert to numpy array for better indexing
-    expected_line = np.array(expected_line)
-    best_fit_line = np.array(best_fit_line)
-
     # use this for debugging
-    plt.figure()
+    if plot_goals:
+        plt.figure()
 
     # For each point in the best_fit_line
     total_goals = np.shape(expected_line)[1]
+    current_index = 0
     for g in range(0, total_goals):
     
         # Get the goal 
@@ -295,34 +297,34 @@ for i in range(0, len(all_files)):
 
         # For each goal
         total_points = np.shape(best_fit_line)[1]
-        for p in range(0, total_points):
+        for p in range(current_index, total_points):
 
-            point = best_fit_line[:,p]
+            point = best_fit_line[:, p]
 
             # Compute the distance between the point and the goal
             d = distance(point, goal)
             dis.append(d)
 
         # Get the index of the minimum
-        min_index = np.argmin(dis)
+        min_index = np.argmin(dis) + current_index
 
         # Compute the indices we were going to that goal
         number_indices = min_index - current_index 
         current_index = max(min_index, current_index)
-        print(current_index)
 
         # Add an extra goal for the last one
         if g == total_goals - 1:
             number_indices += 1
 
         # use this for debugging
-        plt.plot(dis, label="Goal " + str(g))
-        plt.xlabel("Point Index")
-        plt.ylabel("Distance to Goal")
+        if plot_goals:
+            plt.plot(dis, label="Goal " + str(g))
+            plt.xlabel("Point Index")
+            plt.ylabel("Distance to Goal")
 
         if number_indices < 0:
             print("One of your goal was never met.")
-
+        
         # We know that the current goal is up until this index
         for i in range(0, number_indices):
             goal_x.append(goal[0])
@@ -330,19 +332,22 @@ for i in range(0, len(all_files)):
             goal_z.append(goal[2])
 
     # use this for debugging
-    plt.show()
-
-    # Want to add some way to cut off the end of the data line as it technically finished there
-    # First check you are at the right length
-    # Then cut that line
+    if plot_goals:
+        plt.show()
 
     # Save the goal line
     goal_line = [goal_x, goal_y, goal_z]
     print("The goal line shape:\t" + str(np.shape(goal_line)))
-    data["goal_line"] = copy.deepcopy(goal_line)
 
     # Convert goal_line to numpy array for better indexing
     goal_line = np.array(goal_line)
+    final_length = np.shape(goal_line)[1]
+
+    # We now know when the drone reaches the goal. So remove any excess datapoints
+    raw_line = raw_line[:, :final_length]
+    actual_line = actual_line[:, :final_length]
+    best_fit_line = best_fit_line[:, :final_length]
+    time = time[:final_length]
 
     # Save the distance between each goal and each point
     distance_to_goal = []  

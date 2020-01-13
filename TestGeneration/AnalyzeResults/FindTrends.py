@@ -50,7 +50,7 @@ args = parser.parse_args()
 
 # Creat3 the folder based on the passed arguments
 simtime = str(int(args.trajectorylength) * 9)
-folder = args.fileprefix + "_MIT_seed10_length" + args.trajectorylength + "_nodes250_res4_beamwidth5_totaltime" + str(args.searchtime) + "_simtime" + simtime + "_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
+folder = args.fileprefix + "_" + str(args.dronetype) + "_seed10_length" + args.trajectorylength + "_nodes250_res4_beamwidth5_totaltime" + str(args.searchtime) + "_simtime" + simtime + "_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
 
 # All the different system types which are generated using the WorldEngineSimulator
 system_types = []
@@ -88,6 +88,8 @@ for system in system_types:
     if total_files == 0:
         print("No Files Found in: " + str(folder + "/maps/map*/analysis_" + system + ".txt"))
         exit()
+
+    total_files = 20
 
     file_counter = 0
     for file_counter in range(1, total_files + 1):

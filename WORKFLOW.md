@@ -321,7 +321,7 @@ initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_sea
 
 We need to generate a model for each of the types in here. To generate a model we run:
 ```
-maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+$ maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
 $ python3 FindTrends.py --maindirectory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "10" --searchtime "7200" --saveprefix "len10"
 ```
 
@@ -438,10 +438,34 @@ $ cd ~/Desktop/RobotTestGeneration/TestGeneration/AnalyzeResults
 $ python3 convertAnafiToStandard.py --test_directory "/home/autosoftlab/Desktop/RobotTestGeneration/AnafiSimulation/TestingAnafi/Outdoor/"
 ```
 
+Copy the tests into the initial_run_flown folder
+
 This will create a bunch of `performance` files which we then can process using:
 ```
 $ maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "10" --searchtime "7200" --dronetype "ANAFI"
+```
+
+Now we want to generate more test for us to run on. To do that we:
+```
+$ cd ~/Desktop/RobotTestGeneration/TestGeneration/AnalyzeResults
+$ maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+$ python3 FindTrends.py --maindirectory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "10" --searchtime "7200" --saveprefix "len10" --dronetype "ANAFI"
+```
+
+
+Now that we have the models move them into the final models folder. Use that generate new tests
+```
+./learned_model_run_anafi.sh
+```
+
+
+Move the learned folder to anafi_learned_run_flown
+```
+```
+
+Then we now run those tests:
+```
 ```
 
 
