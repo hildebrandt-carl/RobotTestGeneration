@@ -42,6 +42,10 @@ parser.add_argument('-s', '--saveprefix',
                     type=str,
                     required=True,
                     help='Please give the model a save prefix')
+parser.add_argument('-d', '--dronetype',
+                    type=str,
+                    default="MIT",
+                    help='List the dronetype (MIT), (ANAFI)')
 args = parser.parse_args()
 
 # Creat3 the folder based on the passed arguments
@@ -49,12 +53,17 @@ simtime = str(int(args.trajectorylength) * 9)
 folder = args.fileprefix + "_MIT_seed10_length" + args.trajectorylength + "_nodes250_res4_beamwidth5_totaltime" + str(args.searchtime) + "_simtime" + simtime + "_searchtype_" + args.searchtype + "_scoretype_" + args.scoretype
 
 # All the different system types which are generated using the WorldEngineSimulator
-system_types = ["speed-2_minsnap0",
-                "speed-1_minsnap0",
-                "speed2_minsnap0",
-                "speed5_minsnap0",
-                "speed10_minsnap0",
-                "speed-1_minsnap1"]
+system_types = []
+if args.dronetype == "MIT":
+    system_types = ["speed-2_minsnap0",
+                    "speed-1_minsnap0",
+                    "speed2_minsnap0",
+                    "speed5_minsnap0",
+                    "speed10_minsnap0",
+                    "speed-1_minsnap1"]
+elif args.dronetype == "ANAFI":
+    system_types = ["anafi_sim",
+                    "anafi_outdoor"]
 
 # Get the data from the analysis files from execution
 folder = args.maindirectory + folder

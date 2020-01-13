@@ -282,7 +282,7 @@ for i in range(0, len(all_files)):
     best_fit_line = np.array(best_fit_line)
 
     # use this for debugging
-    # plt.figure()
+    plt.figure()
 
     # For each point in the best_fit_line
     total_goals = np.shape(expected_line)[1]
@@ -309,15 +309,16 @@ for i in range(0, len(all_files)):
         # Compute the indices we were going to that goal
         number_indices = min_index - current_index 
         current_index = max(min_index, current_index)
+        print(current_index)
 
         # Add an extra goal for the last one
         if g == total_goals - 1:
             number_indices += 1
 
         # use this for debugging
-        # plt.plot(dis, label="Goal " + str(g))
-        # plt.xlabel("Point Index")
-        # plt.ylabel("Distance to Goal")
+        plt.plot(dis, label="Goal " + str(g))
+        plt.xlabel("Point Index")
+        plt.ylabel("Distance to Goal")
 
         if number_indices < 0:
             print("One of your goal was never met.")
@@ -329,7 +330,11 @@ for i in range(0, len(all_files)):
             goal_z.append(goal[2])
 
     # use this for debugging
-    # plt.show()
+    plt.show()
+
+    # Want to add some way to cut off the end of the data line as it technically finished there
+    # First check you are at the right length
+    # Then cut that line
 
     # Save the goal line
     goal_line = [goal_x, goal_y, goal_z]
