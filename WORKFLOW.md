@@ -473,3 +473,7 @@ Plot the deviation (make sure to comment out the right sections)
 ```
 $ python3 graphDeviation.py
 ```
+
+
+
+Need to go back and rework everything so it works on more than only the first 20 tests
