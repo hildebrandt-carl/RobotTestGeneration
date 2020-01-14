@@ -62,8 +62,7 @@ if args.dronetype == "MIT":
                     "speed10_minsnap0",
                     "speed-1_minsnap1"]
 elif args.dronetype == "ANAFI":
-    system_types = ["anafi_sim",
-                    "anafi_outdoor"]
+    system_types = ["anafi_sim"]
 
 # Get the data from the analysis files from execution
 folder = args.maindirectory + folder

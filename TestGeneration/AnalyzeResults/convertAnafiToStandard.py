@@ -100,22 +100,37 @@ def rotate_line(rotation_line, rotation):
 
 
 # Parse the input arguments
-# parser = argparse.ArgumentParser()
-# parser.add_argument('-m', '--test_directory',
-#                     type=str,
-#                     required=True,
-#                     help='This is the directory where the tests are saved')
-# args = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument('-m', '--test_directory',
+                    type=str,
+                    required=True,
+                    help='This is the directory where the tests are saved')
+parser.add_argument('-d', '--test_type',
+                    type=str,
+                    default="both",
+                    help='Convert either (simulation), (outdoor), (both)')
+args = parser.parse_args()
 
 # Define where the tests are stored
-# file_location = args.test_directory
-file_location = "/home/autosoftlab/Desktop/RobotTestGeneration/AnafiSimulation/TestingAnafi/Outdoor/"
-print("Searching for files in: " + file_location + "test/maps/map*/")
+file_location = args.test_directory
+print("Searching for files in: " + file_location + "/maps/map*/")
 
+
+all_files = None
 # Find all the flight files
-outdoor_files = glob.glob(file_location + "test/maps/map*/outdoor_output.txt")
-sim_files = glob.glob(file_location + "test/maps/map*/simulation_output.txt")
-all_files = outdoor_files + sim_files
+if args.test_type == "simulation":
+    sim_files = glob.glob(file_location + "/maps/map*/simulation_output.txt")
+    all_files = sim_files
+elif args.test_type == "outdoor":
+    outdoor_files = glob.glob(file_location + "/maps/map*/outdoor_output.txt")
+    all_files = outdoor_files
+elif args.test_type == "both":
+    outdoor_files = glob.glob(file_location + "/maps/map*/outdoor_output.txt")
+    sim_files = glob.glob(file_location + "/maps/map*/simulation_output.txt")
+    all_files = outdoor_files + sim_files
+else:
+    print("Unknown test_type")
+    exit()
 
 # Used to control plotting
 plotting_individual = False

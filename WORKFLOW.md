@@ -381,24 +381,6 @@ $ python3 graphDeviation.py
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Anafi
 
 We have to do things slightly differently to fly the Anafi drone. We first have to move the data we want to fly with into the `AnafiSimulation/TestingAnafi/Outdoor` folder. To do that we can run the following commands:
@@ -427,20 +409,15 @@ $ python3 runtestwithpos.py --test_number 1 --test_type "simulation"
 
 Finally we wait until the drone comes to a complete stop. Then we kill the code running in Terminal 2. And inside the simulator we hit `ctrl + r`. We then repeat this for all tests in the simulator.
 
-This can be repeated for outdoors by running:
-```
-$ python3 runtestwithpos.py --test_number 1 --test_type "outdoor" 
-```
-
-Once you are done each of the folders will contain a `simulation_output.txt` or an `outdoor_output.txt` test. We can then convert that file into the same format as our MIT drive by running the following code. In a new terminal run:
+Once you are done each of the folders will contain a `simulation_output.txt`. We can then convert that file into the same format as our MIT drive by running the following code. In a new terminal run:
 ```
 $ cd ~/Desktop/RobotTestGeneration/TestGeneration/AnalyzeResults
-$ python3 convertAnafiToStandard.py --test_directory "/home/autosoftlab/Desktop/RobotTestGeneration/AnafiSimulation/TestingAnafi/Outdoor/"
+$ python3 convertAnafiToStandard.py --test_directory "/home/autosoftlab/Desktop/RobotTestGeneration/AnafiSimulation/TestingAnafi/Outdoor/test/" --test_type "simulation"
 ```
 
-Copy the tests into the initial_run_flown folder
+Copy the tests into the `initial_run_flown` folder
 
-This will create a bunch of `performance` files which we then can process using:
+Each map will now have a bunch of `performance` files which we then can process using:
 ```
 $ maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "10" --searchtime "7200" --dronetype "ANAFI"
@@ -456,16 +433,33 @@ $ python3 FindTrends.py --maindirectory ${maindir} --searchtype "kinematic" --sc
 
 Now that we have the models move them into the final models folder. Use that generate new tests
 ```
-./learned_model_run_anafi.sh
+$ cd ~/Desktop/RobotTestGeneration/TestGeneration
+$ ./learned_model_run_anafi.sh
 ```
 
 
-Move the learned folder to anafi_learned_run_flown
+Move the learned folder to `anafi_learned_run_flown`
 ```
+$ /home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults
+$ mv ../Results anafi_learned_run_flown
 ```
 
 Then we now run those tests:
+Fly them in the same manner
+
+
+We then need to convert them to the standard format:
 ```
+$ cd ~/Desktop/RobotTestGeneration/TestGeneration/AnalyzeResults
+$ python3 convertAnafiToStandard.py --test_directory "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/anafi_learned_run_flown/learned_anafi_outdoor_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned"
+$ python3 convertAnafiToStandard.py --test_directory "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/anafi_learned_run_flown/learned_anafi_sim_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned"
+```
+
+Finally we need to process them:
+```
+$ maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/anafi_learned_run_flown/"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_anafi_outdoor" --trajectorylength "10" --searchtime "3600" --dronetype "ANAFI"
+$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_anafi_sim" --trajectorylength "10" --searchtime "3600" --dronetype "ANAFI"
 ```
 
 

@@ -16,7 +16,7 @@ resolution=4
 seed=10
 totaltime=3600
      
-for systemtypes in "anafi_outdoor" "anafi_sim"
+for systemtypes in "anafi_sim"
   do
 
     savename="${save}_${systemtypes}"
