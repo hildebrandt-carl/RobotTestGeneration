@@ -47,9 +47,7 @@ main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/Fina
 # For outdoor outdoor
 # # # For the RQ3 length 10
 all_folders = ["initial_run_flown/initial_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime7200_simtime90_searchtype_kinematic_scoretype_random/",
-               "anafi_learned_run_flown/learned_anafi_sim_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/",
-               "anafi_learned_run_flown/learned_anafi_outdoor_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
-
+               "anafi_learned_run_flown/learned_anafi_sim_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
 # All the different system types which are generated using the WorldEngineSimulator
 system_types = ["anafi_sim",
                 "anafi_outdoor"]
@@ -195,15 +193,13 @@ for sys in system_types:
         if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
             randomscore_results.append(item['max_deviation'])
 
-        if "scoretype_learned/" in item['test_set'] and sys in item['test_set']  and sys == item['system_type']:
+        if "scoretype_learned/" in item['test_set'] and sys == item['system_type']:
             learnedscore_results.append(item['max_deviation'])
 
     # for item in final_data:
     #     if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
     #         learnedscore_results.append(item['max_deviation'])
 
-
-ticks = ["Simulation", "Outdoor"]
 fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
 
 bp1 = plt.boxplot(randomscore_results, positions=1.5*np.arange(len(randomscore_results)), showmeans=True)

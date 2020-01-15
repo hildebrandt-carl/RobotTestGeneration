@@ -39,6 +39,12 @@ def rotate(point, angle):
     return qx, qy
 
 
+def find_index(l, x):
+    for i in l:
+        if i < x: break
+    return l.index(i)
+
+
 # Match two lines endpoints by rotating the rotation_line
 def find_best_rotation(original_line, rotation_line):
 
@@ -113,6 +119,7 @@ args = parser.parse_args()
 
 # Define where the tests are stored
 file_location = args.test_directory
+# file_location = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/anafi_learned_run_flown/learned_anafi_sim_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned"
 print("Searching for files in: " + file_location + "/maps/map*/")
 
 
@@ -284,16 +291,15 @@ for i in range(0, len(all_files)):
     # Plot the data
     if plotting_individual:
         ax.plot3D(best_fit_line[0, :], best_fit_line[1, :], best_fit_line[2, :], label="Test Data")
-        ax.set_xlabel('X-axis')
-        ax.set_ylabel('Y-axis')
-        ax.set_zlabel('Z-axis')
+        ax.set_xlabel('X-Axis(m)')
+        ax.set_ylabel('Y-Axis(m)')
+        ax.set_zlabel('Z-Axis(m)')
         plt.show()
 
     print("")
     print("Saving data in standard format")
 
     # We need to compute what the current goal is for each timestep to get it into the standard format
-    current_index = 0
     goal_x, goal_y, goal_z = [], [], []
 
     # use this for debugging
@@ -302,11 +308,11 @@ for i in range(0, len(all_files)):
 
     # For each point in the best_fit_line
     total_goals = np.shape(expected_line)[1]
-    current_index = 0
+    current_index = 1
+    add_point = 0
     for g in range(0, total_goals):
     
-        # Get the goal 
-
+        # Get the goal
         goal = expected_line[:, g]
         dis = []    
 
@@ -322,10 +328,12 @@ for i in range(0, len(all_files)):
 
         # Get the index of the minimum
         min_index = np.argmin(dis) + current_index
+        thres_index = find_index(dis, 1.5) + current_index
+        index = min(thres_index, min_index)
 
         # Compute the indices we were going to that goal
-        number_indices = min_index - current_index 
-        current_index = max(min_index, current_index)
+        number_indices = index - current_index
+        current_index = max(index, current_index)
 
         # Add an extra goal for the last one
         if g == total_goals - 1:
@@ -337,8 +345,8 @@ for i in range(0, len(all_files)):
             plt.xlabel("Point Index")
             plt.ylabel("Distance to Goal")
 
-        if number_indices < 0:
-            print("One of your goal was never met.")
+        if number_indices <= 0:
+            number_indices = 1
         
         # We know that the current goal is up until this index
         for i in range(0, number_indices):
