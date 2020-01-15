@@ -451,14 +451,12 @@ Fly them in the same manner
 We then need to convert them to the standard format:
 ```
 $ cd ~/Desktop/RobotTestGeneration/TestGeneration/AnalyzeResults
-$ python3 convertAnafiToStandard.py --test_directory "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/anafi_learned_run_flown/learned_anafi_outdoor_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned"
 $ python3 convertAnafiToStandard.py --test_directory "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/anafi_learned_run_flown/learned_anafi_sim_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned"
 ```
 
 Finally we need to process them:
 ```
 $ maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/anafi_learned_run_flown/"
-$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_anafi_outdoor" --trajectorylength "10" --searchtime "3600" --dronetype "ANAFI"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_anafi_sim" --trajectorylength "10" --searchtime "3600" --dronetype "ANAFI"
 ```
 
