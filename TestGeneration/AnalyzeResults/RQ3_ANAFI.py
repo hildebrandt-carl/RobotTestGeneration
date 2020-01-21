@@ -3,7 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from processResultsUtils import get_numbers_after_string
 
+def annotate_boxplot(bpdict, positions, text, top=False):
 
+    counter = 0
+    for pos in positions:
+            plt.text(x=(pos + 0.21), y=(bpdict['medians'][(counter*2)].get_ydata()[0]-0.75), s=text, rotation=90, rotation_mode='anchor', backgroundcolor='white', fontsize=12)
 
 def set_box_color(bp, color):
     plt.setp(bp['boxes'], color=color, linewidth=3)
@@ -132,18 +136,17 @@ for folder in all_folders:
 
                     # Check for any anomalies
                     if max_dev[0][0] > 30:
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        print("Maximum Deviation over 30m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        failed_tests += 1
                         continue
 
-                    if max_dev[0][0] > 11 and system == "speed-1_minsnap1":
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
-
-                    # Count how many minsnap corridor failed
-                    if max_dev[0][0] > 12 and system == "speed-1_minsnap2":
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                    elif max_dev[0][0] > 15 and system == "speed-1_minsnap1":
+                        print("Maximum Deviation over 15m (" + str(max_dev[0][0]) + "m): " + str(file_name))
                         failed_tests += 1
-                    else:
+                        continue
 
+                    else:
+                        
                         # Save the data
                         average_deviation.append(avg_dev[0][0])
                         total_deviation.append(tot_dev[0][0])
@@ -202,8 +205,17 @@ for sys in system_types:
 
 fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
 
-bp1 = plt.boxplot(randomscore_results, positions=1.5*np.arange(len(randomscore_results)), showmeans=True)
-bp2 = plt.boxplot(learnedscore_results, positions=1.5*np.arange(len(learnedscore_results))+0.6, showmeans=True)
+
+bp1_pos = positions=1.5*np.arange(len(randomscore_results))
+bp1 = plt.boxplot(randomscore_results, positions=bp1_pos, showmeans=True)
+annotate_boxplot(bp1, positions=bp1_pos, text="No Scoring")
+
+bp2_pos = positions=1.5*np.arange(len(learnedscore_results))+0.6
+bp2 = plt.boxplot(learnedscore_results, positions=bp2_pos, showmeans=True)
+annotate_boxplot(bp2, positions=bp2_pos, text="Learned Scoring")
+
+# bp1 = plt.boxplot(randomscore_results, positions=1.5*np.arange(len(randomscore_results)), showmeans=True)
+# bp2 = plt.boxplot(learnedscore_results, positions=1.5*np.arange(len(learnedscore_results))+0.6, showmeans=True)
 
 ax1.grid()
 ax1.grid(which='minor', linestyle='--', linewidth=0.5)
@@ -213,16 +225,16 @@ ax1.grid(which='minor', linestyle='--', linewidth=0.5)
 set_box_color(bp1, 'C0')
 set_box_color(bp2, 'C3')
 
-plt.plot([], c='C0', linewidth=3, label='No Scoring')
-plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
-plt.legend(fontsize=18)
+# plt.plot([], c='C0', linewidth=3, label='No Scoring')
+# plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
+# plt.legend(fontsize=18)
 
 plt.xlim([-0.5, 1.5*len(randomscore_results)-0.5])
 
 plt.yticks(fontsize=15)
 plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=15)
 
-plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+plt.xlabel("Execution Type", fontweight='bold', fontsize=20)
 plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
 
 # log scale
@@ -231,6 +243,8 @@ plt.yscale('log')
 plt.tick_params(axis='y', which='minor', labelsize=15)
 ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
 ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
+fig1.tight_layout()
 
 plt.show()
 

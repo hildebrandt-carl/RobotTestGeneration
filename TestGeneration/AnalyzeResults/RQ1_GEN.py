@@ -6,25 +6,10 @@ import math
 
 folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
 
-# # Anafi Length 10
-# all_files = ["initial_searchtype_random_scoretype_random_dronetype_anafi_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt",
-#             "initial_searchtype_maxvel_scoretype_random_dronetype_anafi_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt",
-#             "initial_searchtype_kinematic_scoretype_random_dronetype_anafi_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt"]
-
-# # Anafi Length 5
-# all_files = ["initial_searchtype_random_scoretype_random_dronetype_anafi_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt",
-#             "initial_searchtype_maxvel_scoretype_random_dronetype_anafi_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt",
-#             "initial_searchtype_kinematic_scoretype_random_dronetype_anafi_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt"]
-
 # MIT Length 10
 all_files = ["initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt",
             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt",
             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt"]
-
-# # MIT Length 5
-# all_files = ["initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt",
-#             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt",
-#             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_5_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_45.txt"]
 
 tick_names = ["No Kinematic", "Approx Kinematic", "Full Kinematic"]
 

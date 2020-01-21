@@ -4,6 +4,18 @@ import numpy as np
 from processResultsUtils import get_numbers_after_string
 
 
+def annotate_boxplot(bpdict, positions, text, top=False):
+
+    shift = [2.5, 3.5, 0.5, 3]
+    counter = 0
+
+    for pos in positions:
+        if counter == 0:
+            plt.text(x=(pos - 0.1), y=(bpdict['caps'][counter*2].get_ydata()[0] - shift[counter]), s=text, rotation=-90, rotation_mode='anchor', backgroundcolor='white', fontsize=12)
+        else:
+            plt.text(x=(pos + 0.1), y=(bpdict['caps'][(counter*2)+1].get_ydata()[0] + shift[counter]), s=text, rotation=90, rotation_mode='anchor', backgroundcolor='white', fontsize=12)
+        counter += 1
+
 
 def set_box_color(bp, color):
     plt.setp(bp['boxes'], color=color, linewidth=3)
@@ -145,20 +157,23 @@ for folder in all_folders:
                     num_way = get_numbers_after_string(file_name=file_name, the_string="Total waypoints:")
                     optimal_time_heuristic = tot_time[0][0] / num_way[0][0]
 
-                    # Get the trajectory length
-
                     # Check for any anomalies
-                    if max_dev[0][0] > 30:
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                    if max_dev[0][0] > 40:
+                        print("Maximum Deviation over 40m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        failed_tests += 1
                         continue
 
-                    if max_dev[0][0] > 11 and system == "speed-1_minsnap1":
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                    elif max_dev[0][0] > 15 and system == "speed-1_minsnap1":
+                        print("Maximum Deviation over 15m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        failed_tests += 1
+                        continue
 
                     # Count how many minsnap corridor failed
-                    if max_dev[0][0] > 12 and system == "speed-1_minsnap2":
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                    elif max_acc[0][0] > 30:
+                        print("Maximum Acceleration over 30m^2 (" + str(max_acc[0][0]) + "m): " + str(file_name))
                         failed_tests += 1
+                        continue
+
                     else:
 
                         # Save the data
@@ -206,7 +221,7 @@ print("Failed tests: " + str(failed_tests))
 
 # RQ2) <------ Multiple Controllers
 
-selectedR2_systems = ["speed-1_minsnap0", "speed-1_minsnap1"]
+selectedR2_systems = ["speed-2_minsnap0", "speed-1_minsnap0", "speed2_minsnap0", "speed-1_minsnap1"]
 randomscore_results = []
 edgecore_results = []
 edge90score_results = []
@@ -235,14 +250,28 @@ for sys in selectedR2_systems:
             learnedscore_results.append(item['max_deviation'])
 
 
-ticks = ["Stable Waypoint Controller", "Minimum Snap Controller"]
+ticks = ["UnStable Waypoint", "Stable Waypoint", "Fixed Velocity", "Minimum Snap"]
 fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
 
-bp1 = plt.boxplot(randomscore_results, positions=4*np.arange(len(randomscore_results)), showmeans=True)
-bp2 = plt.boxplot(edgecore_results, positions=4*np.arange(len(edgecore_results))+0.6, showmeans=True)
-bp3 = plt.boxplot(edge90score_results, positions=4*np.arange(len(edge90score_results))+1.2, showmeans=True)
-bp4 = plt.boxplot(edge180score_results, positions=4*np.arange(len(edge180score_results))+1.8, showmeans=True)
-bp5 = plt.boxplot(learnedscore_results, positions=4*np.arange(len(learnedscore_results))+2.4, showmeans=True)
+bp1_pos = positions=4*np.arange(len(randomscore_results))
+bp1 = plt.boxplot(randomscore_results, positions=bp1_pos, showmeans=True)
+annotate_boxplot(bp1, positions=bp1_pos, text="No Scoring")
+
+bp2_pos = positions=4*np.arange(len(edgecore_results))+0.6
+bp2 = plt.boxplot(edgecore_results, positions=bp2_pos, showmeans=True)
+annotate_boxplot(bp2, positions=bp2_pos, text="High Velocity")
+
+bp3_pos = positions=4*np.arange(len(edge90score_results))+1.2
+bp3 = plt.boxplot(edge90score_results, positions=bp3_pos, showmeans=True)
+annotate_boxplot(bp3, positions=bp3_pos, text="High Velocity + 90 Deg")
+
+bp4_pos = positions=4*np.arange(len(edge180score_results))+1.8
+bp4 = plt.boxplot(edge180score_results, positions=bp4_pos, showmeans=True)
+annotate_boxplot(bp4, positions=bp4_pos, text="High Velocity + 180 Deg")
+
+bp5_pos = positions=4*np.arange(len(learnedscore_results))+2.4
+bp5 = plt.boxplot(learnedscore_results, positions=bp5_pos, showmeans=True)
+annotate_boxplot(bp5, positions=bp5_pos, text="Learned Scoring")
 
 ax1.grid()
 ax1.grid(which='minor', linestyle='--', linewidth=0.5)
@@ -255,13 +284,13 @@ set_box_color(bp3, 'C2')
 set_box_color(bp4, 'C6')
 set_box_color(bp5, 'C3')
 
-plt.plot([], c='C0', linewidth=3, label='No Scoring')
-plt.plot([], c='C5', linewidth=3, label='High Velocity')
-plt.plot([], c='C2', linewidth=3, label='High Velocity + 90 Deg')
-plt.plot([], c='C6', linewidth=3, label='High Velocity + 180 Deg')
-plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
-ax1.legend(loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=2, fontsize=18)
-plt.subplots_adjust(top=0.8)
+# plt.plot([], c='C0', linewidth=3, label='No Scoring')
+# plt.plot([], c='C5', linewidth=3, label='High Velocity')
+# plt.plot([], c='C2', linewidth=3, label='High Velocity + 90 Deg')
+# plt.plot([], c='C6', linewidth=3, label='High Velocity + 180 Deg')
+# plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
+# ax1.legend(loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=2, fontsize=18)
+# plt.subplots_adjust(top=0.8)
 
 plt.xlim([-0.5, 4*len(randomscore_results)-1.15])
 
@@ -277,8 +306,22 @@ plt.yscale('log')
 plt.tick_params(axis='y', which='minor', labelsize=15)
 ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
 ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
-
+fig1.tight_layout()
+plt.ylim([0,50])
 plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # RQ2) <------ Multiple Metrics
@@ -354,7 +397,7 @@ plt.xlim([-0.5, 3.5*len(randomscore_results)-0.5])
 plt.yticks(fontsize=15)
 plt.xticks(3.5 * np.arange(len(ticks)) + 1.2, ticks, fontsize=15, rotation=0)
 
-plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+plt.xlabel("Metric", fontweight='bold', fontsize=20)
 plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
 
 # log scale
@@ -364,5 +407,7 @@ plt.tick_params(axis='y', which='minor', labelsize=15)
 ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
 ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
 plt.show()
+
+
 
 

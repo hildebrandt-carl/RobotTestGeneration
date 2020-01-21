@@ -1,8 +1,9 @@
 import glob
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import gaussian_kde
 from processResultsUtils import get_numbers_after_string
-
+from matplotlib.ticker import FormatStrFormatter
 
 
 def set_box_color(bp, color):
@@ -136,20 +137,23 @@ for folder in all_folders:
                     num_way = get_numbers_after_string(file_name=file_name, the_string="Total waypoints:")
                     optimal_time_heuristic = tot_time[0][0] / num_way[0][0]
 
-                    # Get the trajectory length
-
                     # Check for any anomalies
-                    if max_dev[0][0] > 30:
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                    if max_dev[0][0] > 40:
+                        print("Maximum Deviation over 40m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        failed_tests += 1
                         continue
 
-                    if max_dev[0][0] > 11 and system == "speed-1_minsnap1":
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                    elif max_dev[0][0] > 15 and system == "speed-1_minsnap1":
+                        print("Maximum Deviation over 15m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        failed_tests += 1
+                        continue
 
                     # Count how many minsnap corridor failed
-                    if max_dev[0][0] > 12 and system == "speed-1_minsnap2":
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                    elif max_acc[0][0] > 30:
+                        print("Maximum Acceleration over 30m^2 (" + str(max_acc[0][0]) + "m): " + str(file_name))
                         failed_tests += 1
+                        continue
+
                     else:
 
                         # Save the data
@@ -224,8 +228,6 @@ for item in final_data:
 
 
 # Plot here
-
-
 ticks = ["Max Deviation", "Avg Deviation", "Total Time", "Avg Velocity", "Max Acceleration"]
 
 fig1, ax1 = plt.subplots(1, 1, figsize=(10, 9))
@@ -244,10 +246,93 @@ plt.xlabel("Performance Metric", fontweight='bold', fontsize=20)
 plt.ylabel("Measured Value", fontweight='bold', fontsize=20)
 
 # log scale
-from matplotlib.ticker import FormatStrFormatter
+
 plt.yscale('log')
 plt.tick_params(axis='y', which='minor', labelsize=15)
 ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
 ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
-
 plt.show()
+
+
+
+
+
+
+
+
+# Using a density plot to get the smooth continous version of the histogram
+
+
+# Get the data we are interested in plotting
+max_dev_norm = np.array(waypoint_results[0]) 
+total_time_norm = np.array(waypoint_results[2]) 
+max_acc_norm = np.array(waypoint_results[4])
+
+# max_dev_norm = (max_dev_norm - min(max_dev_norm)) / (max(max_dev_norm) - min(max_dev_norm))
+# total_time_norm = (total_time_norm - min(total_time_norm)) / (max(total_time_norm) - min(total_time_norm))
+# max_acc_norm = (max_acc_norm - min(max_acc_norm)) / (max(max_acc_norm) - min(max_acc_norm))
+ticks = ["Max Deviation", "Total Time", "Max Acceleration"]
+
+
+fig2, ax2 = plt.subplots(1, 1, figsize=(10, 9))
+# Plot histograms
+# equivalent but more general
+
+plt.subplot(311)
+# plt.hist(max_dev_norm, bins=15)
+density = gaussian_kde(max_dev_norm)
+std_dev = np.std(max_dev_norm)
+xs = np.linspace(min(max_dev_norm)-std_dev, max(max_dev_norm)+std_dev, 400)
+prob_density = density(xs)
+plt.minorticks_on()
+plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+plt.plot(xs,prob_density, linewidth=3)
+plt.ylim([0,max(prob_density) + 0.1 * max(prob_density)])
+plt.xlabel("Maximum Deviation", fontweight='bold', fontsize=20)
+# plt.ylabel("Density Function", fontweight='bold', fontsize=20)
+plt.xticks(fontsize=15)
+plt.yticks(fontsize=15)
+
+plt.subplot(312)
+# plt.hist(total_time_norm, bins=15)
+density = gaussian_kde(total_time_norm)
+std_dev = np.std(total_time_norm)
+xs = np.linspace(min(total_time_norm)-std_dev, max(total_time_norm)+std_dev, 400)
+prob_density = density(xs)
+plt.minorticks_on()
+plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+plt.plot(xs,prob_density, linewidth=3)
+plt.ylim([0,max(prob_density) + 0.1 * max(prob_density)])
+plt.xlabel("Total Time", fontweight='bold', fontsize=20)
+plt.ylabel("Density Function", fontweight='bold', fontsize=20)
+plt.xticks(fontsize=15)
+plt.yticks(fontsize=15)
+
+plt.subplot(313)
+# plt.hist(max_acc_norm, bins=15)
+density = gaussian_kde(max_acc_norm)
+std_dev = np.std(max_acc_norm)
+xs = np.linspace(min(max_acc_norm)-std_dev, max(max_acc_norm)+std_dev, 400)
+prob_density = density(xs)
+plt.minorticks_on()
+plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+plt.plot(xs,prob_density, linewidth=3)
+plt.ylim([0,max(prob_density) + 0.1 * max(prob_density)])
+plt.xlabel("Maximum Acceleration", fontweight='bold', fontsize=20)
+# plt.ylabel("Density Function", fontweight='bold', fontsize=20)
+plt.xticks(fontsize=15)
+plt.yticks(fontsize=15)
+
+
+fig2.tight_layout()
+plt.show()
+
+
+# fit = stats.norm.pdf(h, np.mean(h), np.std(h))  #this is a fitting indeed
+
+# pl.plot(h,fit,'-o')
+
+# pl.hist(h,normed=True)      #use this to draw histogram of your data

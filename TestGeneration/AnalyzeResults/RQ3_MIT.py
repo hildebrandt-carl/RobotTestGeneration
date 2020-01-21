@@ -139,20 +139,23 @@ for folder in all_folders:
                     num_way = get_numbers_after_string(file_name=file_name, the_string="Total waypoints:")
                     optimal_time_heuristic = tot_time[0][0] / num_way[0][0]
 
-                    # Get the trajectory length
-
                     # Check for any anomalies
                     if max_dev[0][0] > 30:
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        print("Maximum Deviation over 30m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        failed_tests += 1
                         continue
 
-                    if max_dev[0][0] > 11 and system == "speed-1_minsnap1":
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                    elif max_dev[0][0] > 15 and system == "speed-1_minsnap1":
+                        print("Maximum Deviation over 15m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        failed_tests += 1
+                        continue
 
                     # Count how many minsnap corridor failed
-                    if max_dev[0][0] > 12 and system == "speed-1_minsnap2":
-                        print("Maximum Deviation over 5m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                    elif max_acc[0][0] > 25:
+                        print("Maximum Acceleration over 25m^2 (" + str(max_acc[0][0]) + "m): " + str(file_name))
                         failed_tests += 1
+                        continue
+
                     else:
 
                         # Save the data

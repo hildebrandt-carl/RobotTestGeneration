@@ -116,18 +116,6 @@ The next thing we need to do is to parse all the resulting data to get the detai
 First we want to parse the resulting data to extract high level metrics from it. We do that using the file `processResults.py`. For each of the test sets we need to extract high level information from them individually. To do that we can run the following commands:
 
 
-Not this one
-```
-maindir="~/RobotTestGeneration/TestGeneration/FinalResults/<your_directory>
-maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial2_run_flown/"
-$ python3 processResults.py --main_directory ${maindir} --searchtype "random" --scoretype "random" --fileprefix "initial" --trajectorylength "5" --searchtime "3600"
-$ python3 processResults.py --main_directory ${maindir} --searchtype "maxvel" --scoretype "random" --fileprefix "initial" --trajectorylength "5" --searchtime "3600"
-$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "5" --searchtime "3600"
-$ python3 processResults.py --main_directory ${maindir} --searchtype "random" --scoretype "random" --fileprefix "initial" --trajectorylength "10" --searchtime "3600"
-$ python3 processResults.py --main_directory ${maindir} --searchtype "maxvel" --scoretype "random" --fileprefix "initial" --trajectorylength "10" --searchtime "3600"
-$ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "10" --searchtime "3600"
-```
-
 This one
 ```
 maindir="~/RobotTestGeneration/TestGeneration/FinalResults/<your_directory>
@@ -277,6 +265,21 @@ $ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "handcrafted" 
 $ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted" "10" "3600" "-42"
 ```
 
+Unstable Waypoint Controller
+```
+$ cd ~/Desktop/RobotTestGeneration/WorldEngineSimulation
+$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "handcrafted" "10" "3600" "-2"
+$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "handcrafted" "10" "3600" "-2"
+$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted" "10" "3600" "-2"
+```
+
+Velocity Controller Controller
+```
+$ cd ~/Desktop/RobotTestGeneration/WorldEngineSimulation
+$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "handcrafted" "10" "3600" "2"
+$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "handcrafted" "10" "3600" "2"
+$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted" "10" "3600" "2"
+```
 
 
 Now you need to process them using:

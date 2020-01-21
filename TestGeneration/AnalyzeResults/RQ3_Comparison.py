@@ -28,13 +28,11 @@ folder = main_folder + all_folders
 file_names = glob.glob(folder + "/maps/map*/test.txt")
 total_files = len(file_names)
 
-# Used to save the worst deviation
-worst_deviation = 0
-worst_position_outdoor = []
-worst_position_goals = []
-worst_position_sim = []
-worst_file_name = ""
-save_next = False
+position_outdoor = []
+position_goals = []
+position_sim = []
+plotting_file_name = []
+outdoor_deviation = []
 
 # For each of the systems
 for file_counter in range(1, total_files + 1):
@@ -191,39 +189,36 @@ for file_counter in range(1, total_files + 1):
             # Save the smallest distance to the deviation from optimal array
             current_deviation.append(abs(d))
 
+        if sys == system_types[0]:
+            max_dev = max(current_deviation)
+            # Get the outdoor maximum deviation
+            position_outdoor.append(np.array(current_drone_position))
+            position_goals.append(np.array(test_waypoints))
+            plotting_file_name.append(copy.deepcopy(file_name))
+            outdoor_deviation.append(copy.deepcopy(max_dev))
+        else:
+            position_sim.append(np.array(current_drone_position))
 
-        # Save the test with the worst devaition
-        if save_next:
-            worst_position_sim = copy.deepcopy(current_drone_position)
-            save_next = False
+zipped_files = zip(outdoor_deviation, position_outdoor, position_sim, position_goals, plotting_file_name)
+outdoor_deviation, position_outdoor, position_sim, position_goals, plotting_file_name = zip(*sorted(zipped_files))
 
-        if sys == "anafi_outdoor":
-            maximum_deviation = np.sum(current_deviation)
-
-            # If it is the worst save it
-            if maximum_deviation > worst_deviation:
-                # Save the position
-                worst_position_outdoor = copy.deepcopy(current_drone_position)
-                worst_position_goals = copy.deepcopy(test_waypoints)
-                save_next = True
-                worst_deviation = maximum_deviation
-                worst_file_name = file_name
+shift_down = 0.85
+plt_num = -1
 
 print("The worst test was:")
-print(worst_file_name)
-
+print(plotting_file_name[plt_num])
 # Stack the drone positions and waypoints for plotting
-d_pos_out = np.vstack(worst_position_outdoor)
-d_pos_sim = np.vstack(worst_position_sim)
-w_pos = np.vstack(worst_position_goals)
+d_pos_out1 = np.vstack(position_outdoor[plt_num])
+d_pos_sim1 = np.vstack(position_sim[plt_num])
+w_pos1 = np.vstack(position_goals[plt_num])
 
 # Create a 3D plot of the trajectory and actual path
 fig = plt.figure()
 ax = Axes3D(fig)
-ax.plot(w_pos[:, 0], w_pos[:, 1], w_pos[:, 2], color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
-ax.scatter(w_pos[:, 0], w_pos[:, 1], w_pos[:, 2], c='C0')
-ax.plot3D(d_pos_out[:, 0], d_pos_out[:, 1], d_pos_out[:, 2], color='C2', linewidth=2, label='Real-World')
-ax.plot3D(d_pos_sim[:, 0], d_pos_sim[:, 1], d_pos_sim[:, 2], color='C1', linewidth=2, label='Simulation')
+ax.plot(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
+ax.scatter(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='C0')
+ax.plot3D(d_pos_out1[:, 0], d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
+ax.plot3D(d_pos_sim1[:, 0], d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linewidth=2, label='Simulation')
 
 ax.set_xlim([0, 30])
 ax.set_ylim([0, -30])
@@ -235,8 +230,138 @@ plt.title("Optimal vs. true trajectory")
 ax.legend()
 plt.show()
 
-print("")
-print("-------------------------------------------")
-print("-----------Completed Processing------------")
-print("-------------------------------------------")
-print("")
+
+
+
+
+
+
+
+
+fig = plt.figure(figsize=(20,5))
+plt_num = -1
+
+
+
+
+# Select the plot
+ax = fig.add_subplot(1, 4, 1, projection='3d')
+
+# Stack the drone positions and waypoints for plotting
+d_pos_out1 = np.vstack(position_outdoor[plt_num])
+d_pos_sim1 = np.vstack(position_sim[plt_num])
+w_pos1 = np.vstack(position_goals[plt_num])
+
+# Create a 3D plot of the trajectory and actual path
+ax.plot(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
+ax.scatter(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='C0')
+ax.plot3D(d_pos_out1[:, 0], d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
+ax.plot3D(d_pos_sim1[:, 0], d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linewidth=2, label='Simulation')
+
+ax.set_xlim([0, 30])
+ax.set_ylim([0, -30])
+ax.set_zlim([0, 30])
+ax.set_xlabel('X-Axis(m)')
+ax.set_ylabel('Y-Axis(m)')
+ax.set_zlabel('Z-Axis(m)')
+plt.title("3D View")
+plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+
+ax.zaxis._axinfo['juggled'] = (1,2,1)
+
+
+
+
+
+
+
+
+# Select the plot
+ax1 = fig.add_subplot(1, 4, 2)
+print("The worst test was:")
+print(plotting_file_name[plt_num])
+# Stack the drone positions and waypoints for plotting
+d_pos_out1 = np.vstack(position_outdoor[plt_num])
+d_pos_sim1 = np.vstack(position_sim[plt_num])
+w_pos1 = np.vstack(position_goals[plt_num])
+
+# Create a 3D plot of the trajectory and actual path
+plt.plot(w_pos1[:, 0], -1*w_pos1[:, 1], color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
+plt.scatter(w_pos1[:, 0], -1*w_pos1[:, 1], c='C0')
+plt.plot(d_pos_out1[:, 0], -1*d_pos_out1[:, 1], color='C2', linewidth=2, label='Real-World')
+plt.plot(d_pos_sim1[:, 0], -1*d_pos_sim1[:, 1], color='C1', linewidth=2, label='Simulation')
+
+plt.xlim([0, 35])
+plt.ylim([0, 35])
+plt.xlabel('X-Axis(m)')
+plt.ylabel('Y-Axis(m)')
+plt.title("Top View")
+plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+
+
+
+
+
+
+
+# Select the plot
+plt.subplot(143)
+
+# Stack the drone positions and waypoints for plotting
+d_pos_out1 = np.vstack(position_outdoor[plt_num])
+d_pos_sim1 = np.vstack(position_sim[plt_num])
+w_pos1 = np.vstack(position_goals[plt_num])
+
+# Create a 3D plot of the trajectory and actual path
+plt.plot(w_pos1[:, 0], w_pos1[:, 2]-shift_down, color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
+plt.scatter(w_pos1[:, 0], w_pos1[:, 2]-shift_down, c='C0')
+plt.plot(d_pos_out1[:, 0], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
+plt.plot(d_pos_sim1[:, 0], d_pos_sim1[:, 2]-shift_down, color='C1', linewidth=2, label='Simulation')
+
+plt.xlim([0, 35])
+plt.ylim([0, 35])
+plt.xlabel('X-Axis(m)')
+plt.ylabel('Z-Axis(m)')
+plt.title("Side View")
+plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+
+
+
+
+# Select the plot
+plt.subplot(144)
+
+# Stack the drone positions and waypoints for plotting
+d_pos_out1 = np.vstack(position_outdoor[plt_num])
+d_pos_sim1 = np.vstack(position_sim[plt_num])
+w_pos1 = np.vstack(position_goals[plt_num])
+
+# Create a 3D plot of the trajectory and actual path
+plt.plot(-1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
+plt.scatter(-1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='C0')
+plt.plot(-1*d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
+plt.plot(-1*d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linewidth=2, label='Simulation')
+
+plt.xlim([0, 35])
+plt.ylim([0, 35])
+plt.xlabel('Y-Axis(m)')
+plt.ylabel('Z-Axis(m)')
+plt.title("Side View")
+plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+
+
+
+
+
+
+
+
+
+
+
+fig.tight_layout()
+plt.show()
