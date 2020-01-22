@@ -7,7 +7,7 @@ def annotate_boxplot(bpdict, positions, text, top=False):
 
     counter = 0
     for pos in positions:
-            plt.text(x=(pos + 0.21), y=(bpdict['medians'][(counter*2)].get_ydata()[0]-0.75), s=text, rotation=90, rotation_mode='anchor', backgroundcolor='white', fontsize=12)
+            plt.text(x=(pos + 0.21), y=(bpdict['medians'][(counter*2)].get_ydata()[0]-0.5), s=text, rotation=90, rotation_mode='anchor', backgroundcolor='white', fontsize=12)
 
 def set_box_color(bp, color):
     plt.setp(bp['boxes'], color=color, linewidth=3)
@@ -239,7 +239,6 @@ plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
 
 # log scale
 from matplotlib.ticker import FormatStrFormatter
-plt.yscale('log')
 plt.tick_params(axis='y', which='minor', labelsize=15)
 ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
 ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
