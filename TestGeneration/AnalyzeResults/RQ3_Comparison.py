@@ -202,6 +202,18 @@ for file_counter in range(1, total_files + 1):
 zipped_files = zip(outdoor_deviation, position_outdoor, position_sim, position_goals, plotting_file_name)
 outdoor_deviation, position_outdoor, position_sim, position_goals, plotting_file_name = zip(*sorted(zipped_files))
 
+
+
+
+
+
+
+
+
+
+
+
+
 shift_down = 0.85
 plt_num = -1
 
@@ -238,8 +250,16 @@ plt.show()
 
 
 
+
+
+
+
+
+
 fig = plt.figure(figsize=(20,5))
 plt_num = -1
+
+
 
 
 
@@ -277,6 +297,8 @@ ax.zaxis._axinfo['juggled'] = (1,2,1)
 
 
 
+
+
 # Select the plot
 ax1 = fig.add_subplot(1, 4, 2)
 print("The worst test was:")
@@ -306,6 +328,8 @@ plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
 
 
 
+
+
 # Select the plot
 plt.subplot(143)
 
@@ -327,6 +351,10 @@ plt.ylabel('Z-Axis(m)')
 plt.title("Side View")
 plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
 plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+
+
+
+
 
 
 
