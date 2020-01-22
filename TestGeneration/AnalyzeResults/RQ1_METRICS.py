@@ -293,6 +293,7 @@ plt.xlabel("Maximum Deviation", fontweight='bold', fontsize=20)
 # plt.ylabel("Density Function", fontweight='bold', fontsize=20)
 plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
+plt.ylim([0,0.36])
 
 plt.subplot(312)
 # plt.hist(total_time_norm, bins=15)
@@ -309,6 +310,7 @@ plt.xlabel("Total Time", fontweight='bold', fontsize=20)
 plt.ylabel("Density Function", fontweight='bold', fontsize=20)
 plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
+plt.ylim([0,0.36])
 
 plt.subplot(313)
 # plt.hist(max_acc_norm, bins=15)
@@ -325,6 +327,7 @@ plt.xlabel("Maximum Acceleration", fontweight='bold', fontsize=20)
 # plt.ylabel("Density Function", fontweight='bold', fontsize=20)
 plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
+plt.ylim([0,0.36])
 
 
 fig2.tight_layout()
