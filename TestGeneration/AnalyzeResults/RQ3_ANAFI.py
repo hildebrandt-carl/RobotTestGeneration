@@ -52,6 +52,7 @@ main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/Fina
 # # # For the RQ3 length 10
 all_folders = ["initial_run_flown/initial_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime7200_simtime90_searchtype_kinematic_scoretype_random/",
                "anafi_learned_run_flown/learned_anafi_sim_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
+
 # All the different system types which are generated using the WorldEngineSimulator
 system_types = ["anafi_sim",
                 "anafi_outdoor"]
@@ -199,51 +200,80 @@ for sys in system_types:
         if "scoretype_learned/" in item['test_set'] and sys == item['system_type']:
             learnedscore_results.append(item['max_deviation'])
 
-    # for item in final_data:
-    #     if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
-    #         learnedscore_results.append(item['max_deviation'])
+# Get the ratio of each
+for i in range(0,2):
+    mean = np.mean(randomscore_results[i])
+    print("Mean: " + str(mean))
+
+    randomscore_results[i] = randomscore_results[i] / mean
+    learnedscore_results[i] = learnedscore_results[i] / mean
+
+
+
 
 fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
+plt.axvline(x=3, color='black', linestyle='-', linewidth=0.5)
 
-
-bp1_pos = positions=1.5*np.arange(len(randomscore_results))
+bp1_pos = positions=3*np.arange(len(randomscore_results))+1
 bp1 = plt.boxplot(randomscore_results, positions=bp1_pos, showmeans=True)
-annotate_boxplot(bp1, positions=bp1_pos, text="No Scoring")
+# annotate_boxplot(bp1, positions=bp1_pos, text="No Scoring")
 
-bp2_pos = positions=1.5*np.arange(len(learnedscore_results))+0.6
+bp2_pos = positions=3*np.arange(len(learnedscore_results))+2
 bp2 = plt.boxplot(learnedscore_results, positions=bp2_pos, showmeans=True)
-annotate_boxplot(bp2, positions=bp2_pos, text="Learned Scoring")
+# annotate_boxplot(bp2, positions=bp2_pos, text="Learned Scoring")
 
-# bp1 = plt.boxplot(randomscore_results, positions=1.5*np.arange(len(randomscore_results)), showmeans=True)
-# bp2 = plt.boxplot(learnedscore_results, positions=1.5*np.arange(len(learnedscore_results))+0.6, showmeans=True)
-
-ax1.grid()
-ax1.grid(which='minor', linestyle='--', linewidth=0.5)
-
-# add_values(bpl, ax1)
-# add_values(bpr, ax1)
+# Add colors
 set_box_color(bp1, 'C0')
 set_box_color(bp2, 'C3')
 
-# plt.plot([], c='C0', linewidth=3, label='No Scoring')
-# plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
-# plt.legend(fontsize=18)
+# Set the right scale
+plt.xlim([0, 3*len(randomscore_results)])
 
-plt.xlim([-0.5, 1.5*len(randomscore_results)-0.5])
+# Draw the central line
+plt.axhline(y=1, color='gray', linestyle='--')
 
+# Change the Y ticks font size
 plt.yticks(fontsize=15)
-plt.xticks(1.5 * np.arange(len(ticks)) + 0.3, ticks, fontsize=15, rotation=15)
 
-plt.xlabel("Execution Type", fontweight='bold', fontsize=20)
-plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
+# Plot the minor and major grid for the Y axis
+plt.minorticks_on()
+plt.grid(b=True, which='major', axis='y', linestyle='-', linewidth=0.5)
+plt.grid(b=True, which='minor', axis='y', linestyle='--', linewidth=0.5)
 
-# log scale
-from matplotlib.ticker import FormatStrFormatter
-plt.tick_params(axis='y', which='minor', labelsize=15)
-ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
-ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+# Add the ticks for X
+ticks = ["No Scoring", "Learned Scoring"]
+final_ticks = []
+final_ticks += ticks
+final_ticks += [""]
+final_ticks += ticks
+final_ticks += [""]
+plt.xticks(np.arange(len(final_ticks)) + 1, final_ticks, fontsize=10, rotation=15, ha="right", rotation_mode="anchor")
+ax1.tick_params(axis='x', which='minor', bottom=False)
+ax1.tick_params(axis='x', length=10, which='major')
+for a in ax1.xaxis.get_majorticklabels():
+    a.set_y(.005)
 
+# Plot the minor and major grid for the X axis
+plt.grid(b=True, which='major', axis='x', linestyle='-', linewidth=0.5)
+plt.grid(b=False, which='minor', axis='x')
+
+# Add the labels
+plt.xlabel("Scoring Model", fontweight='bold', fontsize=20)
+plt.ylabel("Ratio of Max $\mathregular{Dev_{Scoring Model}}$ to Max $\mathregular{Dev_{No Scoring}}$", fontweight='bold', fontsize=15)
+
+topticks = ["Simulation", "Real-World"]
+new_tick_locations = np.array([1.5, 4.5])
+ax2 = ax1.twiny()
+ax2.set_xlim(ax1.get_xlim())
+ax2.set_xticks(new_tick_locations)
+ax2.set_xticklabels(topticks, fontsize=15)
+ax2.tick_params(axis='x', length=0, which='major')
+for a in ax2.xaxis.get_majorticklabels():
+    a.set_y(a.get_position()[1]-.01)
+
+# Turn off the bottom minor labels
+ax1.tick_params(axis='x', which='minor', bottom=False)
+
+# Display graph
 fig1.tight_layout()
-
 plt.show()
-

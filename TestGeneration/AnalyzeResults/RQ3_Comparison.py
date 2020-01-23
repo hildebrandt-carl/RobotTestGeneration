@@ -217,30 +217,43 @@ outdoor_deviation, position_outdoor, position_sim, position_goals, plotting_file
 shift_down = 0.85
 plt_num = -1
 
-print("The worst test was:")
-print(plotting_file_name[plt_num])
-# Stack the drone positions and waypoints for plotting
-d_pos_out1 = np.vstack(position_outdoor[plt_num])
-d_pos_sim1 = np.vstack(position_sim[plt_num])
-w_pos1 = np.vstack(position_goals[plt_num])
+# print("The worst test was:")
+# print(plotting_file_name[plt_num])
+# # Stack the drone positions and waypoints for plotting
+# d_pos_out1 = np.vstack(position_outdoor[plt_num])
+# d_pos_sim1 = np.vstack(position_sim[plt_num])
+# w_pos1 = np.vstack(position_goals[plt_num])
 
-# Create a 3D plot of the trajectory and actual path
-fig = plt.figure()
-ax = Axes3D(fig)
-ax.plot(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
-ax.scatter(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='C0')
-ax.plot3D(d_pos_out1[:, 0], d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
-ax.plot3D(d_pos_sim1[:, 0], d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linewidth=2, label='Simulation')
+# # Create a 3D plot of the trajectory and actual path
+# fig = plt.figure()
+# ax = Axes3D(fig)
+# ax.plot(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
+# ax.scatter(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='C0')
+# ax.plot3D(d_pos_out1[:, 0], d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
+# ax.plot3D(d_pos_sim1[:, 0], d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linewidth=2, label='Simulation')
 
-ax.set_xlim([0, 30])
-ax.set_ylim([0, -30])
-ax.set_zlim([0, 30])
-ax.set_xlabel('X-Axis(m)')
-ax.set_ylabel('Y-Axis(m)')
-ax.set_zlabel('Z-Axis(m)')
-plt.title("Optimal vs. true trajectory")
-ax.legend()
-plt.show()
+# ax.set_xlim([0, 30])
+# ax.set_ylim([0, -30])
+# ax.set_zlim([0, 30])
+# ax.set_xlabel('X-Axis(m)')
+# ax.set_ylabel('Y-Axis(m)')
+# ax.set_zlabel('Z-Axis(m)')
+# plt.title("Optimal vs. true trajectory")
+# ax.legend()
+# plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -258,8 +271,8 @@ plt.show()
 
 fig = plt.figure(figsize=(20,5))
 plt_num = -1
-
-
+labelsize = 13
+headingsize = 15
 
 
 
@@ -273,28 +286,22 @@ d_pos_sim1 = np.vstack(position_sim[plt_num])
 w_pos1 = np.vstack(position_goals[plt_num])
 
 # Create a 3D plot of the trajectory and actual path
-ax.plot(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
-ax.scatter(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='C0')
-ax.plot3D(d_pos_out1[:, 0], d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
-ax.plot3D(d_pos_sim1[:, 0], d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linewidth=2, label='Simulation')
+ax.plot(w_pos1[:, 0], -1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='black', linewidth=2, linestyle=":", label='Ideal Trajectory')
+ax.scatter(w_pos1[:, 0], -1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='black')
+ax.plot3D(d_pos_out1[:, 0], -1*d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
+ax.plot3D(d_pos_sim1[:, 0], -1*d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, linestyle="--", color='C1', linewidth=2, label='Simulation')
 
 ax.set_xlim([0, 30])
-ax.set_ylim([0, -30])
+ax.set_ylim([0, 30])
 ax.set_zlim([0, 30])
-ax.set_xlabel('X-Axis(m)')
-ax.set_ylabel('Y-Axis(m)')
-ax.set_zlabel('Z-Axis(m)')
-plt.title("3D View")
+ax.set_xlabel('X-Axis(m)', fontsize=labelsize)
+ax.set_ylabel('Y-Axis(m)', fontsize=labelsize)
+ax.set_zlabel('Z-Axis(m)', fontsize=labelsize)
+plt.title("3D View", fontsize=headingsize)
 plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
 plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
 
 ax.zaxis._axinfo['juggled'] = (1,2,1)
-
-
-
-
-
-
 
 
 
@@ -309,24 +316,18 @@ d_pos_sim1 = np.vstack(position_sim[plt_num])
 w_pos1 = np.vstack(position_goals[plt_num])
 
 # Create a 3D plot of the trajectory and actual path
-plt.plot(w_pos1[:, 0], -1*w_pos1[:, 1], color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
-plt.scatter(w_pos1[:, 0], -1*w_pos1[:, 1], c='C0')
+plt.plot(w_pos1[:, 0], -1*w_pos1[:, 1], color='black', linewidth=2, linestyle=":", label='Ideal Trajectory')
+plt.scatter(w_pos1[:, 0], -1*w_pos1[:, 1], c='black')
 plt.plot(d_pos_out1[:, 0], -1*d_pos_out1[:, 1], color='C2', linewidth=2, label='Real-World')
-plt.plot(d_pos_sim1[:, 0], -1*d_pos_sim1[:, 1], color='C1', linewidth=2, label='Simulation')
+plt.plot(d_pos_sim1[:, 0], -1*d_pos_sim1[:, 1], color='C1', linewidth=2, linestyle="--", label='Simulation')
 
 plt.xlim([0, 35])
 plt.ylim([0, 35])
-plt.xlabel('X-Axis(m)')
-plt.ylabel('Y-Axis(m)')
-plt.title("Top View")
+plt.xlabel('X-Axis(m)', fontsize=labelsize)
+plt.ylabel('Y-Axis(m)', fontsize=labelsize)
+plt.title("Top View", fontsize=headingsize)
 plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
 plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
-
-
-
-
-
-
 
 
 
@@ -339,21 +340,18 @@ d_pos_sim1 = np.vstack(position_sim[plt_num])
 w_pos1 = np.vstack(position_goals[plt_num])
 
 # Create a 3D plot of the trajectory and actual path
-plt.plot(w_pos1[:, 0], w_pos1[:, 2]-shift_down, color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
-plt.scatter(w_pos1[:, 0], w_pos1[:, 2]-shift_down, c='C0')
+plt.plot(w_pos1[:, 0], w_pos1[:, 2]-shift_down, color='black', linewidth=2, linestyle=":", label='Ideal Trajectory')
+plt.scatter(w_pos1[:, 0], w_pos1[:, 2]-shift_down, c='black')
 plt.plot(d_pos_out1[:, 0], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
-plt.plot(d_pos_sim1[:, 0], d_pos_sim1[:, 2]-shift_down, color='C1', linewidth=2, label='Simulation')
+plt.plot(d_pos_sim1[:, 0], d_pos_sim1[:, 2]-shift_down, color='C1', linestyle="--", linewidth=2, label='Simulation')
 
 plt.xlim([0, 35])
 plt.ylim([0, 35])
-plt.xlabel('X-Axis(m)')
-plt.ylabel('Z-Axis(m)')
-plt.title("Side View")
+plt.xlabel('X-Axis(m)', fontsize=labelsize)
+plt.ylabel('Z-Axis(m)', fontsize=labelsize)
+plt.title("Side View", fontsize=headingsize)
 plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
 plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
-
-
-
 
 
 
@@ -368,26 +366,18 @@ d_pos_sim1 = np.vstack(position_sim[plt_num])
 w_pos1 = np.vstack(position_goals[plt_num])
 
 # Create a 3D plot of the trajectory and actual path
-plt.plot(-1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
-plt.scatter(-1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='C0')
+plt.plot(-1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='black', linewidth=2, linestyle=":", label='Ideal Trajectory')
+plt.scatter(-1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='black')
 plt.plot(-1*d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
-plt.plot(-1*d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linewidth=2, label='Simulation')
+plt.plot(-1*d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linestyle="--", linewidth=2, label='Simulation')
 
 plt.xlim([0, 35])
 plt.ylim([0, 35])
-plt.xlabel('Y-Axis(m)')
-plt.ylabel('Z-Axis(m)')
-plt.title("Side View")
+plt.xlabel('Y-Axis(m)', fontsize=labelsize)
+plt.ylabel('Z-Axis(m)', fontsize=labelsize)
+plt.title("Side View", fontsize=headingsize)
 plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
 plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
-
-
-
-
-
-
-
-
 
 
 

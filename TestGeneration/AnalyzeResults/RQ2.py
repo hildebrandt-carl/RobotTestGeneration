@@ -229,218 +229,101 @@ print("Failed tests: " + str(failed_tests))
 
 
 
-# RQ2) <------ Log Scale
+# # RQ2) <------ Log Scale
 
-# Get the results
+# # Get the results
 
-selectedR2_systems = ["speed-2_minsnap0", "speed-1_minsnap0", "speed2_minsnap0", "speed-1_minsnap1"]
-randomscore_results = []
-edgecore_results = []
-edge90score_results = []
-edge180score_results = []
-learnedscore_results = []
+# selectedR2_systems = ["speed-2_minsnap0", "speed-1_minsnap0", "speed2_minsnap0", "speed-1_minsnap1"]
+# randomscore_results = []
+# edgecore_results = []
+# edge90score_results = []
+# edge180score_results = []
+# learnedscore_results = []
 
-for sys in selectedR2_systems:
-    for item in final_data:
-        if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
-            randomscore_results.append(item['max_deviation'])
+# for sys in selectedR2_systems:
+#     for item in final_data:
+#         if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
+#             randomscore_results.append(item['max_deviation'])
 
-    for item in final_data:
-        if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
-            edgecore_results.append(item['max_deviation'])
+#     for item in final_data:
+#         if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
+#             edgecore_results.append(item['max_deviation'])
 
-    for item in final_data:
-        if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
-            edge90score_results.append(item['max_deviation'])
+#     for item in final_data:
+#         if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
+#             edge90score_results.append(item['max_deviation'])
 
-    for item in final_data:
-        if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
-            edge180score_results.append(item['max_deviation'])
+#     for item in final_data:
+#         if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
+#             edge180score_results.append(item['max_deviation'])
 
-    for item in final_data:
-        if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
-            learnedscore_results.append(item['max_deviation'])
-
-
-
-ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity", "Minimum Snap"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
-
-bp1_pos = positions=4*np.arange(len(randomscore_results))
-bp1 = plt.boxplot(randomscore_results, positions=bp1_pos, showmeans=True)
-annotate_boxplot(bp1, positions=bp1_pos, text="No Scoring")
-
-bp2_pos = positions=4*np.arange(len(edgecore_results))+0.6
-bp2 = plt.boxplot(edgecore_results, positions=bp2_pos, showmeans=True)
-annotate_boxplot(bp2, positions=bp2_pos, text="High Velocity")
-
-bp3_pos = positions=4*np.arange(len(edge90score_results))+1.2
-bp3 = plt.boxplot(edge90score_results, positions=bp3_pos, showmeans=True)
-annotate_boxplot(bp3, positions=bp3_pos, text="High Velocity + 90 Deg")
-
-bp4_pos = positions=4*np.arange(len(edge180score_results))+1.8
-bp4 = plt.boxplot(edge180score_results, positions=bp4_pos, showmeans=True)
-annotate_boxplot(bp4, positions=bp4_pos, text="High Velocity + 180 Deg")
-
-bp5_pos = positions=4*np.arange(len(learnedscore_results))+2.4
-bp5 = plt.boxplot(learnedscore_results, positions=bp5_pos, showmeans=True)
-annotate_boxplot(bp5, positions=bp5_pos, text="Learned Scoring")
-
-ax1.grid()
-ax1.grid(which='minor', linestyle='--', linewidth=0.5)
-
-# add_values(bpl, ax1)
-# add_values(bpr, ax1)
-set_box_color(bp1, 'C0')
-set_box_color(bp2, 'C5')
-set_box_color(bp3, 'C2')
-set_box_color(bp4, 'C6')
-set_box_color(bp5, 'C3')
-
-# plt.plot([], c='C0', linewidth=3, label='No Scoring')
-# plt.plot([], c='C5', linewidth=3, label='High Velocity')
-# plt.plot([], c='C2', linewidth=3, label='High Velocity + 90 Deg')
-# plt.plot([], c='C6', linewidth=3, label='High Velocity + 180 Deg')
-# plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
-# ax1.legend(loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=2, fontsize=18)
-# plt.subplots_adjust(top=0.8)
-
-plt.xlim([-0.5, 4*len(randomscore_results)-1.15])
-
-plt.yticks(fontsize=15)
-plt.xticks(4 * np.arange(len(ticks)) + 1.2, ticks, fontsize=15, rotation=0)
-
-plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
-plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
-plt.minorticks_on()
-# log scale
-plt.yscale('log')
-plt.tick_params(axis='y', which='minor', labelsize=15)
-ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
-ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
-
-plt.minorticks_on()
-plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
-plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
-plt.ylim([0,50])
-plt.show()
+#     for item in final_data:
+#         if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
+#             learnedscore_results.append(item['max_deviation'])
 
 
 
+# ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity", "Minimum Snap"]
+# fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
 
+# bp1_pos = positions=4*np.arange(len(randomscore_results))
+# bp1 = plt.boxplot(randomscore_results, positions=bp1_pos, showmeans=True)
+# annotate_boxplot(bp1, positions=bp1_pos, text="No Scoring")
 
+# bp2_pos = positions=4*np.arange(len(edgecore_results))+0.6
+# bp2 = plt.boxplot(edgecore_results, positions=bp2_pos, showmeans=True)
+# annotate_boxplot(bp2, positions=bp2_pos, text="High Velocity")
 
+# bp3_pos = positions=4*np.arange(len(edge90score_results))+1.2
+# bp3 = plt.boxplot(edge90score_results, positions=bp3_pos, showmeans=True)
+# annotate_boxplot(bp3, positions=bp3_pos, text="High Velocity + 90 Deg")
 
+# bp4_pos = positions=4*np.arange(len(edge180score_results))+1.8
+# bp4 = plt.boxplot(edge180score_results, positions=bp4_pos, showmeans=True)
+# annotate_boxplot(bp4, positions=bp4_pos, text="High Velocity + 180 Deg")
 
+# bp5_pos = positions=4*np.arange(len(learnedscore_results))+2.4
+# bp5 = plt.boxplot(learnedscore_results, positions=bp5_pos, showmeans=True)
+# annotate_boxplot(bp5, positions=bp5_pos, text="Learned Scoring")
 
+# ax1.grid()
+# ax1.grid(which='minor', linestyle='--', linewidth=0.5)
 
+# # add_values(bpl, ax1)
+# # add_values(bpr, ax1)
+# set_box_color(bp1, 'C0')
+# set_box_color(bp2, 'C5')
+# set_box_color(bp3, 'C2')
+# set_box_color(bp4, 'C6')
+# set_box_color(bp5, 'C3')
 
+# # plt.plot([], c='C0', linewidth=3, label='No Scoring')
+# # plt.plot([], c='C5', linewidth=3, label='High Velocity')
+# # plt.plot([], c='C2', linewidth=3, label='High Velocity + 90 Deg')
+# # plt.plot([], c='C6', linewidth=3, label='High Velocity + 180 Deg')
+# # plt.plot([], c='C3', linewidth=3, label='Learned Scoring')
+# # ax1.legend(loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=2, fontsize=18)
+# # plt.subplots_adjust(top=0.8)
 
+# plt.xlim([-0.5, 4*len(randomscore_results)-1.15])
 
+# plt.yticks(fontsize=15)
+# plt.xticks(4 * np.arange(len(ticks)) + 1.2, ticks, fontsize=15, rotation=0)
 
-
-
-
-
-
-# RQ2) <------ Ratio
-
-# Get the results
-
-selectedR2_systems = ["speed-2_minsnap0", "speed-1_minsnap0", "speed2_minsnap0", "speed-1_minsnap1"]
-randomscore_results = []
-edgecore_results = []
-edge90score_results = []
-edge180score_results = []
-learnedscore_results = []
-
-for sys in selectedR2_systems:
-    for item in final_data:
-        if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
-            randomscore_results.append(item['max_deviation'])
-
-    for item in final_data:
-        if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
-            edgecore_results.append(item['max_deviation'])
-
-    for item in final_data:
-        if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
-            edge90score_results.append(item['max_deviation'])
-
-    for item in final_data:
-        if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
-            edge180score_results.append(item['max_deviation'])
-
-    for item in final_data:
-        if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
-            learnedscore_results.append(item['max_deviation'])
-
-
-
-# Get the ratio of each
-for i in range(0,4):
-    mean = np.median(randomscore_results[i])
-    print("Median: " + str(mean))
-
-    randomscore_results[i] = randomscore_results[i] / mean
-    edgecore_results[i] = edgecore_results[i] / mean
-    edge90score_results[i] = edge90score_results[i] / mean
-    edge180score_results[i] = edge180score_results[i] / mean
-    learnedscore_results[i] = learnedscore_results[i] / mean
-    
-ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity", "Minimum Snap"]
-fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
-
-bp1_pos = positions=4*np.arange(len(randomscore_results))
-bp1 = plt.boxplot(randomscore_results, positions=bp1_pos, showmeans=True)
-annotate_boxplot(bp1, positions=bp1_pos, text="No Scoring")
-
-bp2_pos = positions=4*np.arange(len(edgecore_results))+0.6
-bp2 = plt.boxplot(edgecore_results, positions=bp2_pos, showmeans=True)
-annotate_boxplot(bp2, positions=bp2_pos, text="High Velocity")
-
-bp3_pos = positions=4*np.arange(len(edge90score_results))+1.2
-bp3 = plt.boxplot(edge90score_results, positions=bp3_pos, showmeans=True)
-annotate_boxplot(bp3, positions=bp3_pos, text="High Velocity + 90 Deg")
-
-bp4_pos = positions=4*np.arange(len(edge180score_results))+1.8
-bp4 = plt.boxplot(edge180score_results, positions=bp4_pos, showmeans=True)
-annotate_boxplot(bp4, positions=bp4_pos, text="High Velocity + 180 Deg")
-
-bp5_pos = positions=4*np.arange(len(learnedscore_results))+2.4
-bp5 = plt.boxplot(learnedscore_results, positions=bp5_pos, showmeans=True)
-annotate_boxplot(bp5, positions=bp5_pos, text="Learned Scoring")
-
-ax1.grid()
-ax1.grid(which='minor', linestyle='--', linewidth=0.5)
-
-set_box_color(bp1, 'C0')
-set_box_color(bp2, 'C5')
-set_box_color(bp3, 'C2')
-set_box_color(bp4, 'C6')
-set_box_color(bp5, 'C3')
-
-plt.xlim([-0.5, 4*len(randomscore_results)-1.15])
-
-plt.yticks(fontsize=15)
-plt.xticks(4 * np.arange(len(ticks)) + 1.2, ticks, fontsize=15, rotation=0)
-
-plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
-plt.ylabel("Ratio Improvement", fontweight='bold', fontsize=20)
-
-# log scale
+# plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+# plt.ylabel("Maximum Deviation", fontweight='bold', fontsize=20)
+# plt.minorticks_on()
+# # log scale
 # plt.yscale('log')
-plt.tick_params(axis='y', which='minor', labelsize=15)
+# plt.tick_params(axis='y', which='minor', labelsize=15)
 # ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
-ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+# ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
 
-plt.minorticks_on()
-plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
-plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
-fig1.tight_layout()
-plt.show()
-
-
+# plt.minorticks_on()
+# plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+# plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+# plt.ylim([0,50])
+# plt.show()
 
 
 
@@ -460,67 +343,184 @@ plt.show()
 
 
 
+# # RQ2) <------ Ratio
+
+# # Get the results
+
+# selectedR2_systems = ["speed-2_minsnap0", "speed-1_minsnap0", "speed2_minsnap0", "speed-1_minsnap1"]
+# randomscore_results = []
+# edgecore_results = []
+# edge90score_results = []
+# edge180score_results = []
+# learnedscore_results = []
+
+# for sys in selectedR2_systems:
+#     for item in final_data:
+#         if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
+#             randomscore_results.append(item['max_deviation'])
+
+#     for item in final_data:
+#         if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
+#             edgecore_results.append(item['max_deviation'])
+
+#     for item in final_data:
+#         if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
+#             edge90score_results.append(item['max_deviation'])
+
+#     for item in final_data:
+#         if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
+#             edge180score_results.append(item['max_deviation'])
+
+#     for item in final_data:
+#         if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
+#             learnedscore_results.append(item['max_deviation'])
+
+
+
+# # Get the ratio of each
+# for i in range(0,4):
+#     mean = np.median(randomscore_results[i])
+#     print("Median: " + str(mean))
+
+#     randomscore_results[i] = randomscore_results[i] / mean
+#     edgecore_results[i] = edgecore_results[i] / mean
+#     edge90score_results[i] = edge90score_results[i] / mean
+#     edge180score_results[i] = edge180score_results[i] / mean
+#     learnedscore_results[i] = learnedscore_results[i] / mean
+    
+# ticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity", "Minimum Snap"]
+# fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
+
+# bp1_pos = positions=4*np.arange(len(randomscore_results))
+# bp1 = plt.boxplot(randomscore_results, positions=bp1_pos, showmeans=True)
+# annotate_boxplot(bp1, positions=bp1_pos, text="No Scoring")
+
+# bp2_pos = positions=4*np.arange(len(edgecore_results))+0.6
+# bp2 = plt.boxplot(edgecore_results, positions=bp2_pos, showmeans=True)
+# annotate_boxplot(bp2, positions=bp2_pos, text="High Velocity")
+
+# bp3_pos = positions=4*np.arange(len(edge90score_results))+1.2
+# bp3 = plt.boxplot(edge90score_results, positions=bp3_pos, showmeans=True)
+# annotate_boxplot(bp3, positions=bp3_pos, text="High Velocity + 90 Deg")
+
+# bp4_pos = positions=4*np.arange(len(edge180score_results))+1.8
+# bp4 = plt.boxplot(edge180score_results, positions=bp4_pos, showmeans=True)
+# annotate_boxplot(bp4, positions=bp4_pos, text="High Velocity + 180 Deg")
+
+# bp5_pos = positions=4*np.arange(len(learnedscore_results))+2.4
+# bp5 = plt.boxplot(learnedscore_results, positions=bp5_pos, showmeans=True)
+# annotate_boxplot(bp5, positions=bp5_pos, text="Learned Scoring")
+
+# ax1.grid()
+# ax1.grid(which='minor', linestyle='--', linewidth=0.5)
+
+# set_box_color(bp1, 'C0')
+# set_box_color(bp2, 'C5')
+# set_box_color(bp3, 'C2')
+# set_box_color(bp4, 'C6')
+# set_box_color(bp5, 'C3')
+
+# plt.xlim([-0.5, 4*len(randomscore_results)-1.15])
+
+# plt.yticks(fontsize=15)
+# plt.xticks(4 * np.arange(len(ticks)) + 1.2, ticks, fontsize=15, rotation=0)
+
+# plt.xlabel("Controller Type", fontweight='bold', fontsize=20)
+# plt.ylabel("Ratio Improvement", fontweight='bold', fontsize=20)
+
+# # log scale
+# # plt.yscale('log')
+# plt.tick_params(axis='y', which='minor', labelsize=15)
+# # ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+# ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+
+# plt.minorticks_on()
+# plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+# plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+# fig1.tight_layout()
+# plt.show()
 
 
 
 
 
-# RQ2) <------ Seperate Axes
-
-selectedR2_systems = ["speed-2_minsnap0", "speed-1_minsnap0", "speed2_minsnap0", "speed-1_minsnap1"]
-randomscore_results = []
-edgecore_results = []
-edge90score_results = []
-edge180score_results = []
-learnedscore_results = []
-
-for sys in selectedR2_systems:
-    for item in final_data:
-        if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
-            randomscore_results.append(item['max_deviation'])
-
-    for item in final_data:
-        if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
-            edgecore_results.append(item['max_deviation'])
-
-    for item in final_data:
-        if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
-            edge90score_results.append(item['max_deviation'])
-
-    for item in final_data:
-        if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
-            edge180score_results.append(item['max_deviation'])
-
-    for item in final_data:
-        if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
-            learnedscore_results.append(item['max_deviation'])
 
 
-fig2, ax2 = plt.subplots(1, 1, figsize=(10, 5))
-# Get the ratio of each
-for i in range(0,4):
-    mean = np.median(randomscore_results[i])
-    print("Median: " + str(mean))
 
-    randomscore_results[i] = randomscore_results[i] / mean
-    edgecore_results[i] = edgecore_results[i] / mean
-    edge90score_results[i] = edge90score_results[i] / mean
-    edge180score_results[i] = edge180score_results[i] / mean
-    learnedscore_results[i] = learnedscore_results[i] / mean
 
-    plt.subplot(141 + (i))
-    plt.boxplot([randomscore_results[i], edgecore_results[i], edge90score_results[i], edge180score_results[i], learnedscore_results[i]])
-    plt.minorticks_on()
-    plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
-    plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
 
-    plt.xlabel(ticks[i])
-    if i == 0:
-        plt.ylabel("Maximum Deviation")
 
-fig2.tight_layout()
-plt.minorticks_on()
-plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # RQ2) <------ Seperate Axes
+
+# selectedR2_systems = ["speed-2_minsnap0", "speed-1_minsnap0", "speed2_minsnap0", "speed-1_minsnap1"]
+# randomscore_results = []
+# edgecore_results = []
+# edge90score_results = []
+# edge180score_results = []
+# learnedscore_results = []
+
+# for sys in selectedR2_systems:
+#     for item in final_data:
+#         if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
+#             randomscore_results.append(item['max_deviation'])
+
+#     for item in final_data:
+#         if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
+#             edgecore_results.append(item['max_deviation'])
+
+#     for item in final_data:
+#         if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
+#             edge90score_results.append(item['max_deviation'])
+
+#     for item in final_data:
+#         if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
+#             edge180score_results.append(item['max_deviation'])
+
+#     for item in final_data:
+#         if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
+#             learnedscore_results.append(item['max_deviation'])
+
+
+# fig2, ax2 = plt.subplots(1, 1, figsize=(10, 5))
+# # Get the ratio of each
+# for i in range(0,4):
+#     mean = np.median(randomscore_results[i])
+#     print("Median: " + str(mean))
+
+#     randomscore_results[i] = randomscore_results[i] / mean
+#     edgecore_results[i] = edgecore_results[i] / mean
+#     edge90score_results[i] = edge90score_results[i] / mean
+#     edge180score_results[i] = edge180score_results[i] / mean
+#     learnedscore_results[i] = learnedscore_results[i] / mean
+
+#     plt.subplot(141 + (i))
+#     plt.boxplot([randomscore_results[i], edgecore_results[i], edge90score_results[i], edge180score_results[i], learnedscore_results[i]])
+#     plt.minorticks_on()
+#     plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+#     plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+
+#     plt.xlabel(ticks[i])
+#     if i == 0:
+#         plt.ylabel("Maximum Deviation")
+
+# fig2.tight_layout()
+# plt.minorticks_on()
+# plt.show()
 
 
 
@@ -587,7 +587,7 @@ ticks = ["High Velocity", "High Velocity + 90 Deg", "High Velocity + 180 Deg", "
 fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
 
 # Draw the central line
-plt.axhline(y=1, color='gray', linestyle='-')
+plt.axhline(y=1, color='gray', linestyle='--')
 
 # Seperate the plot
 plt.axvline(x=5, color='black', linestyle='-', linewidth=0.5)
@@ -644,7 +644,7 @@ plt.grid(b=True, which='major', axis='x', linestyle='-', linewidth=0.5)
 plt.grid(b=False, which='minor', axis='x')
 
 # Add the labels
-plt.xlabel("Score Model", fontweight='bold', fontsize=20)
+plt.xlabel("Scoring Model", fontweight='bold', fontsize=20)
 plt.ylabel("Ratio of Max $\mathregular{Dev_{Scoring Model}}$ to Max $\mathregular{Dev_{No Scoring}}$", fontweight='bold', fontsize=15)
 
 topticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity", "Minimum Snap"]
@@ -659,7 +659,7 @@ for a in ax2.xaxis.get_majorticklabels():
 
 
 # Colour the boxes
-set_box_color(bp2, 'C0')
+set_box_color(bp2, 'C5')
 set_box_color(bp3, 'C2')
 set_box_color(bp4, 'C6')
 set_box_color(bp5, 'C3')
