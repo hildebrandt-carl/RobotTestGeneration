@@ -633,7 +633,7 @@ final_ticks += ticks
 final_ticks += [""]
 final_ticks += ticks
 final_ticks += [""]
-plt.xticks(np.arange(len(final_ticks)) + 1, final_ticks, fontsize=10, rotation=15, ha="right", rotation_mode="anchor")
+plt.xticks(np.arange(len(final_ticks)) + 1, final_ticks, fontsize=12, rotation=15, ha="right", rotation_mode="anchor")
 ax1.tick_params(axis='x', which='minor', bottom=False)
 ax1.tick_params(axis='x', length=10, which='major')
 for a in ax1.xaxis.get_majorticklabels():

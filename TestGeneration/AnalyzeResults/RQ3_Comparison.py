@@ -291,6 +291,12 @@ ax.scatter(w_pos1[:, 0], -1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='black')
 ax.plot3D(d_pos_out1[:, 0], -1*d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
 ax.plot3D(d_pos_sim1[:, 0], -1*d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, linestyle="--", color='C1', linewidth=2, label='Simulation')
 
+for i in range(len(w_pos1[:, 2])):
+    x = w_pos1[:, 0][i]
+    y = -1*w_pos1[:, 1][i]
+    z = w_pos1[:, 2][i]
+    ax.text(x +1, y -1, z  , i+1, fontsize=12)
+
 ax.set_xlim([0, 30])
 ax.set_ylim([0, 30])
 ax.set_zlim([0, 30])
@@ -321,6 +327,12 @@ plt.scatter(w_pos1[:, 0], -1*w_pos1[:, 1], c='black')
 plt.plot(d_pos_out1[:, 0], -1*d_pos_out1[:, 1], color='C2', linewidth=2, label='Real-World')
 plt.plot(d_pos_sim1[:, 0], -1*d_pos_sim1[:, 1], color='C1', linewidth=2, linestyle="--", label='Simulation')
 
+# Add scatter plot numbers
+for i in range(len(w_pos1[:, 2])):
+    x = w_pos1[:, 0][i]
+    y = -1*w_pos1[:, 1][i]
+    plt.text(x + 1 ,y - 1 , i+1, fontsize=12)
+
 plt.xlim([0, 35])
 plt.ylim([0, 35])
 plt.xlabel('X-Axis(m)', fontsize=labelsize)
@@ -344,6 +356,12 @@ plt.plot(w_pos1[:, 0], w_pos1[:, 2]-shift_down, color='black', linewidth=2, line
 plt.scatter(w_pos1[:, 0], w_pos1[:, 2]-shift_down, c='black')
 plt.plot(d_pos_out1[:, 0], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
 plt.plot(d_pos_sim1[:, 0], d_pos_sim1[:, 2]-shift_down, color='C1', linestyle="--", linewidth=2, label='Simulation')
+
+# Add scatter plot numbers
+for i in range(len(w_pos1[:, 2])):
+    x = w_pos1[:, 0][i]
+    y = w_pos1[:, 2][i]
+    plt.text(x + 1 ,y - 1 , i+1, fontsize=12)
 
 plt.xlim([0, 35])
 plt.ylim([0, 35])
@@ -370,6 +388,12 @@ plt.plot(-1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='black', linewidth=2, l
 plt.scatter(-1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='black')
 plt.plot(-1*d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
 plt.plot(-1*d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linestyle="--", linewidth=2, label='Simulation')
+
+# Add scatter plot numbers
+for i in range(len(w_pos1[:, 2])):
+    x = -1*w_pos1[:, 1][i]
+    y = w_pos1[:, 2][i]
+    plt.text(x + 1 ,y - 1 , i+1, fontsize=12)
 
 plt.xlim([0, 35])
 plt.ylim([0, 35])
