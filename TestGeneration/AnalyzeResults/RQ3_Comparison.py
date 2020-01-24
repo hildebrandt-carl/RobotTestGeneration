@@ -214,7 +214,7 @@ outdoor_deviation, position_outdoor, position_sim, position_goals, plotting_file
 
 
 
-shift_down = 0.85
+shift_down = 1
 plt_num = -1
 
 # print("The worst test was:")
@@ -285,6 +285,21 @@ d_pos_out1 = np.vstack(position_outdoor[plt_num])
 d_pos_sim1 = np.vstack(position_sim[plt_num])
 w_pos1 = np.vstack(position_goals[plt_num])
 
+
+# Find the largest Z value
+max_value_points = max(w_pos1[:,2]-shift_down)
+max_value_simulation = max(d_pos_sim1[:,2])-shift_down
+max_value_outdoor = max(d_pos_out1[:,2])-shift_down
+# max_index = d_pos_sim1[:,2].index(d_pos_sim1[:,2])
+print("The worst test was:")
+print(plotting_file_name[plt_num])
+print("Worst Z in Points: " + str(max_value_points))
+print("Worst Z in Simulation: " + str(max_value_simulation))
+print("Worst Z in Real-Word: " + str(max_value_outdoor))
+
+
+
+
 # Create a 3D plot of the trajectory and actual path
 ax.plot(w_pos1[:, 0], -1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='black', linewidth=2, linestyle=":", label='Ideal Trajectory')
 ax.scatter(w_pos1[:, 0], -1*w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='black')
@@ -314,8 +329,7 @@ ax.zaxis._axinfo['juggled'] = (1,2,1)
 
 # Select the plot
 ax1 = fig.add_subplot(1, 4, 2)
-print("The worst test was:")
-print(plotting_file_name[plt_num])
+
 # Stack the drone positions and waypoints for plotting
 d_pos_out1 = np.vstack(position_outdoor[plt_num])
 d_pos_sim1 = np.vstack(position_sim[plt_num])
@@ -407,3 +421,7 @@ plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
 
 fig.tight_layout()
 plt.show()
+
+
+
+

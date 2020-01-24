@@ -203,7 +203,12 @@ for sys in system_types:
 # Get the ratio of each
 for i in range(0,2):
     mean = np.mean(randomscore_results[i])
-    print("Mean: " + str(mean))
+    print("System: " + str(system_types[i]))
+    print("Mean (random score): " + str(mean))
+    print("Max (random score): " + str(np.max(randomscore_results[i])))
+    print("Mean (learned score): " + str(np.mean(learnedscore_results[i])))
+    print("Max (learned score): " + str(np.max(learnedscore_results[i])))
+    print("")
 
     randomscore_results[i] = randomscore_results[i] / mean
     learnedscore_results[i] = learnedscore_results[i] / mean
@@ -259,7 +264,7 @@ plt.grid(b=False, which='minor', axis='x')
 
 # Add the labels
 plt.xlabel("Scoring Model", fontweight='bold', fontsize=20)
-plt.ylabel("Ratio of Max $\mathregular{Dev_{Scoring Model}}$ to Max $\mathregular{Dev_{No Scoring}}$", fontweight='bold', fontsize=15)
+plt.ylabel("Max $\mathregular{Dev_{Scoring Model}}$ \ Max $\mathregular{Dev_{No Scoring}}$", fontweight='bold', fontsize=15)
 
 topticks = ["Simulation", "Real-World"]
 new_tick_locations = np.array([1.5, 4.5])

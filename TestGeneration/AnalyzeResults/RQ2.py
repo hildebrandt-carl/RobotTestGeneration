@@ -645,7 +645,7 @@ plt.grid(b=False, which='minor', axis='x')
 
 # Add the labels
 plt.xlabel("Scoring Model", fontweight='bold', fontsize=20)
-plt.ylabel("Ratio of Max $\mathregular{Dev_{Scoring Model}}$ to Max $\mathregular{Dev_{No Scoring}}$", fontweight='bold', fontsize=15)
+plt.ylabel("Max $\mathregular{Dev_{Scoring Model}}$ \ Max $\mathregular{Dev_{No Scoring}}$", fontweight='bold', fontsize=15)
 
 topticks = ["Unstable Waypoint", "Stable Waypoint", "Fixed Velocity", "Minimum Snap"]
 new_tick_locations = np.array([2.5, 7.5 , 12.5 ,17.5])
