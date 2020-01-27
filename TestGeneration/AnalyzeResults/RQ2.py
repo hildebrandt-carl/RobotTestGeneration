@@ -573,15 +573,32 @@ for sys in selectedR2_systems:
 
 
 # Get the ratio of each
+best_increase_percentage_handcraft = []
+increase_percentage_learned = []
+
 for i in range(0,4):
     mean = np.mean(randomscore_results[i])
-    print("Mean: " + str(mean))
+    print("Mean Deviation for Random:\t" + str(mean))
 
     randomscore_results[i] = randomscore_results[i] / mean
     edgecore_results[i] = edgecore_results[i] / mean
     edge90score_results[i] = edge90score_results[i] / mean
     edge180score_results[i] = edge180score_results[i] / mean
     learnedscore_results[i] = learnedscore_results[i] / mean
+
+    print("Ratio High Velocity:\t\t" + str(np.mean(edgecore_results[i])))
+    print("Ratio High Velocity + 90:\t" + str(np.mean(edge90score_results[i])))
+    print("Ratio High Velocity + 180:\t" + str(np.mean(edge180score_results[i])))
+    print("Ratio Learned Model:\t\t" + str(np.mean(learnedscore_results[i])))
+    best_increase_percentage_handcraft.append(max(np.mean(edgecore_results[i]), np.mean(edge90score_results[i]), np.mean(edge180score_results[i])) - 1)
+    increase_percentage_learned.append(np.mean(learnedscore_results[i] - 1))
+    print("-------------------------------------------------")
+
+print("Best Handcrafted Increases: " + str(best_increase_percentage_handcraft))
+print("Best Learned Increases: " + str(increase_percentage_learned))
+print("Overall Handcraft Increase: " + str(np.mean(best_increase_percentage_handcraft) * 100))
+print("Overall Learned Increase: " + str(np.mean(increase_percentage_learned) * 100))
+    
     
 ticks = ["High Velocity", "High Velocity + 90 Deg", "High Velocity + 180 Deg", "Learned"]
 fig1, ax1 = plt.subplots(1, 1, figsize=(10, 7))
