@@ -24,15 +24,21 @@ def set_box_color(bp, color):
     plt.setp(bp['caps'], linewidth=2)
     plt.setp(bp['medians'], linewidth=2)
     # plt.setp(bp['fliers'], linewidth=3)
-    # plt.setp(bp['means'], linewidth=3)
+    plt.setp(bp['means'], linewidth=3)
 
 
 def add_values(bp, ax, left=False):
     """ This actually adds the numbers to the various points of the boxplots"""
-    for element in ['whiskers', 'medians', 'caps']:
+    for element in ['means']:
         for line in bp[element]:
             # Get the position of the element. y is the label you want
-            (x_l, y),(x_r, _) = line.get_xydata()
+            x_r, x_l, y = 0, 0, 0
+            if element == "means":
+                a = line.get_xydata()[0]
+                x_r = a[0]
+                y = a[1]
+            else:
+                (x_l, y),(x_r, _) = line.get_xydata()
             # Make sure datapoints exist
             # (I've been working with intervals, should not be problem for this case)
             if not np.isnan(y):
@@ -42,19 +48,16 @@ def add_values(bp, ax, left=False):
                     else:
                         x_line_center = x_l - (x_r - x_l)
                     if element == 'whiskers':
-                        x_line_center = x_r
+                        x_line_center = x_r                   
                 else:
-                    x_line_center = x_r
+                    x_line_center = x_r + 0.25
                 y_line_center = y  # Since it's a line and it's horisontal
                 # overlay the value:  on the line, from center to right
                 ax.text(x_line_center, y_line_center, # Position
-                        '%.3f' % y, # Value (3f = 3 decimal float)
+                        '%.2f' % y, # Value (3f = 3 decimal float)
                         verticalalignment='center', # Centered vertically with line
-                        fontsize=10, backgroundcolor="white")
-
-
-
-
+                        fontsize=12,
+                        fontweight='bold')
 
 # For RQ2
 main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
@@ -614,18 +617,22 @@ plt.axvline(x=15, color='black', linestyle='-', linewidth=0.5)
 # Plot the box plots
 bp2_pos = positions=5*np.arange(len(edgecore_results))+1
 bp2 = plt.boxplot(edgecore_results, positions=bp2_pos, showmeans=True)
+add_values(bp2, ax1)
 # annotate_boxplot(bp2, positions=bp2_pos, text="High Velocity")
 
 bp3_pos = positions=5*np.arange(len(edge90score_results))+2
 bp3 = plt.boxplot(edge90score_results, positions=bp3_pos, showmeans=True)
+add_values(bp3, ax1)
 # annotate_boxplot(bp3, positions=bp3_pos, text="High Velocity + 90 Deg")
 
 bp4_pos = positions=5*np.arange(len(edge180score_results))+3
 bp4 = plt.boxplot(edge180score_results, positions=bp4_pos, showmeans=True)
+add_values(bp4, ax1)
 # annotate_boxplot(bp4, positions=bp4_pos, text="High Velocity + 180 Deg")
 
 bp5_pos = positions=5*np.arange(len(learnedscore_results))+4
 bp5 = plt.boxplot(learnedscore_results, positions=bp5_pos, showmeans=True)
+add_values(bp5, ax1)
 # annotate_boxplot(bp5, positions=bp5_pos, text="Learned Scoring")
 
 

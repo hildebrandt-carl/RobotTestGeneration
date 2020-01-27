@@ -11,7 +11,7 @@ all_files = ["initial_searchtype_random_scoretype_random_dronetype_mit_trajector
             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt",
             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt"]
 
-tick_names = ["No Kinematic", "Approx Kinematic", "Full Kinematic"]
+tick_names = ["No KD", "Approx KD", "Full KD"]
 
 # Used to save the results for each of the files
 explored_trajectories = []
@@ -163,15 +163,15 @@ xp = np.linspace(3, 15, 100)
 
 # randp = np.poly1d(np.polyfit(x, valid_trajectories[0], 5))
 # plt.plot(xp, randp(xp), linestyle="--", color='C0', linewidth=0.75)
-plt.plot(x, valid_trajectories[0], linestyle="--", label="No Kinematic", marker="o", markersize=10)
+plt.plot(x, valid_trajectories[0], linestyle="--", label="No KD", marker="o", markersize=10)
 
 # maxvp = np.poly1d(np.polyfit(x, valid_trajectories[1], 5))
 # plt.plot(xp, maxvp(xp), linestyle="--", color='C1', linewidth=0.75)
-plt.plot(x, valid_trajectories[1], linestyle="--", label="Approx Kinematic", marker="^", markersize=10)
+plt.plot(x, valid_trajectories[1], linestyle="--", label="Approx KD", marker="^", markersize=10)
 
 # kinp = np.poly1d(np.polyfit(x, valid_trajectories[2], 3))
 # plt.plot(xp, kinp(xp), linestyle="--", color='C2', linewidth=0.75)
-plt.plot(x, valid_trajectories[2], linestyle="--", label="Full Kinematic", marker="P", markersize=10)
+plt.plot(x, valid_trajectories[2], linestyle="--", label="Full KD", marker="P", markersize=10)
 
 plt.xlabel("Trajectory Length", fontweight='bold', fontsize=20)
 plt.ylabel("Valid Trajectories", fontweight='bold', fontsize=20)
