@@ -39,7 +39,7 @@
 **/.idea/*
 
 # Ignore the test generation files
-**/TestGeneration/FinalResults/*
+# **/TestGeneration/FinalResults/*
 **/TestGeneration/GenerateTests/Results/*
 **/TestGeneration/Results/*
 

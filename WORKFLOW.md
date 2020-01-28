@@ -15,7 +15,7 @@ $ pip3 install sympy --user
 $ pip3 install sklean --user
 ```
 
-## Generate a base set of tests
+## Generate the initial tests
 
 We start by generating the tests. The point of this is to generate the initial sets of tests. This includes the tests for all the search stratergies namely:
 
@@ -105,8 +105,6 @@ $ ./run_mit_25002.sh "initial_run_flown" "maxvel" "random" "initial" "10" "7200"
 $ ./run_mit_25003.sh "initial_run_flown" "kinematic" "random" "initial" "10" "7200"
 ```
 
-YOU ONLY REALLY NEED THE LAST ONE TBH
-
 The simulators output will be automatically put into the correct folders inside of `RobotTestGeneration/TestGeneration/FinalResults/<your_directory>`.
 
 ## Analyzing Results
@@ -115,105 +113,22 @@ The next thing we need to do is to parse all the resulting data to get the detai
 
 First we want to parse the resulting data to extract high level metrics from it. We do that using the file `processResults.py`. For each of the test sets we need to extract high level information from them individually. To do that we can run the following commands:
 
-
-This one
 ```
 maindir="~/RobotTestGeneration/TestGeneration/FinalResults/<your_directory>
 maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "random" --fileprefix "initial" --trajectorylength "10" --searchtime "7200"
 ```
 
-
-TODO: (NEED TO UPDATE THIS SO I CAN JUST PASS IN COMMANDS)
-You have to run
-```
-$ python3 graphGenerationStatistics.py
-```
-
-Now we want to plot the deviation for RQ1)
-
-python3 graphDeviation.py
-Make sure RQ1 is uncommented
-
-initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_random
-initial_MIT_seed10_length5_nodes250_res4_beamwidth5_totaltime3600_simtime45_searchtype_kinematic_scoretype_random
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-TODO:
-This section needs major cleanup
-
-
-## Generating More Stressfull Tests
-
-Once you have completed that we are ready to learn a scoring function to generate new tests for the robot. This file will learn from the results we just generated which types of trajectories are hardest for the quadrotor. For this section we are only going to be working on the the trajectories generated using the kinematic search approach. First we need to generate models for both the length 5 and length 10 trajectories. We can do this by running the command:
-
-```
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "random --fileprefix "initial" --trajectorylength "5" --saveprefix "len5" --searchtime "3600"
-$ python3 ProcessResults --main_directory ${maindir} --searchtype "kinematic" --scoretype "random --fileprefix "initial" --trajectorylength "10" --saveprefix "len10" --searchtime "3600"
-```
-
-Using these models we are able to restart the test generation process from before however using our handcrafted scoring functions as well as our learnt scoring functions. This can be done by first going back to the test generation folder and then restarted the test generation process. Generating the tests can be slightly cumbersome and so I have created a script for it. You can run the script as follows
-
-To run a script you use
-```
-$ cd ~/RobotTestGeneration/TestGeneration
-$ ./improved_lim_run.sh <modeldirectory> <model_prefix> <trajectorylength>
-```
-
-
- -->
-
-
-
-
 # RQ1
 
-To do this we can run
+To answer RQ1 you can run the following:
 ```
-$ python3 graphGenerationStatistics.py
+$ python3 RQ1_GEN.py
+$ python3 RQ1_METRICS.py
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # RQ2 
-(WE WILL BE MISSING THE LEARNT BUT OH WELL)
-
 
 So for in our case we need to run:
 ```
@@ -228,26 +143,6 @@ Move the handcrafted tests into the results folder (DONT USE THESE COMMANDS YET)
 $ cd ~/Desktop/RobotTestGeneration/TestGeneration/FinalResults
 $ mv ../Results ./handcrafted_run_flown
 ```
-
-<!-- Waypoint controller tests
-```
-$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "handcrafted" "5" "-1"
-$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "handcrafted" "5" "-1"
-$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted" "5" "-1"
-$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "handcrafted" "10" "-1"
-$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "handcrafted" "10" "-1"
-$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted" "10" "-1"
-```
-
-Fixed Velocity Controller Tests
-```
-$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "handcrafted" "5" "-42"
-$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "handcrafted" "5" "-42"
-$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted" "5" "-42"
-$ ./run_mit_25001.sh "handcrafted_run_flown" "kinematic" "edge" "handcrafted" "10" "-42"
-$ ./run_mit_25002.sh "handcrafted_run_flown" "kinematic" "edge90" "handcrafted" "10" "-42"
-$ ./run_mit_25003.sh "handcrafted_run_flown" "kinematic" "edge180" "handcrafted" "10" "-42" 
-```-->
 
 Waypoint controller tests
 ```
@@ -293,26 +188,10 @@ $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic"
 
 You can use the graph deviation file for this:
 
-Plot the deviation (make sure to comment out the right sections)
+Plot the deviation
 ```
-$ python3 graphDeviation.py
+$ python3 RQ2.py
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # RQ3
@@ -378,9 +257,9 @@ $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic"
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_speed-1_minsnap1" --trajectorylength "10" --searchtime "3600"
 ```
 
-Plot the deviation (make sure to comment out the right sections)
+Plot the deviation 
 ```
-$ python3 graphDeviation.py
+$ python3 RQ3_MIT.py
 ```
 
 
@@ -463,12 +342,10 @@ $ maindir="/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalRes
 $ python3 processResults.py --main_directory ${maindir} --searchtype "kinematic" --scoretype "learned" --fileprefix "learned_anafi_sim" --trajectorylength "10" --searchtime "3600" --dronetype "ANAFI"
 ```
 
-
-Plot the deviation (make sure to comment out the right sections)
+Plot the deviation 
 ```
-$ python3 graphDeviation.py
+$ python3 RQ3_Comparison.py
+$ python3 RQ_ANAFI.py
 ```
 
 
-
-Need to go back and rework everything so it works on more than only the first 20 tests

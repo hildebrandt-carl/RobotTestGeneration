@@ -1,0 +1,1585 @@
+Goal switch
+Time between goals: 0.056250018
+Total Time: 0.056250018
+-------------------------------
+Current Drone Position: -3.78425540921e-10, 3.78426044022e-10, 1.49930671333
+Current Goal Position: 0.1, -0.1, 0.1
+Distance to Goal: 1: 1.40643495339
+Elapsed Time: 0.098958365
+-------------------------------
+Current Drone Position: -4.83140281619e-05, 4.83191663989e-05, 1.45333663549
+Current Goal Position: 0.1, -0.1, 0.1
+Distance to Goal: 1: 1.36071282064
+Elapsed Time: 0.198958397
+-------------------------------
+Current Drone Position: -6.42156727394e-05, 6.32862703785e-05, 1.33764100946
+Current Goal Position: 0.1, -0.1, 0.1
+Distance to Goal: 1: 1.24570493168
+Elapsed Time: 0.298958429
+-------------------------------
+Current Drone Position: 0.00113033351969, -0.00114004901665, 1.15922449075
+Current Goal Position: 0.1, -0.1, 0.1
+Distance to Goal: 1: 1.06841238418
+Elapsed Time: 0.398958461
+-------------------------------
+Goal switch
+Time between goals: 0.377083454
+Total Time: 0.433333472
+-------------------------------
+Current Drone Position: 0.00660723389813, -0.00665173420816, 0.930499953932
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 10.5187833813
+Elapsed Time: 0.498958493
+-------------------------------
+Current Drone Position: 0.0344378323404, -0.0349534883943, 0.743830814517
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 10.6622801243
+Elapsed Time: 0.598958525
+-------------------------------
+Current Drone Position: 0.0994225842523, -0.103267374192, 0.626080382129
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 10.7229602727
+Elapsed Time: 0.698958557
+-------------------------------
+Current Drone Position: 0.207464233868, -0.223279162127, 0.564970730805
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 10.7060873642
+Elapsed Time: 0.798958589
+-------------------------------
+Current Drone Position: 0.357998111954, -0.404508166615, 0.552971263987
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 10.6159531156
+Elapsed Time: 0.898958621
+-------------------------------
+Current Drone Position: 0.542532302753, -0.652884346838, 0.584695795649
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 10.458771384
+Elapsed Time: 0.998958653
+-------------------------------
+Current Drone Position: 0.746117496171, -0.970591926453, 0.656315956558
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 10.2425596915
+Elapsed Time: 1.098958685
+-------------------------------
+Current Drone Position: 0.950782754983, -1.35406908383, 0.765642147663
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 9.97679263193
+Elapsed Time: 1.198958717
+-------------------------------
+Current Drone Position: 1.14196485083, -1.79469396897, 0.914556115242
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 9.66852163393
+Elapsed Time: 1.300000416
+-------------------------------
+Current Drone Position: 1.3031513518, -2.26142411149, 1.10250126739
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 9.33320931738
+Elapsed Time: 1.401042115
+-------------------------------
+Current Drone Position: 1.42949535963, -2.73336067577, 1.33173323663
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 8.97612505531
+Elapsed Time: 1.50000048
+-------------------------------
+Current Drone Position: 1.51939232991, -3.18867903214, 1.60030715889
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 8.60387033554
+Elapsed Time: 1.600000512
+-------------------------------
+Current Drone Position: 1.57472331369, -3.61171717596, 1.90535054716
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 8.21985971423
+Elapsed Time: 1.700000544
+-------------------------------
+Current Drone Position: 1.6005915126, -3.99073209517, 2.24431731087
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 7.82474341334
+Elapsed Time: 1.800000576
+-------------------------------
+Current Drone Position: 1.60436086257, -4.31873851233, 2.61538017818
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 7.41678464022
+Elapsed Time: 1.900000608
+-------------------------------
+Current Drone Position: 1.59471309381, -4.59191386174, 3.012301474
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 6.99800092935
+Elapsed Time: 2.00000064
+-------------------------------
+Current Drone Position: 1.57980162364, -4.80755545863, 3.43103567161
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 6.56824250658
+Elapsed Time: 2.100000672
+-------------------------------
+Current Drone Position: 1.56653138446, -4.96411419615, 3.8688873063
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 6.12622055047
+Elapsed Time: 2.200000704
+-------------------------------
+Current Drone Position: 1.56024155177, -5.0620413949, 4.32322387869
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 5.67110125536
+Elapsed Time: 2.300000736
+-------------------------------
+Current Drone Position: 1.56414217153, -5.10538081345, 4.79253432954
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 5.2018859146
+Elapsed Time: 2.400000768
+-------------------------------
+Current Drone Position: 1.57934791488, -5.10224475861, 5.27733789327
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 4.71685186967
+Elapsed Time: 2.5000008
+-------------------------------
+Current Drone Position: 1.60541084873, -5.062668278, 5.78156508564
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 4.2121445565
+Elapsed Time: 2.600000832
+-------------------------------
+Current Drone Position: 1.63988919755, -5.00003456801, 6.30295291091
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 3.69104748889
+Elapsed Time: 2.700000864
+-------------------------------
+Current Drone Position: 1.67983641452, -4.92712786705, 6.84539626161
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 3.15107929356
+Elapsed Time: 2.801042563
+-------------------------------
+Current Drone Position: 1.72017637783, -4.85940716132, 7.39256932763
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 2.60963848269
+Elapsed Time: 2.901042595
+-------------------------------
+Current Drone Position: 1.75666740055, -4.81000252795, 7.94972693959
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 2.06174452125
+Elapsed Time: 3.001042627
+-------------------------------
+Current Drone Position: 1.78423368109, -4.79227297952, 8.51613097346
+Current Goal Position: 1.68472383246, -5.07625644246, 9.99294093889
+Distance to Goal: 2: 1.50715509858
+Elapsed Time: 3.101042659
+-------------------------------
+Goal switch
+Time between goals: 2.76041755
+Total Time: 3.193751022
+-------------------------------
+Current Drone Position: 1.79775098372, -4.8159868641, 9.09082448058
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 12.516417624
+Elapsed Time: 3.202084358
+-------------------------------
+Current Drone Position: 1.79633006929, -4.8742872657, 9.62707943374
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 12.8170255607
+Elapsed Time: 3.30208439
+-------------------------------
+Current Drone Position: 1.79094476662, -4.93975687825, 10.0638876444
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 13.0619061989
+Elapsed Time: 3.402084422
+-------------------------------
+Current Drone Position: 1.78413755437, -5.01347355216, 10.4085717213
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 13.2480802177
+Elapsed Time: 3.502084454
+-------------------------------
+Current Drone Position: 1.7793496642, -5.09917722528, 10.6722005566
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 13.3754178942
+Elapsed Time: 3.602084486
+-------------------------------
+Current Drone Position: 1.78139942646, -5.19998485862, 10.8624282523
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 13.4432350318
+Elapsed Time: 3.702084518
+-------------------------------
+Current Drone Position: 1.79499530076, -5.3182344108, 10.9839317037
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 13.4503277674
+Elapsed Time: 3.80208455
+-------------------------------
+Current Drone Position: 1.82451207369, -5.45607536682, 11.0400102795
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 13.3953447599
+Elapsed Time: 3.902084582
+-------------------------------
+Current Drone Position: 1.87331242802, -5.61497912528, 11.0327211506
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 13.2771371063
+Elapsed Time: 4.002084614
+-------------------------------
+Current Drone Position: 1.94397758651, -5.79610153159, 10.9642723952
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 13.0953447171
+Elapsed Time: 4.102084646
+-------------------------------
+Current Drone Position: 2.03968924665, -6.0028663036, 10.8362470187
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 12.8478103581
+Elapsed Time: 4.203126345
+-------------------------------
+Current Drone Position: 2.15951523425, -6.23169736949, 10.6548191227
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 12.5413595566
+Elapsed Time: 4.303126377
+-------------------------------
+Current Drone Position: 2.30459891421, -6.48573990497, 10.4241309771
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 12.1767901994
+Elapsed Time: 4.403126409
+-------------------------------
+Current Drone Position: 2.47281959341, -6.76529168292, 10.1493462651
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 11.7583761071
+Elapsed Time: 4.503126441
+-------------------------------
+Current Drone Position: 2.66064252576, -7.07051199951, 9.83617161773
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 11.2913126256
+Elapsed Time: 4.603126473
+-------------------------------
+Current Drone Position: 2.8629587399, -7.40024932594, 9.48901385806
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 10.7810073413
+Elapsed Time: 4.703126505
+-------------------------------
+Current Drone Position: 3.07531626104, -7.75405914493, 9.11277637788
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 10.2326419084
+Elapsed Time: 4.803126537
+-------------------------------
+Current Drone Position: 3.29307040791, -8.13021415535, 8.7105066017
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 9.65076481684
+Elapsed Time: 4.903126569
+-------------------------------
+Current Drone Position: 3.51227853133, -8.52648944585, 8.28391401156
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 9.03897385886
+Elapsed Time: 5.003126601
+-------------------------------
+Current Drone Position: 3.73105499333, -8.94507670814, 7.83876744359
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 8.40093099294
+Elapsed Time: 5.103126633
+-------------------------------
+Current Drone Position: 3.9454389889, -9.38564085231, 7.37956522633
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 7.74133072599
+Elapsed Time: 5.203126665
+-------------------------------
+Current Drone Position: 4.15244309834, -9.84784252234, 6.90068623873
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 7.05675967562
+Elapsed Time: 5.304168364
+-------------------------------
+Current Drone Position: 4.34467258042, -10.3212721551, 6.41632950848
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 6.3660567213
+Elapsed Time: 5.404168396
+-------------------------------
+Current Drone Position: 4.52170009104, -10.8078912448, 5.92406755635
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 5.66666210023
+Elapsed Time: 5.504168428
+-------------------------------
+Current Drone Position: 4.68249475734, -11.3004241925, 5.42031449052
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 4.96053364584
+Elapsed Time: 5.60416846
+-------------------------------
+Current Drone Position: 4.82683259283, -11.7979732092, 4.90792125778
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 4.25153077707
+Elapsed Time: 5.704168492
+-------------------------------
+Current Drone Position: 4.95475748404, -12.2930647301, 4.38289512578
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 3.54180161772
+Elapsed Time: 5.804168524
+-------------------------------
+Current Drone Position: 5.06459753463, -12.7877510403, 3.85332076722
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 2.84088706502
+Elapsed Time: 5.904168556
+-------------------------------
+Current Drone Position: 5.15681007441, -13.2750634075, 3.31919676134
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 2.15991875624
+Elapsed Time: 6.004168588
+-------------------------------
+Current Drone Position: 5.23152239686, -13.7486940369, 2.7856990292
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 1.52637275627
+Elapsed Time: 6.10416862
+-------------------------------
+Current Drone Position: 5.29054415353, -14.1986738992, 2.24988924603
+Current Goal Position: 5.23074563341, -13.9699564321, 1.2754486724
+Distance to Goal: 3: 1.00270732236
+Elapsed Time: 6.204168652
+-------------------------------
+Goal switch
+Time between goals: 3.014584298
+Total Time: 6.20833532
+-------------------------------
+Current Drone Position: 5.32780396691, -14.6158382553, 1.73924943349
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 7.19105335417
+Elapsed Time: 6.304168684
+-------------------------------
+Current Drone Position: 5.33001909119, -14.9921049469, 1.31415512977
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 7.16618726493
+Elapsed Time: 6.404168716
+-------------------------------
+Current Drone Position: 5.30891248563, -15.3412339495, 0.975362711006
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 7.16729842674
+Elapsed Time: 6.504168748
+-------------------------------
+Current Drone Position: 5.28435814295, -15.6902542079, 0.712432816049
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 7.15868240603
+Elapsed Time: 6.605210447
+-------------------------------
+Current Drone Position: 5.27601804987, -16.0523002583, 0.519158522845
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 7.11722122714
+Elapsed Time: 6.705210479
+-------------------------------
+Current Drone Position: 5.2985946697, -16.4407238318, 0.380581211489
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 7.0334191316
+Elapsed Time: 6.805210511
+-------------------------------
+Current Drone Position: 5.36483162788, -16.8601067099, 0.290513278749
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 6.901391291
+Elapsed Time: 6.90625221
+-------------------------------
+Current Drone Position: 5.48146904046, -17.2907317524, 0.247290413687
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 6.72539180217
+Elapsed Time: 7.006252242
+-------------------------------
+Current Drone Position: 5.65607010987, -17.7235862006, 0.247512610399
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 6.505217809
+Elapsed Time: 7.107293941
+-------------------------------
+Current Drone Position: 5.88709887307, -18.1288445194, 0.287321707199
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 6.24997390891
+Elapsed Time: 7.207293973
+-------------------------------
+Current Drone Position: 6.17601527457, -18.4948326124, 0.361045958277
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 5.96148433011
+Elapsed Time: 7.307294005
+-------------------------------
+Current Drone Position: 6.52979974318, -18.8161739231, 0.465971015475
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 5.63540967141
+Elapsed Time: 7.409377371
+-------------------------------
+Current Drone Position: 6.93694590099, -19.0732880021, 0.59436019445
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 5.28451966641
+Elapsed Time: 7.51041907
+-------------------------------
+Current Drone Position: 7.39302145573, -19.2622268622, 0.740939597022
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 4.91519564948
+Elapsed Time: 7.610419102
+-------------------------------
+Current Drone Position: 7.89511353528, -19.3823039024, 0.905691811905
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 4.53223647012
+Elapsed Time: 7.711460801
+-------------------------------
+Current Drone Position: 8.4336377509, -19.4318480387, 1.09494687035
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 4.1422697298
+Elapsed Time: 7.811460833
+-------------------------------
+Current Drone Position: 8.97325904144, -19.4120128674, 1.31229641654
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 3.76535325059
+Elapsed Time: 7.911460865
+-------------------------------
+Current Drone Position: 9.49838640172, -19.3319025487, 1.569097676
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 3.4043243241
+Elapsed Time: 8.012502564
+-------------------------------
+Current Drone Position: 9.97638177828, -19.2100105154, 1.86112493953
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 3.07635227684
+Elapsed Time: 8.112502596
+-------------------------------
+Current Drone Position: 10.3995084138, -19.0669040898, 2.18827012595
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 2.78392736377
+Elapsed Time: 8.212502628
+-------------------------------
+Current Drone Position: 10.7608710251, -18.9258377199, 2.54701343508
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 2.52844312313
+Elapsed Time: 8.31250266
+-------------------------------
+Current Drone Position: 11.0614569799, -18.8061051033, 2.93324668427
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 2.30899545732
+Elapsed Time: 8.413544359
+-------------------------------
+Current Drone Position: 11.297304733, -18.7231390163, 3.32606621255
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 2.13273149847
+Elapsed Time: 8.513544391
+-------------------------------
+Current Drone Position: 11.4756320057, -18.6818218485, 3.71687613931
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.99714802063
+Elapsed Time: 8.613544423
+-------------------------------
+Current Drone Position: 11.6011882728, -18.683283725, 4.09412053187
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.89975548956
+Elapsed Time: 8.713544455
+-------------------------------
+Current Drone Position: 11.6792309248, -18.7255999668, 4.4471326952
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.8356945301
+Elapsed Time: 8.813544487
+-------------------------------
+Current Drone Position: 11.7140795929, -18.8061447359, 4.76839082105
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.7963113255
+Elapsed Time: 8.913544519
+-------------------------------
+Current Drone Position: 11.7108496836, -18.9189444441, 5.04966834487
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.77380417554
+Elapsed Time: 9.013544551
+-------------------------------
+Current Drone Position: 11.6712182271, -19.0570705234, 5.28937818108
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.75756410257
+Elapsed Time: 9.113544583
+-------------------------------
+Current Drone Position: 11.5972608749, -19.2107583359, 5.48553330476
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.73982044877
+Elapsed Time: 9.214586282
+-------------------------------
+Current Drone Position: 11.4913291093, -19.3651384777, 5.63396419218
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.71227790088
+Elapsed Time: 9.314586314
+-------------------------------
+Current Drone Position: 11.3551914622, -19.5114499317, 5.73396207526
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.6669859919
+Elapsed Time: 9.414586346
+-------------------------------
+Current Drone Position: 11.1895855641, -19.6421211514, 5.78485271607
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.59649488898
+Elapsed Time: 9.514586378
+-------------------------------
+Current Drone Position: 10.9951004076, -19.7515831531, 5.78614426641
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.49563064267
+Elapsed Time: 9.61458641
+-------------------------------
+Current Drone Position: 10.7722249053, -19.8357530076, 5.73789414452
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.36288768886
+Elapsed Time: 9.714586442
+-------------------------------
+Current Drone Position: 10.5236207758, -19.8906747277, 5.64294774408
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.20448985326
+Elapsed Time: 9.814586474
+-------------------------------
+Current Drone Position: 10.240431439, -19.914292987, 5.50074144869
+Current Goal Position: 9.95024709628, -19.1023042766, 4.93548010375
+Distance to Goal: 4: 1.03104461916
+Elapsed Time: 9.914586506
+-------------------------------
+Goal switch
+Time between goals: 3.726042859
+Total Time: 9.934378179
+-------------------------------
+Current Drone Position: 9.91997603471, -19.8888204659, 5.34203027495
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.3270757312
+Elapsed Time: 10.014586538
+-------------------------------
+Current Drone Position: 9.55171244243, -19.7898326425, 5.22403665373
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.38417621823
+Elapsed Time: 10.11458657
+-------------------------------
+Current Drone Position: 9.16643981248, -19.6444713694, 5.15355870562
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.47176034453
+Elapsed Time: 10.214586602
+-------------------------------
+Current Drone Position: 8.78519799779, -19.4831679234, 5.13564453372
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.56732936267
+Elapsed Time: 10.314586634
+-------------------------------
+Current Drone Position: 8.42324049992, -19.3325376251, 5.16640737379
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.65132720548
+Elapsed Time: 10.414586666
+-------------------------------
+Current Drone Position: 8.09065512453, -19.2115044449, 5.23794625204
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.70939522539
+Elapsed Time: 10.514586698
+-------------------------------
+Current Drone Position: 7.79343292662, -19.131809216, 5.34097064007
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.7322436882
+Elapsed Time: 10.61458673
+-------------------------------
+Current Drone Position: 7.53495901051, -19.1001256661, 5.46735489548
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.7136989068
+Elapsed Time: 10.714586762
+-------------------------------
+Current Drone Position: 7.3172876812, -19.1201708131, 5.6111462252
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.64906612574
+Elapsed Time: 10.814586794
+-------------------------------
+Current Drone Position: 7.14167939781, -19.1937698619, 5.76756580689
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.53507176309
+Elapsed Time: 10.914586826
+-------------------------------
+Current Drone Position: 7.00676217503, -19.3249936264, 5.9364761297
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.36519377544
+Elapsed Time: 11.015628525
+-------------------------------
+Current Drone Position: 6.91829740091, -19.5111281445, 6.11039510013
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 6.14140283723
+Elapsed Time: 11.117711891
+-------------------------------
+Current Drone Position: 6.87467439689, -19.7490221348, 6.28489691691
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 5.86618559836
+Elapsed Time: 11.217711923
+-------------------------------
+Current Drone Position: 6.87505203353, -20.0395934511, 6.46014066597
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 5.5368830384
+Elapsed Time: 11.317711955
+-------------------------------
+Current Drone Position: 6.91976289236, -20.3850208077, 6.63589809433
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 5.15027162755
+Elapsed Time: 11.418753654
+-------------------------------
+Current Drone Position: 7.00801187568, -20.7800179198, 6.80786685386
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 4.71229412885
+Elapsed Time: 11.519795353
+-------------------------------
+Current Drone Position: 7.13776802154, -21.2181415352, 6.97414412462
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 4.23000938168
+Elapsed Time: 11.619795385
+-------------------------------
+Current Drone Position: 7.30722609437, -21.70042948, 7.13570466366
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 3.70410569133
+Elapsed Time: 11.719795417
+-------------------------------
+Current Drone Position: 7.51302610281, -22.2305538654, 7.296389261
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 3.134437561
+Elapsed Time: 11.820837116
+-------------------------------
+Current Drone Position: 7.74351520029, -22.8020382649, 7.4589930062
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 2.53584320433
+Elapsed Time: 11.921878815
+-------------------------------
+Current Drone Position: 7.9845847259, -23.4138453538, 7.63002636911
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 1.92553494892
+Elapsed Time: 12.022920514
+-------------------------------
+Current Drone Position: 8.21814366804, -24.0617488001, 7.81560099526
+Current Goal Position: 8.21437019601, -24.8044836177, 8.94189857942
+Distance to Goal: 5: 1.34915362226
+Elapsed Time: 12.123962213
+-------------------------------
+Goal switch
+Time between goals: 2.27083406
+Total Time: 12.205212239
+-------------------------------
+Current Drone Position: 8.42052549452, -24.7276451743, 8.02865820765
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 10.5205072244
+Elapsed Time: 12.223962245
+-------------------------------
+Current Drone Position: 8.58154878061, -25.3850201496, 8.26627856671
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 10.5842267661
+Elapsed Time: 12.323962277
+-------------------------------
+Current Drone Position: 8.69478788378, -26.0038850664, 8.523590856
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 10.6392108327
+Elapsed Time: 12.423962309
+-------------------------------
+Current Drone Position: 8.75703915698, -26.5729178264, 8.800325405
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 10.6729885669
+Elapsed Time: 12.525004008
+-------------------------------
+Current Drone Position: 8.76596678181, -27.0714244493, 9.08394819889
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 10.6767451258
+Elapsed Time: 12.62500404
+-------------------------------
+Current Drone Position: 8.72122556311, -27.5062800936, 9.37526239257
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 10.6432354928
+Elapsed Time: 12.726045739
+-------------------------------
+Current Drone Position: 8.62411877969, -27.868593936, 9.66311635288
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 10.5687862304
+Elapsed Time: 12.826045771
+-------------------------------
+Current Drone Position: 8.47396838589, -28.1637735941, 9.94858652111
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 10.4477882666
+Elapsed Time: 12.926045803
+-------------------------------
+Current Drone Position: 8.27203386454, -28.3941504326, 10.2274720307
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 10.2792735488
+Elapsed Time: 13.026045835
+-------------------------------
+Current Drone Position: 8.01830312684, -28.5605469097, 10.4987832437
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 10.0599455174
+Elapsed Time: 13.126045867
+-------------------------------
+Current Drone Position: 7.71292445691, -28.6632591803, 10.7621313145
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 9.7869897473
+Elapsed Time: 13.226045899
+-------------------------------
+Current Drone Position: 7.35867223457, -28.7043985481, 11.0138861718
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 9.46284584452
+Elapsed Time: 13.326045931
+-------------------------------
+Current Drone Position: 6.95711233081, -28.6844796446, 11.2533241692
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 9.08756839056
+Elapsed Time: 13.426045963
+-------------------------------
+Current Drone Position: 6.51056734569, -28.6043232186, 11.4796445751
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 8.66275181791
+Elapsed Time: 13.526045995
+-------------------------------
+Current Drone Position: 6.02328600864, -28.4650020505, 11.6932321874
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 8.19156740358
+Elapsed Time: 13.626046027
+-------------------------------
+Current Drone Position: 5.5041314373, -28.268423617, 11.8962708997
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 7.68014406489
+Elapsed Time: 13.726046059
+-------------------------------
+Current Drone Position: 4.96693353769, -28.0163401747, 12.0945267622
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 7.13544592223
+Elapsed Time: 13.826046091
+-------------------------------
+Current Drone Position: 4.42734821801, -27.7106989963, 12.2938068978
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 6.56469679603
+Elapsed Time: 13.926046123
+-------------------------------
+Current Drone Position: 3.90459592488, -27.3572548216, 12.4961796062
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 5.97998980989
+Elapsed Time: 14.026046155
+-------------------------------
+Current Drone Position: 3.39560703266, -26.947299624, 12.7085655677
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 5.37013533023
+Elapsed Time: 14.126046187
+-------------------------------
+Current Drone Position: 2.92911675291, -26.4965018905, 12.9235015733
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.76134731144
+Elapsed Time: 14.226046219
+-------------------------------
+Current Drone Position: 2.5111481669, -26.0013267978, 13.1460181647
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.14902626628
+Elapsed Time: 14.326046251
+-------------------------------
+Current Drone Position: 2.15045673216, -25.4643034775, 13.3748912278
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 3.53828274011
+Elapsed Time: 14.426046283
+-------------------------------
+Current Drone Position: 1.85511699632, -24.8860154383, 13.6113983951
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 2.93367072659
+Elapsed Time: 14.526046315
+-------------------------------
+Current Drone Position: 1.62840824463, -24.271778743, 13.8548542783
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 2.35171036968
+Elapsed Time: 14.626046347
+-------------------------------
+Current Drone Position: 1.47296576895, -23.6340912784, 14.1111930118
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 1.82675034234
+Elapsed Time: 14.726046379
+-------------------------------
+Current Drone Position: 1.39115242192, -22.9936644784, 14.3944212742
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 1.42446463656
+Elapsed Time: 14.826046411
+-------------------------------
+Current Drone Position: 1.38081728833, -22.3788383268, 14.7115522003
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 1.25627514616
+Elapsed Time: 14.926046443
+-------------------------------
+Current Drone Position: 1.42981367532, -21.8109668242, 15.0462960917
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 1.38850368873
+Elapsed Time: 15.026046475
+-------------------------------
+Current Drone Position: 1.51793247104, -21.2967847701, 15.371925375
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 1.72410488039
+Elapsed Time: 15.126046507
+-------------------------------
+Current Drone Position: 1.62676864582, -20.835190153, 15.6773557116
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 2.1340057664
+Elapsed Time: 15.226046539
+-------------------------------
+Current Drone Position: 1.73866318489, -20.4215860343, 15.9561000097
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 2.55303034383
+Elapsed Time: 15.326046571
+-------------------------------
+Current Drone Position: 1.83874260662, -20.0523485474, 16.2090488922
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 2.95231232643
+Elapsed Time: 15.426046603
+-------------------------------
+Current Drone Position: 1.91628934984, -19.7232074121, 16.4330325101
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 3.31963362287
+Elapsed Time: 15.526046635
+-------------------------------
+Current Drone Position: 1.96313206895, -19.432191709, 16.6295818544
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 3.64837308636
+Elapsed Time: 15.626046667
+-------------------------------
+Current Drone Position: 1.97608931186, -19.1762957505, 16.7947779933
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 3.93610684192
+Elapsed Time: 15.726046699
+-------------------------------
+Current Drone Position: 1.95358209602, -18.9546145166, 16.928703637
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.1815628822
+Elapsed Time: 15.826046731
+-------------------------------
+Current Drone Position: 1.89556740647, -18.7661255801, 17.0351264041
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.38636031822
+Elapsed Time: 15.92708843
+-------------------------------
+Current Drone Position: 1.80805872611, -18.6155934497, 17.1139818601
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.5470391051
+Elapsed Time: 16.027088462
+-------------------------------
+Current Drone Position: 1.69790525789, -18.5027305221, 17.1702617116
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.66667037939
+Elapsed Time: 16.127088494
+-------------------------------
+Current Drone Position: 1.57413282557, -18.4293273218, 17.2069512557
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.74562761714
+Elapsed Time: 16.227088526
+-------------------------------
+Current Drone Position: 1.44714694246, -18.3965989345, 17.2252477715
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.78364901274
+Elapsed Time: 16.327088558
+-------------------------------
+Current Drone Position: 1.32793582787, -18.4057134059, 17.2256261862
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.7793982161
+Elapsed Time: 16.42708859
+-------------------------------
+Current Drone Position: 1.22619468408, -18.4576622062, 17.2073916161
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.73056447995
+Elapsed Time: 16.527088622
+-------------------------------
+Current Drone Position: 1.14974333448, -18.5534555685, 17.1694188621
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.63425543501
+Elapsed Time: 16.627088654
+-------------------------------
+Current Drone Position: 1.10493430278, -18.69234228, 17.1114336192
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.48941598314
+Elapsed Time: 16.727088686
+-------------------------------
+Current Drone Position: 1.09452390299, -18.8824381587, 17.0301357096
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.28616706789
+Elapsed Time: 16.828130385
+-------------------------------
+Current Drone Position: 1.12022956307, -19.1155614531, 16.9305460459
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 4.03307649925
+Elapsed Time: 16.929172084
+-------------------------------
+Current Drone Position: 1.17876096922, -19.3950908608, 16.8128414383
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 3.72742639045
+Elapsed Time: 17.028130449
+-------------------------------
+Current Drone Position: 1.26499160929, -19.7210005966, 16.6801253918
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 3.37134492866
+Elapsed Time: 17.128130481
+-------------------------------
+Current Drone Position: 1.3713470466, -20.0928679538, 16.5362368964
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 2.96821259492
+Elapsed Time: 17.228130513
+-------------------------------
+Current Drone Position: 1.48815364707, -20.5091886108, 16.3842747274
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 2.52268937198
+Elapsed Time: 17.328130545
+-------------------------------
+Current Drone Position: 1.60425266195, -20.9687665048, 16.2281775902
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 2.03953508142
+Elapsed Time: 17.428130577
+-------------------------------
+Current Drone Position: 1.70680711183, -21.4688180035, 16.0697506654
+Current Goal Position: 1.56141707525, -22.9641678688, 15.8083658978
+Distance to Goal: 6: 1.52496933711
+Elapsed Time: 17.528130609
+-------------------------------
+Goal switch
+Time between goals: 5.421876735
+Total Time: 17.627088974
+-------------------------------
+Current Drone Position: 1.78256075139, -22.0064016266, 15.9101060211
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 12.7930155958
+Elapsed Time: 17.629172308
+-------------------------------
+Current Drone Position: 1.81293938523, -22.5913948226, 15.7671518397
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 13.3399122218
+Elapsed Time: 17.72917234
+-------------------------------
+Current Drone Position: 1.78884762693, -23.2254746035, 15.6621470406
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 13.9197910589
+Elapsed Time: 17.828130705
+-------------------------------
+Current Drone Position: 1.73062616475, -23.8838396255, 15.6035597875
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 14.5061458272
+Elapsed Time: 17.928130737
+-------------------------------
+Current Drone Position: 1.66526868581, -24.5470788092, 15.5969132532
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 15.0777124575
+Elapsed Time: 18.029172436
+-------------------------------
+Current Drone Position: 1.61796326487, -25.179282097, 15.6389057628
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 15.603561883
+Elapsed Time: 18.129172468
+-------------------------------
+Current Drone Position: 1.60451173183, -25.7839340048, 15.7223153059
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 16.0887363353
+Elapsed Time: 18.231255834
+-------------------------------
+Current Drone Position: 1.63533365131, -26.3272063415, 15.8344222173
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 16.5086855714
+Elapsed Time: 18.331255866
+-------------------------------
+Current Drone Position: 1.71262857129, -26.817319557, 15.9690217337
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 16.8728642303
+Elapsed Time: 18.431255898
+-------------------------------
+Current Drone Position: 1.83345141303, -27.2521263814, 16.1222441485
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.1814762983
+Elapsed Time: 18.53125593
+-------------------------------
+Current Drone Position: 1.98905039143, -27.6311291909, 16.2917610094
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.4362417742
+Elapsed Time: 18.631255962
+-------------------------------
+Current Drone Position: 2.16732604331, -27.9543829934, 16.4773140035
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.6387271192
+Elapsed Time: 18.731255994
+-------------------------------
+Current Drone Position: 2.35539543618, -28.2220548492, 16.6793226201
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.7900876223
+Elapsed Time: 18.831256026
+-------------------------------
+Current Drone Position: 2.54107645856, -28.4355378536, 16.8946295067
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.8934370044
+Elapsed Time: 18.931256058
+-------------------------------
+Current Drone Position: 2.71393869519, -28.5956133674, 17.1211778414
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.9502858511
+Elapsed Time: 19.03125609
+-------------------------------
+Current Drone Position: 2.8662804293, -28.7038493929, 17.3541298506
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.9632756038
+Elapsed Time: 19.131256122
+-------------------------------
+Current Drone Position: 2.99278561105, -28.7602144813, 17.5918135827
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.9321011145
+Elapsed Time: 19.231256154
+-------------------------------
+Current Drone Position: 3.09191868825, -28.7639355848, 17.8337356371
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.8551765934
+Elapsed Time: 19.331256186
+-------------------------------
+Current Drone Position: 3.16606377801, -28.7147643642, 18.0783414101
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.7316842364
+Elapsed Time: 19.431256218
+-------------------------------
+Current Drone Position: 3.21990548336, -28.6133491009, 18.3226872402
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.5621051842
+Elapsed Time: 19.53125625
+-------------------------------
+Current Drone Position: 3.25858969067, -28.4597354122, 18.5654392602
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.3459710508
+Elapsed Time: 19.631256282
+-------------------------------
+Current Drone Position: 3.28755717233, -28.2544328134, 18.8050462877
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 17.0834016417
+Elapsed Time: 19.731256314
+-------------------------------
+Current Drone Position: 3.31196092109, -27.9982974331, 19.039902098
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 16.7749309713
+Elapsed Time: 19.831256346
+-------------------------------
+Current Drone Position: 3.33608718712, -27.692212862, 19.2688112225
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 16.4210846118
+Elapsed Time: 19.931256378
+-------------------------------
+Current Drone Position: 3.36307686609, -27.3374092824, 19.4904583492
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 16.0228299808
+Elapsed Time: 20.03125641
+-------------------------------
+Current Drone Position: 3.39476555722, -26.9359189459, 19.7026116804
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 15.5822019656
+Elapsed Time: 20.131256442
+-------------------------------
+Current Drone Position: 3.43161422458, -26.4893259751, 19.9040749648
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 15.1006338443
+Elapsed Time: 20.231256474
+-------------------------------
+Current Drone Position: 3.47306577416, -25.9989076541, 20.0944974499
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 14.5791535314
+Elapsed Time: 20.331256506
+-------------------------------
+Current Drone Position: 3.51846029451, -25.4603640699, 20.2753437934
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 14.0130129646
+Elapsed Time: 20.432298205
+-------------------------------
+Current Drone Position: 3.56536655574, -24.8875295376, 20.4411703549
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 13.4167524726
+Elapsed Time: 20.532298237
+-------------------------------
+Current Drone Position: 3.61237976781, -24.2774873616, 20.5927543903
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 12.7872351919
+Elapsed Time: 20.632298269
+-------------------------------
+Current Drone Position: 3.65776944781, -23.6312720318, 20.730885196
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 12.1252682566
+Elapsed Time: 20.732298301
+-------------------------------
+Current Drone Position: 3.70036901854, -22.9508092405, 20.855402435
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 11.432793727
+Elapsed Time: 20.832298333
+-------------------------------
+Current Drone Position: 3.73942909137, -22.2379924081, 20.9662849616
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 10.7117893196
+Elapsed Time: 20.932298365
+-------------------------------
+Current Drone Position: 3.77435886914, -21.496413405, 21.0634255433
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 9.96605175632
+Elapsed Time: 21.032298397
+-------------------------------
+Current Drone Position: 3.80443943643, -20.7294162474, 21.1491414801
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 9.19878424604
+Elapsed Time: 21.132298429
+-------------------------------
+Current Drone Position: 3.82941311663, -19.9316930279, 21.2264668747
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 8.40477383347
+Elapsed Time: 21.233340128
+-------------------------------
+Current Drone Position: 3.84872967831, -19.1206061207, 21.2960146949
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 7.6016383997
+Elapsed Time: 21.33334016
+-------------------------------
+Current Drone Position: 3.86323828517, -18.2903116114, 21.359776033
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 6.78445289196
+Elapsed Time: 21.433340192
+-------------------------------
+Current Drone Position: 3.87389979518, -17.4534873303, 21.4182627906
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 5.96711914081
+Elapsed Time: 21.533340224
+-------------------------------
+Current Drone Position: 3.88219383235, -16.5916522296, 21.4781280413
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 5.13286504873
+Elapsed Time: 21.633340256
+-------------------------------
+Current Drone Position: 3.88920597428, -15.7262829486, 21.5509446714
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 4.30200760564
+Elapsed Time: 21.734381955
+-------------------------------
+Current Drone Position: 3.89671304088, -14.8745517683, 21.6379745957
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 3.49497082359
+Elapsed Time: 21.834381987
+-------------------------------
+Current Drone Position: 3.90678222871, -14.0246581684, 21.7520730813
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 2.70448811181
+Elapsed Time: 21.935423686
+-------------------------------
+Current Drone Position: 3.92163492965, -13.1990219149, 21.8964745156
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 1.96692540757
+Elapsed Time: 22.035423718
+-------------------------------
+Current Drone Position: 3.94443973577, -12.392665205, 22.078838229
+Current Goal Position: 4.05487022327, -11.776969054, 23.2488093767
+Distance to Goal: 7: 1.3266910452
+Elapsed Time: 22.13542375
+-------------------------------
+Goal switch
+Time between goals: 4.585418134
+Total Time: 22.212507108
+-------------------------------
+Current Drone Position: 3.97874631602, -11.6164348989, 22.3149202931
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 13.3638333747
+Elapsed Time: 22.235423782
+-------------------------------
+Current Drone Position: 4.02048774692, -10.8915424089, 22.5479678513
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 13.3956894194
+Elapsed Time: 22.335423814
+-------------------------------
+Current Drone Position: 4.0660795671, -10.2232133182, 22.7241789134
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 13.4333550952
+Elapsed Time: 22.435423846
+-------------------------------
+Current Drone Position: 4.11919230558, -9.610007148, 22.8480173856
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 13.4662276963
+Elapsed Time: 22.535423878
+-------------------------------
+Current Drone Position: 4.18425906256, -9.05067475256, 22.9244376557
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 13.4853535555
+Elapsed Time: 22.63542391
+-------------------------------
+Current Drone Position: 4.26519035178, -8.54373390947, 22.9564897108
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 13.4826083613
+Elapsed Time: 22.735423942
+-------------------------------
+Current Drone Position: 4.36513283282, -8.08766755559, 22.9463650152
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 13.4512763199
+Elapsed Time: 22.835423974
+-------------------------------
+Current Drone Position: 4.48661699332, -7.68129450413, 22.8960846406
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 13.3860881866
+Elapsed Time: 22.935424006
+-------------------------------
+Current Drone Position: 4.63147536659, -7.32371842345, 22.8073158675
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 13.2829192593
+Elapsed Time: 23.035424038
+-------------------------------
+Current Drone Position: 4.80310894375, -7.01173305688, 22.6804999151
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 13.1369082443
+Elapsed Time: 23.136465737
+-------------------------------
+Current Drone Position: 4.99890407114, -6.75180619791, 22.5199273069
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 12.9486207864
+Elapsed Time: 23.236465769
+-------------------------------
+Current Drone Position: 5.22121729374, -6.54108710403, 22.3265399784
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 12.7149997808
+Elapsed Time: 23.336465801
+-------------------------------
+Current Drone Position: 5.46995142394, -6.37986523907, 22.10174275
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 12.4348213479
+Elapsed Time: 23.436465833
+-------------------------------
+Current Drone Position: 5.74557773937, -6.26959455764, 21.8485960005
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 12.1074142575
+Elapsed Time: 23.536465865
+-------------------------------
+Current Drone Position: 6.05027308811, -6.20970915331, 21.5651942883
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 11.7285384119
+Elapsed Time: 23.637507564
+-------------------------------
+Current Drone Position: 6.38144447058, -6.20312795544, 21.2578482137
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 11.3016886459
+Elapsed Time: 23.738549263
+-------------------------------
+Current Drone Position: 6.73363251501, -6.24828126842, 20.9315222458
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 10.8330452432
+Elapsed Time: 23.838549295
+-------------------------------
+Current Drone Position: 7.10928037565, -6.34492344577, 20.5861357741
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 10.3198368703
+Elapsed Time: 23.938549327
+-------------------------------
+Current Drone Position: 7.50650586815, -6.49159087001, 20.2233205678
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 9.76413552751
+Elapsed Time: 24.038549359
+-------------------------------
+Current Drone Position: 7.92347337105, -6.68666255926, 19.8448993654
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 9.16846673044
+Elapsed Time: 24.138549391
+-------------------------------
+Current Drone Position: 8.3629462952, -6.93075571221, 19.4485419783
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 8.52913950135
+Elapsed Time: 24.23959109
+-------------------------------
+Current Drone Position: 8.81454352742, -7.21507720902, 19.0451090235
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 7.86356468528
+Elapsed Time: 24.339591122
+-------------------------------
+Current Drone Position: 9.28235039152, -7.53568934073, 18.6346162502
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 7.17100582147
+Elapsed Time: 24.439591154
+-------------------------------
+Current Drone Position: 9.77010801526, -7.88636303398, 18.2152270571
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 6.45105141914
+Elapsed Time: 24.540632853
+-------------------------------
+Current Drone Position: 10.2675756382, -8.25037050432, 17.798936755
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 5.72547532083
+Elapsed Time: 24.640632885
+-------------------------------
+Current Drone Position: 10.7801962049, -8.62113126216, 17.3854964618
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 4.99425234555
+Elapsed Time: 24.740632917
+-------------------------------
+Current Drone Position: 11.3060720982, -8.98749974425, 16.9750821076
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 4.26453112719
+Elapsed Time: 24.840632949
+-------------------------------
+Current Drone Position: 11.8448729247, -9.34070103078, 16.5694008482
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 3.54325240996
+Elapsed Time: 24.940632981
+-------------------------------
+Current Drone Position: 12.3955802499, -9.67216167061, 16.1690149282
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 2.83880474347
+Elapsed Time: 25.040633013
+-------------------------------
+Current Drone Position: 12.9538924429, -9.9748824222, 15.7696262403
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 2.16321871792
+Elapsed Time: 25.140633045
+-------------------------------
+Current Drone Position: 13.5181750463, -10.2442371021, 15.370024906
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 1.54399507735
+Elapsed Time: 25.240633077
+-------------------------------
+Current Drone Position: 14.0896889432, -10.4798669813, 14.9646467208
+Current Goal Position: 14.4663826081, -9.80862562548, 14.2320153015
+Distance to Goal: 8: 1.06264381214
+Elapsed Time: 25.341674776
+-------------------------------
+Goal switch
+Time between goals: 3.153126009
+Total Time: 25.365633117
+-------------------------------
+Current Drone Position: 14.6489538572, -10.6755123994, 14.5666678243
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 9.43731317129
+Elapsed Time: 25.441674808
+-------------------------------
+Current Drone Position: 15.1824654577, -10.8394624567, 14.155878432
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 9.00583101035
+Elapsed Time: 25.54167484
+-------------------------------
+Current Drone Position: 15.6867723189, -10.9730762745, 13.7339549351
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 8.59854594016
+Elapsed Time: 25.642716539
+-------------------------------
+Current Drone Position: 16.1458418691, -11.0802787568, 13.3091858261
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 8.21931314056
+Elapsed Time: 25.742716571
+-------------------------------
+Current Drone Position: 16.5667898161, -11.1722383014, 12.8694831918
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 7.85217708964
+Elapsed Time: 25.84375827
+-------------------------------
+Current Drone Position: 16.9389316929, -11.2541743, 12.4265296569
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 7.50244359645
+Elapsed Time: 25.943758302
+-------------------------------
+Current Drone Position: 17.2723068354, -11.334864831, 11.9671721866
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 7.15535582158
+Elapsed Time: 26.045841668
+-------------------------------
+Current Drone Position: 17.5529453087, -11.4149385147, 11.5111824564
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 6.82173526819
+Elapsed Time: 26.1458417
+-------------------------------
+Current Drone Position: 17.7909256787, -11.4986691307, 11.0436619294
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 6.48678504005
+Elapsed Time: 26.246883399
+-------------------------------
+Current Drone Position: 17.98324602, -11.5843756008, 10.5712957373
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 6.15255509041
+Elapsed Time: 26.346883431
+-------------------------------
+Current Drone Position: 18.1296661703, -11.6730940463, 10.0961102158
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 5.81742036085
+Elapsed Time: 26.446883463
+-------------------------------
+Current Drone Position: 18.2305346033, -11.7628617253, 9.61846393711
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 5.47898720633
+Elapsed Time: 26.546883495
+-------------------------------
+Current Drone Position: 18.2861400909, -11.8508921741, 9.13886933127
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 5.13530674569
+Elapsed Time: 26.646883527
+-------------------------------
+Current Drone Position: 18.2962705779, -11.9342733913, 8.65860105705
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 4.78495291088
+Elapsed Time: 26.746883559
+-------------------------------
+Current Drone Position: 18.2579048969, -12.0115478311, 8.17140399292
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 4.41955160918
+Elapsed Time: 26.848966925
+-------------------------------
+Current Drone Position: 18.1728073323, -12.076151141, 7.69755719436
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 4.05213591836
+Elapsed Time: 26.948966957
+-------------------------------
+Current Drone Position: 18.0395359904, -12.1261681207, 7.22954919085
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 3.6741339022
+Elapsed Time: 27.048966989
+-------------------------------
+Current Drone Position: 17.8559418534, -12.1579362781, 6.77121748587
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 3.28430104128
+Elapsed Time: 27.148967021
+-------------------------------
+Current Drone Position: 17.6207057496, -12.1685811372, 6.32511705976
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 2.88179985877
+Elapsed Time: 27.248967053
+-------------------------------
+Current Drone Position: 17.3336942012, -12.1565611454, 5.89229746399
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 2.46833661271
+Elapsed Time: 27.348967085
+-------------------------------
+Current Drone Position: 16.9912728456, -12.1203924249, 5.47866859727
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 2.04804174437
+Elapsed Time: 27.448967117
+-------------------------------
+Current Drone Position: 16.5889082285, -12.0600438131, 5.0912512929
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 1.6324546059
+Elapsed Time: 27.548967149
+-------------------------------
+Current Drone Position: 16.1196502563, -11.9781877462, 4.73995694411
+Current Goal Position: 14.9640195992, -11.9777595772, 5.22494604729
+Distance to Goal: 9: 1.25327444286
+Elapsed Time: 27.648967181
+-------------------------------
+Goal switch
+Time between goals: 2.382292429
+Total Time: 27.747925546
+-------------------------------
+Current Drone Position: 15.571645593, -11.883085543, 4.44030617961
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.0249293874
+Elapsed Time: 27.748967213
+-------------------------------
+Current Drone Position: 14.9329615455, -11.7937734235, 4.2147945147
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.2518905244
+Elapsed Time: 27.848967245
+-------------------------------
+Current Drone Position: 14.233239531, -11.7333511226, 4.07103013699
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.4324668717
+Elapsed Time: 27.948967277
+-------------------------------
+Current Drone Position: 13.5101069548, -11.7178421242, 4.00592537844
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.56987547
+Elapsed Time: 28.050008976
+-------------------------------
+Current Drone Position: 12.8117787863, -11.7572127115, 4.01622253271
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.6596461751
+Elapsed Time: 28.150009008
+-------------------------------
+Current Drone Position: 12.1536812568, -11.8553043761, 4.09112120847
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.7044554527
+Elapsed Time: 28.25000904
+-------------------------------
+Current Drone Position: 11.5495662407, -12.0129449098, 4.21945191132
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.7067590875
+Elapsed Time: 28.350009072
+-------------------------------
+Current Drone Position: 11.0065032031, -12.2264890782, 4.39214735205
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.6690581154
+Elapsed Time: 28.450009104
+-------------------------------
+Current Drone Position: 10.5274928946, -12.4861333814, 4.60521596007
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.591996395
+Elapsed Time: 28.550009136
+-------------------------------
+Current Drone Position: 10.1132862619, -12.7773727516, 4.85734955218
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.4757745338
+Elapsed Time: 28.650009168
+-------------------------------
+Current Drone Position: 9.76232690709, -13.0814373924, 5.14433958332
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.3246697151
+Elapsed Time: 28.7500092
+-------------------------------
+Current Drone Position: 9.47316197194, -13.3777548443, 5.46481272918
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 11.1399018947
+Elapsed Time: 28.850009232
+-------------------------------
+Current Drone Position: 9.24324614058, -13.649587903, 5.81375024667
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 10.9247888932
+Elapsed Time: 28.950009264
+-------------------------------
+Current Drone Position: 9.06994905536, -13.8849124336, 6.18531423644
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 10.6821163445
+Elapsed Time: 29.050009296
+-------------------------------
+Current Drone Position: 8.95186224621, -14.0770219555, 6.57648593963
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 10.4109292517
+Elapsed Time: 29.150009328
+-------------------------------
+Current Drone Position: 8.88680882153, -14.2257989546, 6.98156846558
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 10.112652368
+Elapsed Time: 29.25000936
+-------------------------------
+Current Drone Position: 8.87423083001, -14.3339013129, 7.39888528188
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 9.78497216874
+Elapsed Time: 29.350009392
+-------------------------------
+Current Drone Position: 8.91359568296, -14.4077483451, 7.82674273274
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 9.42606489239
+Elapsed Time: 29.450009424
+-------------------------------
+Current Drone Position: 9.0040581672, -14.455812692, 8.26288872725
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 9.03527125159
+Elapsed Time: 29.550009456
+-------------------------------
+Current Drone Position: 9.14514305449, -14.486905299, 8.70614776114
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 8.61134089612
+Elapsed Time: 29.650009488
+-------------------------------
+Current Drone Position: 9.33715427949, -14.5097798936, 9.15728984391
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 8.15140474858
+Elapsed Time: 29.75000952
+-------------------------------
+Current Drone Position: 9.57600508881, -14.5323574814, 9.60797576142
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 7.66239751718
+Elapsed Time: 29.850009552
+-------------------------------
+Current Drone Position: 9.86156894434, -14.5606504294, 10.0582885688
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 7.14261952144
+Elapsed Time: 29.950009584
+-------------------------------
+Current Drone Position: 10.1931373637, -14.5987480041, 10.5073486198
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 6.59172572181
+Elapsed Time: 30.050009616
+-------------------------------
+Current Drone Position: 10.5666741186, -14.647959489, 10.9479996414
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 6.01639574811
+Elapsed Time: 30.150009648
+-------------------------------
+Current Drone Position: 10.9821024884, -14.7081605049, 11.380627916
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 5.41558168497
+Elapsed Time: 30.25000968
+-------------------------------
+Current Drone Position: 11.4390065084, -14.7777014823, 11.8052571585
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 4.78920380665
+Elapsed Time: 30.351051379
+-------------------------------
+Current Drone Position: 11.9358587014, -14.8533753584, 12.2201187153
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 4.13983099176
+Elapsed Time: 30.450009744
+-------------------------------
+Current Drone Position: 12.471682635, -14.9308046821, 12.624480655
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 3.46990905475
+Elapsed Time: 30.550009776
+-------------------------------
+Current Drone Position: 13.0467287659, -15.0048249837, 13.0200250831
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 2.78129330821
+Elapsed Time: 30.650009808
+-------------------------------
+Current Drone Position: 13.6603445334, -15.0699744987, 13.4099959382
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 2.08030913958
+Elapsed Time: 30.75000984
+-------------------------------
+Current Drone Position: 14.3094572971, -15.1197546301, 13.7980673743
+Current Goal Position: 15.0, -15.0, 15.0
+Distance to Goal: 10: 1.3913419539
+Elapsed Time: 30.850009872
+-------------------------------
+Final Reached
+Goal switch
+Time between goals: 3.16666768
+Total Time: 30.914593226
+-------------------------------
