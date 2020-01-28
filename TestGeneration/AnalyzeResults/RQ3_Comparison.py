@@ -310,7 +310,7 @@ for i in range(len(w_pos1[:, 2])):
     x = w_pos1[:, 0][i]
     y = -1*w_pos1[:, 1][i]
     z = w_pos1[:, 2][i]
-    ax.text(x +1, y -1, z  , i+1, fontsize=12)
+    ax.text(x +1, y -1, z  , i+1, fontsize=13, fontweight='bold')
 
 ax.set_xlim([0, 30])
 ax.set_ylim([0, 30])
@@ -345,7 +345,7 @@ plt.plot(d_pos_sim1[:, 0], -1*d_pos_sim1[:, 1], color='C1', linewidth=2, linesty
 for i in range(len(w_pos1[:, 2])):
     x = w_pos1[:, 0][i]
     y = -1*w_pos1[:, 1][i]
-    plt.text(x + 1 ,y - 1 , i+1, fontsize=12)
+    plt.text(x + 1 ,y - 1 , i+1, fontsize=13, fontweight='bold')
 
 plt.xlim([0, 35])
 plt.ylim([0, 35])
@@ -375,7 +375,7 @@ plt.plot(d_pos_sim1[:, 0], d_pos_sim1[:, 2]-shift_down, color='C1', linestyle="-
 for i in range(len(w_pos1[:, 2])):
     x = w_pos1[:, 0][i]
     y = w_pos1[:, 2][i]
-    plt.text(x + 1 ,y - 1 , i+1, fontsize=12)
+    plt.text(x + 1 ,y - 1 , i+1, fontsize=13, fontweight='bold')
 
 plt.xlim([0, 35])
 plt.ylim([0, 35])
@@ -407,7 +407,7 @@ plt.plot(-1*d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linestyle
 for i in range(len(w_pos1[:, 2])):
     x = -1*w_pos1[:, 1][i]
     y = w_pos1[:, 2][i]
-    plt.text(x + 1 ,y - 1 , i+1, fontsize=12)
+    plt.text(x + 1 ,y - 1 , i+1, fontsize=13, fontweight='bold')
 
 plt.xlim([0, 35])
 plt.ylim([0, 35])

@@ -15,15 +15,21 @@ def set_box_color(bp, color):
     plt.setp(bp['caps'], linewidth=2)
     plt.setp(bp['medians'], linewidth=2)
     # plt.setp(bp['fliers'], linewidth=3)
-    # plt.setp(bp['means'], linewidth=3)
+    plt.setp(bp['means'], linewidth=3)
 
 
 def add_values(bp, ax, left=False):
     """ This actually adds the numbers to the various points of the boxplots"""
-    for element in ['whiskers', 'medians', 'caps']:
+    for element in ['means']:
         for line in bp[element]:
             # Get the position of the element. y is the label you want
-            (x_l, y),(x_r, _) = line.get_xydata()
+            x_r, x_l, y = 0, 0, 0
+            if element == "means":
+                a = line.get_xydata()[0]
+                x_r = a[0]
+                y = a[1]
+            else:
+                (x_l, y),(x_r, _) = line.get_xydata()
             # Make sure datapoints exist
             # (I've been working with intervals, should not be problem for this case)
             if not np.isnan(y):
@@ -33,15 +39,16 @@ def add_values(bp, ax, left=False):
                     else:
                         x_line_center = x_l - (x_r - x_l)
                     if element == 'whiskers':
-                        x_line_center = x_r
+                        x_line_center = x_r                   
                 else:
-                    x_line_center = x_r
+                    x_line_center = x_r + 0.25
                 y_line_center = y  # Since it's a line and it's horisontal
                 # overlay the value:  on the line, from center to right
                 ax.text(x_line_center, y_line_center, # Position
-                        '%.3f' % y, # Value (3f = 3 decimal float)
+                        '%.2f' % y, # Value (3f = 3 decimal float)
                         verticalalignment='center', # Centered vertically with line
-                        fontsize=10, backgroundcolor="white")
+                        fontsize=12,
+                        fontweight='bold')
 
 
 
@@ -221,10 +228,12 @@ plt.axvline(x=3, color='black', linestyle='-', linewidth=0.5)
 
 bp1_pos = positions=3*np.arange(len(randomscore_results))+1
 bp1 = plt.boxplot(randomscore_results, positions=bp1_pos, showmeans=True)
+add_values(bp1, ax1)
 # annotate_boxplot(bp1, positions=bp1_pos, text="No Scoring")
 
 bp2_pos = positions=3*np.arange(len(learnedscore_results))+2
 bp2 = plt.boxplot(learnedscore_results, positions=bp2_pos, showmeans=True)
+add_values(bp2, ax1)
 # annotate_boxplot(bp2, positions=bp2_pos, text="Learned Scoring")
 
 # Add colors

@@ -583,12 +583,6 @@ for i in range(0,4):
     mean = np.mean(randomscore_results[i])
     print("Mean Deviation for Random:\t" + str(mean))
 
-    randomscore_results[i] = randomscore_results[i] / mean
-    edgecore_results[i] = edgecore_results[i] / mean
-    edge90score_results[i] = edge90score_results[i] / mean
-    edge180score_results[i] = edge180score_results[i] / mean
-    learnedscore_results[i] = learnedscore_results[i] / mean
-
     print("Ratio High Velocity:\t\t" + str(np.mean(edgecore_results[i])))
     print("Ratio High Velocity + 90:\t" + str(np.mean(edge90score_results[i])))
     print("Ratio High Velocity + 180:\t" + str(np.mean(edge180score_results[i])))
