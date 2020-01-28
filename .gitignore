@@ -48,4 +48,4 @@
 
 # Ignore the model files used for generation
 **/Models/*
-**/FinalModels/*
+# **/FinalModels/*
