@@ -21,7 +21,7 @@ A detailed description of how to replicate the results is presented in [workflow
 
 The data can be viewed in two ways. Either the you can view the final results or you can view the raw data.
 
-* [Final Results](./AnafiSimulation/) - Contains the figures used in the paper (and some that werent).
+* [Final Results](./RobotTestGenerationFinalResults/) - Contains the figures used in the paper (and some that werent).
 * [Raw Data](./TestGeneration/FinalResults/) - Contains the raw results.
 * [Raw Models](./TestGeneration/FinalModels/) - Contains the raw learned scoring models that were used saved as numpy files.
 
