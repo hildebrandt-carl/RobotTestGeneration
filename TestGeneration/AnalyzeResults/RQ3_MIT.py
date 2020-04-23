@@ -49,7 +49,7 @@ def add_values(bp, ax, left=False):
 
 
 # # For RQ3
-main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
+main_folder = "../FinalResults/"
 
 # # # For the RQ3 length 10
 all_folders = ["initial_run_flown/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime7200_simtime90_searchtype_kinematic_scoretype_random/",

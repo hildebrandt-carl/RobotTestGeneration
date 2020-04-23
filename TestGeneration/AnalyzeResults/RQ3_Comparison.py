@@ -10,7 +10,7 @@ from processResultsUtils import get_numbers_from_string
 from processResultsUtils import lineseg_dist
 
 # # For RQ3
-main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
+main_folder = "../FinalResults/"
 
 # For outdoor outdoor
 # # # For the RQ3 length 10
@@ -216,53 +216,6 @@ outdoor_deviation, position_outdoor, position_sim, position_goals, plotting_file
 
 shift_down = 1
 plt_num = -1
-
-# print("The worst test was:")
-# print(plotting_file_name[plt_num])
-# # Stack the drone positions and waypoints for plotting
-# d_pos_out1 = np.vstack(position_outdoor[plt_num])
-# d_pos_sim1 = np.vstack(position_sim[plt_num])
-# w_pos1 = np.vstack(position_goals[plt_num])
-
-# # Create a 3D plot of the trajectory and actual path
-# fig = plt.figure()
-# ax = Axes3D(fig)
-# ax.plot(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, color='C0', linewidth=2, linestyle=":", label='Ideal Trajectory')
-# ax.scatter(w_pos1[:, 0], w_pos1[:, 1], w_pos1[:, 2]-shift_down, c='C0')
-# ax.plot3D(d_pos_out1[:, 0], d_pos_out1[:, 1], d_pos_out1[:, 2]-shift_down, color='C2', linewidth=2, label='Real-World')
-# ax.plot3D(d_pos_sim1[:, 0], d_pos_sim1[:, 1], d_pos_sim1[:, 2]-shift_down, color='C1', linewidth=2, label='Simulation')
-
-# ax.set_xlim([0, 30])
-# ax.set_ylim([0, -30])
-# ax.set_zlim([0, 30])
-# ax.set_xlabel('X-Axis(m)')
-# ax.set_ylabel('Y-Axis(m)')
-# ax.set_zlabel('Z-Axis(m)')
-# plt.title("Optimal vs. true trajectory")
-# ax.legend()
-# plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
