@@ -12,7 +12,7 @@ $ pip3 install numpy --user
 $ pip3 install matplotlib --user
 $ pip3 install scipy --user
 $ pip3 install sympy --user
-$ pip3 install sklean --user
+$ pip3 install sklearn --user
 ```
 
 ## Generate the initial tests

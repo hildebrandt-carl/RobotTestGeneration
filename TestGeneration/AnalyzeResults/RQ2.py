@@ -468,62 +468,62 @@ print("Failed tests: " + str(failed_tests))
 
 
 
-# # RQ2) <------ Seperate Axes
+# RQ2) <------ Seperate Axes
 
-# selectedR2_systems = ["speed-2_minsnap0", "speed-1_minsnap0", "speed2_minsnap0", "speed-1_minsnap1"]
-# randomscore_results = []
-# edgecore_results = []
-# edge90score_results = []
-# edge180score_results = []
-# learnedscore_results = []
+selectedR2_systems = ["speed-2_minsnap0", "speed-1_minsnap0", "speed2_minsnap0", "speed-1_minsnap1"]
+randomscore_results = []
+edgecore_results = []
+edge90score_results = []
+edge180score_results = []
+learnedscore_results = []
 
-# for sys in selectedR2_systems:
-#     for item in final_data:
-#         if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
-#             randomscore_results.append(item['max_deviation'])
+for sys in selectedR2_systems:
+    for item in final_data:
+        if "scoretype_random/" in item['test_set'] and sys == item['system_type']:
+            randomscore_results.append(item['max_deviation'])
 
-#     for item in final_data:
-#         if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
-#             edgecore_results.append(item['max_deviation'])
+    for item in final_data:
+        if "scoretype_edge/" in item['test_set'] and sys == item['system_type']:
+            edgecore_results.append(item['max_deviation'])
 
-#     for item in final_data:
-#         if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
-#             edge90score_results.append(item['max_deviation'])
+    for item in final_data:
+        if "scoretype_edge90/" in item['test_set'] and sys == item['system_type']:
+            edge90score_results.append(item['max_deviation'])
 
-#     for item in final_data:
-#         if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
-#             edge180score_results.append(item['max_deviation'])
+    for item in final_data:
+        if "scoretype_edge180/" in item['test_set'] and sys == item['system_type']:
+            edge180score_results.append(item['max_deviation'])
 
-#     for item in final_data:
-#         if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
-#             learnedscore_results.append(item['max_deviation'])
+    for item in final_data:
+        if "scoretype_learned/" in item['test_set'] and sys == item['system_type'] and sys in item['test_set']:
+            learnedscore_results.append(item['max_deviation'])
 
 
-# fig2, ax2 = plt.subplots(1, 1, figsize=(10, 5))
-# # Get the ratio of each
-# for i in range(0,4):
-#     mean = np.median(randomscore_results[i])
-#     print("Median: " + str(mean))
+fig2, ax2 = plt.subplots(1, 1, figsize=(10, 5))
+# Get the ratio of each
+for i in range(0,4):
+    mean = np.median(randomscore_results[i])
+    print("Median: " + str(mean))
 
-#     randomscore_results[i] = randomscore_results[i] / mean
-#     edgecore_results[i] = edgecore_results[i] / mean
-#     edge90score_results[i] = edge90score_results[i] / mean
-#     edge180score_results[i] = edge180score_results[i] / mean
-#     learnedscore_results[i] = learnedscore_results[i] / mean
+    randomscore_results[i] = randomscore_results[i] / mean
+    edgecore_results[i] = edgecore_results[i] / mean
+    edge90score_results[i] = edge90score_results[i] / mean
+    edge180score_results[i] = edge180score_results[i] / mean
+    learnedscore_results[i] = learnedscore_results[i] / mean
 
-#     plt.subplot(141 + (i))
-#     plt.boxplot([randomscore_results[i], edgecore_results[i], edge90score_results[i], edge180score_results[i], learnedscore_results[i]])
-#     plt.minorticks_on()
-#     plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
-#     plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
+    plt.subplot(141 + (i))
+    plt.boxplot([randomscore_results[i], edgecore_results[i], edge90score_results[i], edge180score_results[i], learnedscore_results[i]])
+    plt.minorticks_on()
+    plt.grid(b=True, which='major', linestyle='-', linewidth=0.5)
+    plt.grid(b=True, which='minor', linestyle='--', linewidth=0.5)
 
-#     plt.xlabel(ticks[i])
-#     if i == 0:
-#         plt.ylabel("Maximum Deviation")
+    plt.xlabel(ticks[i])
+    if i == 0:
+        plt.ylabel("Maximum Deviation")
 
-# fig2.tight_layout()
-# plt.minorticks_on()
-# plt.show()
+fig2.tight_layout()
+plt.minorticks_on()
+plt.show()
 
 
 
