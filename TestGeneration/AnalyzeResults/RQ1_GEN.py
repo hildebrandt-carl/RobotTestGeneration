@@ -94,12 +94,12 @@ all_files = [["initial_searchtype_random_scoretype_random_dronetype_mit_trajecto
             "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_13_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_117.txt",
             "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_14_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_126.txt",
             "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_15_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_135.txt",
-            "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_20_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_180.txt",
+            # "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_20_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_180.txt",
             "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_25_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_225.txt",
-            "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_30_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_270.txt",
-            "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_35_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_315.txt",
-            "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_40_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_360.txt",
-            "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_45_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_405.txt",
+            # "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_30_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_270.txt",
+            # "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_35_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_315.txt",
+            # "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_40_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_360.txt",
+            # "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_45_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_405.txt",
             "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_50_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_450.txt"],
             ["initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_3_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_27.txt",
             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_4_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_36.txt",
@@ -114,12 +114,12 @@ all_files = [["initial_searchtype_random_scoretype_random_dronetype_mit_trajecto
             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_13_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_117.txt",
             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_14_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_126.txt",
             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_15_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_135.txt",
-            "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_20_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_180.txt",
+            # "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_20_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_180.txt",
             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_25_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_225.txt",
-            "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_30_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_270.txt",
-            "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_35_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_315.txt",
-            "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_40_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_360.txt",
-            "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_45_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_405.txt",
+            # "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_30_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_270.txt",
+            # "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_35_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_315.txt",
+            # "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_40_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_360.txt",
+            # "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_45_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_405.txt",
             "initial_searchtype_maxvel_scoretype_random_dronetype_mit_trajectorylength_50_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_450.txt"],
             ["initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_3_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_27.txt",
             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_4_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_36.txt",
@@ -134,12 +134,12 @@ all_files = [["initial_searchtype_random_scoretype_random_dronetype_mit_trajecto
             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_13_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_117.txt",
             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_14_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_126.txt",
             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_15_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_135.txt",
-            "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_20_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_180.txt",
+            # "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_20_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_180.txt",
             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_25_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_225.txt",
-            "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_30_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_270.txt",
-            "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_35_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_315.txt",
-            "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_40_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_360.txt",
-            "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_45_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_405.txt",
+            # "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_30_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_270.txt",
+            # "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_35_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_315.txt",
+            # "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_40_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_360.txt",
+            # "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_45_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_405.txt",
             "initial_searchtype_kinematic_scoretype_random_dronetype_mit_trajectorylength_50_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_450.txt"]]
 
 # This will hold the results for all systems
@@ -187,23 +187,28 @@ for system_type in all_files:
 # At this point each system random, approx kinematic and kinematic have there data in the correct lists
 fig2, ax2 = plt.subplots(1, 1, figsize=(10, 6))
 
-x = np.arange(3, len(valid_trajectories[0]) + 3)
+x = np.arange(3, len(valid_trajectories[0]) + 3, dtype=float)
+x[-2] += 0.25
+x[-1] += 0.85
 
 plt.plot(x, valid_trajectories[0], linestyle="--", label="No KD", marker="o", markersize=10)
 plt.plot(x, valid_trajectories[1], linestyle="--", label="Approx KD", marker="^", markersize=10)
 plt.plot(x, valid_trajectories[2], linestyle="--", label="Full KD", marker="P", markersize=10)
 
-# for i in range(len(valid_trajectories[2])):
-#     xp =x[i]
-#     yp = valid_trajectories[2][i]
-#     plt.text(xp * (1 + 0.01), yp * (1 + 0.04) , int(yp), fontsize=12)
+for i in range(len(valid_trajectories[2])):
+    xp =x[i]
+    yp = valid_trajectories[2][i]
+    if yp > 125:
+        plt.text(xp-0.5, yp - 15, int(yp), fontsize=12)
+    else:
+        plt.text(xp, yp + 5, int(yp), fontsize=12)
 
 
 plt.xlabel("Trajectory Length", fontweight='bold', fontsize=20)
 plt.ylabel("Valid Trajectories", fontweight='bold', fontsize=20)
-plt.xticks(np.arange(20) + 3,["3","4","5","6","7","8","9","10","11","12","13","14","15","20","25","30","35","40","45","50"])
+plt.xticks(x,["3","4","5","6","7","8","9","10","11","12","13","14","15","25","50"], fontsize=15)
 
-plt.xticks(np.arange(3, len(valid_trajectories[0])+3, 1.0), fontsize=15)
+# plt.xticks(np.arange(3, len(valid_trajectories[0])+3, 1.0), fontsize=15)
 plt.yticks(fontsize=15)
 plt.legend(fontsize=20)
 
