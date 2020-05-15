@@ -290,4 +290,234 @@ ax1.tick_params(axis='x', which='minor', bottom=False)
 
 # Display graph
 fig1.tight_layout()
+# plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # For RQ3
+main_folder = "../FinalResults/"
+
+# For outdoor outdoor
+# # # For the RQ3 length 10
+all_folders = ["initial_run_flown/initial_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime7200_simtime90_searchtype_kinematic_scoretype_random/",
+               "anafi_learned_run_flown/learned_anafi_sim_ANAFI_seed10_length10_nodes250_res4_beamwidth5_totaltime3600_simtime90_searchtype_kinematic_scoretype_learned/"]
+
+# All the different system types which are generated using the WorldEngineSimulator
+system_types = ["anafi_sim",
+                "anafi_outdoor"]
+
+# System type names
+ticks = ["Simulation", "Outdoor"]
+
+
+failed_tests = 0
+beam_lengths = [10]
+depths = [10]
+res_numbers = [4]
+
+final_data = []
+
+for folder in all_folders:
+
+    for system in system_types:
+
+        scores = []
+        average_deviation = []
+        travelled_length =[]
+        total_deviation = []
+        average_time = []
+        total_time = []
+        distance_heuristic = []
+        time_heuristic = []
+        maximum_deviation = []
+        trajectory_length = []
+        avg_vel_heuristic = []
+        max_vel_heuristic = []
+        avg_acc_heuristic = []
+        max_acc_heuristic = []
+
+        for depth in depths:
+            for beam in beam_lengths:
+
+                file_location = main_folder + folder
+                analysis_file_names = glob.glob(file_location + "maps/map*/analysis_" + system + ".txt")
+
+                # Make sure we go in order from highest score to lowest score
+                total_files = len(analysis_file_names)
+                file_counter = 0
+
+                for file_counter in range(1, total_files + 1):
+
+                    # Create the file name
+                    file_name = file_location + "maps/map" + str(file_counter) + "/analysis_" + system + ".txt"
+
+                    # Get the average and total deviation for that test
+                    avg_dev = get_numbers_after_string(file_name=file_name, the_string="Average deviation from optimal trajectory:")
+                    tot_dev = get_numbers_after_string(file_name=file_name, the_string="Total deviation from optimal trajectory:")
+
+                    # Get the score for that test
+                    scr = get_numbers_after_string(file_name=file_name, the_string="Path Score:")
+
+                    # Get the average and total time for that test
+                    avg_time = get_numbers_after_string(file_name=file_name, the_string="Average time between waypoints:")
+                    tot_time = get_numbers_after_string(file_name=file_name, the_string="Total time between waypoints:")
+                    
+                    # Get the average and maximum velocity
+                    avg_vel = get_numbers_after_string(file_name=file_name, the_string="Average Velocity:")
+                    max_vel = get_numbers_after_string(file_name=file_name, the_string="Maximum Velocity:")
+
+                    # Get the average and maximum acceleration
+                    avg_acc = get_numbers_after_string(file_name=file_name, the_string="Average Acceleration:")
+                    max_acc = get_numbers_after_string(file_name=file_name, the_string="Maximum Acceleration:")
+
+                    # Get the maximum deviation from the optimal trajectory
+                    max_dev = get_numbers_after_string(file_name=file_name, the_string="Maximum deviation from optimal trajectory:")
+
+                    # Get the total distance travelled and the total trajectory length
+                    tot_dist = get_numbers_after_string(file_name=file_name, the_string="Total distance travelled:")
+                    traj_len = get_numbers_after_string(file_name=file_name, the_string="Trajectory length:")
+                    optimal_distance_heuristic = tot_dist[0][0] / traj_len[0][0]
+
+                    # Get the number of waypoints (This should be equal to the trajectory's optimal time)
+                    num_way = get_numbers_after_string(file_name=file_name, the_string="Total waypoints:")
+                    optimal_time_heuristic = tot_time[0][0] / num_way[0][0]
+
+                    # Get the trajectory length
+
+                    # Check for any anomalies
+                    if max_dev[0][0] > 30:
+                        print("Maximum Deviation over 30m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        failed_tests += 1
+                        continue
+
+                    elif max_dev[0][0] > 15 and system == "speed-1_minsnap1":
+                        print("Maximum Deviation over 15m (" + str(max_dev[0][0]) + "m): " + str(file_name))
+                        failed_tests += 1
+                        continue
+
+                    else:
+                        
+                        # Save the data
+                        average_deviation.append(avg_dev[0][0])
+                        total_deviation.append(tot_dev[0][0])
+                        scores.append(scr[0][0])
+                        average_time.append(avg_time[0][0])
+                        total_time.append(tot_time[0][0])
+                        distance_heuristic.append(optimal_distance_heuristic)
+                        time_heuristic.append(optimal_time_heuristic)
+                        maximum_deviation.append(max_dev[0][0])
+                        trajectory_length.append(traj_len)
+                        travelled_length.append(tot_dist[0][0])
+                        avg_vel_heuristic.append(avg_vel[0][0])
+                        max_vel_heuristic.append(max_vel[0][0])
+                        avg_acc_heuristic.append(avg_acc[0][0])
+                        max_acc_heuristic.append(max_acc[0][0])
+
+        # Save the data into each respective system
+
+        record = {
+            'total_deviation': total_deviation,
+            'total_time': total_time,
+            'max_deviation': maximum_deviation,
+            'test_set': folder,
+            'system_type': system,
+            'total_deviation': total_deviation,
+            'average_deviation': average_deviation,
+            'total_travelled_length': travelled_length,
+            'avg_velocity': avg_vel_heuristic,
+            'max_velocity': max_vel_heuristic,
+            'avg_acceleration': avg_acc_heuristic,
+            'max_acceleration': max_acc_heuristic,
+        }
+
+        final_data.append(record)
+
+
+print("Failed tests: " + str(failed_tests))
+
+
+# Outdoor!
+
+randomscore_results = []
+learnedscore_results = []
+
+for item in final_data:
+    if "scoretype_random/" in item['test_set'] and item['system_type'] == "anafi_outdoor":
+        randomscore_results.append(item['max_deviation'])
+    if "scoretype_learned/" in item['test_set'] and item['system_type'] == "anafi_outdoor":
+        learnedscore_results.append(item['max_deviation'])
+
+# Count the number of violations per distance
+distance = []
+violations_random = []
+violations_learned = []
+for i in np.arange(1, 7.25, 0.25):
+    distance.append(i)
+    # Random violations
+    vr = np.sum(randomscore_results>i)
+    violations_random.append(vr / np.shape(randomscore_results)[1])
+    # Learned violations
+    vl = np.sum(learnedscore_results>i)
+    violations_learned.append(vl / np.shape(learnedscore_results)[1])
+
+
+
+fig5, ax5 = plt.subplots(1, 1, figsize=(10, 7))
+
+# Plot
+plt.plot(distance, violations_random, label="No Scoring", linewidth=3)
+plt.plot(distance, violations_learned, label="Learned Scoring", linewidth=3)
+
+
+# Plot the minor and major grid for the Y axis
+plt.grid(which='major', linestyle='-', linewidth=0.5)
+plt.grid(which='minor', linestyle='--', linewidth=0.25)
+ax5.minorticks_on()
+
+# Add the labels
+plt.xlabel("Distance from Trajectory (m)", fontweight='bold', fontsize=20)
+plt.ylabel("Percentage Violations in Test Set (%)", fontweight='bold', fontsize=20)
+plt.yticks(fontsize=15)
+plt.xticks(fontsize=15)
+
+# Plot legetn
+
+plt.legend(fontsize=20)
+
+# Display graph
+fig5.tight_layout()
 plt.show()
