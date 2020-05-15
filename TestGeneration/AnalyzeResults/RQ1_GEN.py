@@ -4,7 +4,7 @@ import numpy as np
 from processResultsUtils import get_numbers_after_string
 import math
 
-folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+folder = "../FinalResults/initial_run_flown/"
 
 # MIT Length 10
 all_files = ["initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_10_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_90.txt",
@@ -62,7 +62,6 @@ plt.yscale('log')
 
 plt.legend(fontsize=20)
 
-plt.show()
 
 
 
@@ -79,8 +78,8 @@ plt.show()
 
 
 
-folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
 
+folder = "../FinalResults/initial_run_flown/"
 
 all_files = [["initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_3_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_27.txt",
             "initial_searchtype_random_scoretype_random_dronetype_mit_trajectorylength_4_beamwidth_5_nodes_250_resolution_4_seed_10_totaltime_7200_simulationtime_36.txt",

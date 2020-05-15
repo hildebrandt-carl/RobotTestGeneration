@@ -25,6 +25,6 @@ The data can be viewed in two ways. You can view the final results or you can vi
 * [Raw Data](./TestGeneration/FinalResults/) - Contains the raw results.
 * [Raw Models](./TestGeneration/FinalModels/) - Contains the raw learned scoring models that were used saved as numpy files.
 
-# Developed By:
+## Authors:
 
-XXX
+Carl Hildebrandt, Sebastian Elbaum, Nicola Bezzo, Matthew B. Dwyer

@@ -53,7 +53,7 @@ def add_values(bp, ax, left=False):
 
 
 # # For RQ3
-main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/"
+main_folder = "../FinalResults/"
 
 # For outdoor outdoor
 # # # For the RQ3 length 10

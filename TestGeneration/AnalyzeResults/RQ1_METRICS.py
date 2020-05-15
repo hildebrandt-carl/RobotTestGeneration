@@ -46,8 +46,7 @@ def add_values(bp, ax, left=False):
 
 
 # # For RQ1
-main_folder = "/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
-# main_folder = "/Users/carlhildebrandt/Dropbox/UVA/Research/Work/RobotTestGeneration/TestGeneration/FinalResults/initial_run_flown/"
+main_folder = "../FinalResults/initial_run_flown/"
 
 # For the RQ1 length 10
 all_folders = ["/initial_MIT_seed10_length10_nodes250_res4_beamwidth5_totaltime7200_simtime90_searchtype_kinematic_scoretype_random/"]
@@ -251,7 +250,7 @@ plt.yscale('log')
 plt.tick_params(axis='y', which='minor', labelsize=15)
 ax1.yaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
 ax1.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
-plt.show()
+
 
 
 
