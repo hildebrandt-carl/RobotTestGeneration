@@ -1,0 +1,138 @@
+DATA: Starting search at time: 0.0014362335205078125
+DATA: Generation time left: 7200
+
+UPDATE: Running search on new world
+UPDATE: Populating trajectory graph
+UPDATE: Searching for trajectories in the world
+Found 1 new complete trajectories
+Time passed since start of PRM search: 5.790738582611084
+Current number of complete trajectories found: 1
+Time taken to find 1 trajectories: 5.791255712509155
+Total complete trajectories returned this run: 1
+Total explored trajectories during this run: 2868
+DATA: Total unique complete trajectories found: 1
+Total complete trajectories: 1
+Total valid trajectories: 0
+
+UPDATE: Reseting PRM as trajectories were found
+DATA: Search Completed at Time: 7.227726936340332
+DATA: Trajectories explored during that search: 2868
+DATA: Complete trajectories found during that search: 1
+DATA: Valid trajectories found during that search: 0
+DATA: Total explored trajectories: 2868
+DATA: Total complete trajectories: 1
+DATA: Total valid trajectories: 0
+DATA: Estimated simulation time for valid trajectories: 0
+DATA: Total generation time left: 7200
+DATA: Starting search at time: 7.227765798568726
+DATA: Generation time left: 7200
+
+UPDATE: Running search on new world
+UPDATE: Populating trajectory graph
+UPDATE: Searching for trajectories in the world
+Found 1 new complete trajectories
+Time passed since start of PRM search: 12.196733474731445
+Current number of complete trajectories found: 1
+Time taken to find 1 trajectories: 12.197762250900269
+Total complete trajectories returned this run: 1
+Total explored trajectories during this run: 10032
+DATA: Total unique complete trajectories found: 1
+Total complete trajectories: 1
+Total valid trajectories: 0
+
+UPDATE: Reseting PRM as trajectories were found
+DATA: Search Completed at Time: 20.894450902938843
+DATA: Trajectories explored during that search: 10032
+DATA: Complete trajectories found during that search: 1
+DATA: Valid trajectories found during that search: 0
+DATA: Total explored trajectories: 12900
+DATA: Total complete trajectories: 2
+DATA: Total valid trajectories: 0
+DATA: Estimated simulation time for valid trajectories: 0
+DATA: Total generation time left: 7200
+DATA: Starting search at time: 20.894490480422974
+DATA: Generation time left: 7200
+
+UPDATE: Running search on new world
+UPDATE: Populating trajectory graph
+UPDATE: Searching for trajectories in the world
+Found 1 new complete trajectories
+Time passed since start of PRM search: 6.5673112869262695
+Current number of complete trajectories found: 1
+Time taken to find 1 trajectories: 6.568058967590332
+Total complete trajectories returned this run: 1
+Total explored trajectories during this run: 7821
+DATA: Total unique complete trajectories found: 1
+Total complete trajectories: 1
+Total valid trajectories: 0
+
+UPDATE: Reseting PRM as trajectories were found
+DATA: Search Completed at Time: 28.93305206298828
+DATA: Trajectories explored during that search: 7821
+DATA: Complete trajectories found during that search: 1
+DATA: Valid trajectories found during that search: 0
+DATA: Total explored trajectories: 20721
+DATA: Total complete trajectories: 3
+DATA: Total valid trajectories: 0
+DATA: Estimated simulation time for valid trajectories: 0
+DATA: Total generation time left: 7200
+DATA: Starting search at time: 28.933083057403564
+DATA: Generation time left: 7200
+
+UPDATE: Running search on new world
+UPDATE: Populating trajectory graph
+UPDATE: Searching for trajectories in the world
+Found 1 new complete trajectories
+Time passed since start of PRM search: 9.909852027893066
+Current number of complete trajectories found: 1
+Time taken to find 1 trajectories: 9.910486936569214
+Total complete trajectories returned this run: 1
+Total explored trajectories during this run: 13829
+DATA: Total unique complete trajectories found: 1
+Total complete trajectories: 1
+Total valid trajectories: 0
+
+UPDATE: Reseting PRM as trajectories were found
+DATA: Search Completed at Time: 40.30088567733765
+DATA: Trajectories explored during that search: 13829
+DATA: Complete trajectories found during that search: 1
+DATA: Valid trajectories found during that search: 0
+DATA: Total explored trajectories: 34550
+DATA: Total complete trajectories: 4
+DATA: Total valid trajectories: 0
+DATA: Estimated simulation time for valid trajectories: 0
+DATA: Total generation time left: 7200
+DATA: Starting search at time: 40.30091071128845
+DATA: Generation time left: 7200
+
+UPDATE: Running search on new world
+UPDATE: Populating trajectory graph
+UPDATE: Searching for trajectories in the world
+Exiting PRM as we are out of time
+Time taken to find 0 trajectories: 7200.524618864059
+Total complete trajectories returned this run: 0
+Total explored trajectories during this run: 9968587
+DATA: Total unique complete trajectories found: 0
+UPDATE: Reseting PRM as trajectories were found
+DATA: Search Completed at Time: 7241.099733829498
+DATA: Trajectories explored during that search: 9968587
+DATA: Complete trajectories found during that search: 0
+DATA: Valid trajectories found during that search: 0
+DATA: Total explored trajectories: 10003137
+DATA: Total complete trajectories: 4
+DATA: Total valid trajectories: 0
+DATA: Estimated simulation time for valid trajectories: 0
+DATA: Total generation time left: 7200
+
+-----------------------------------
+DATA: Total search time: 7241.099784374237
+DATA: Estimated simulation time: 0
+DATA: Total overall time: 7241.099792718887
+DATA: Given time: 7200
+DATA: Total explored trajectories: 10003137
+DATA: Total complete trajectories: 4
+DATA: Total valid trajectories: 0
+-----------------------------------
+UPDATE: Test generation completed
+-----------------------------------
+Process finished successfully with time: 7241.963985204697

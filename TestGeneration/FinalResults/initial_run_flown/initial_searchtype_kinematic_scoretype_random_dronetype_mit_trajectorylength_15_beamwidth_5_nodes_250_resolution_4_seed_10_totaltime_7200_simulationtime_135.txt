@@ -1,0 +1,146 @@
+DATA: Starting search at time: 0.0015552043914794922
+DATA: Generation time left: 7200
+
+UPDATE: Running search on new world
+UPDATE: Populating trajectory graph
+UPDATE: Searching for trajectories in the world
+Found 1 new complete trajectories
+Time passed since start of PRM search: 22.018643617630005
+Current number of complete trajectories found: 1
+Time taken to find 1 trajectories: 22.018728494644165
+Total complete trajectories returned this run: 1
+Total explored trajectories during this run: 17090
+DATA: Total unique complete trajectories found: 1
+Total complete trajectories: 1
+Total valid trajectories: 1
+
+UPDATE: Reseting PRM as trajectories were found
+DATA: Search Completed at Time: 22.55801010131836
+DATA: Trajectories explored during that search: 17090
+DATA: Complete trajectories found during that search: 1
+DATA: Valid trajectories found during that search: 1
+DATA: Total explored trajectories: 17090
+DATA: Total complete trajectories: 1
+DATA: Total valid trajectories: 1
+DATA: Estimated simulation time for valid trajectories: 135
+DATA: Total generation time left: 7065
+DATA: Starting search at time: 22.558048009872437
+DATA: Generation time left: 7065
+
+UPDATE: Running search on new world
+UPDATE: Populating trajectory graph
+UPDATE: Searching for trajectories in the world
+Found 1 new complete trajectories
+Time passed since start of PRM search: 24.632925271987915
+Current number of complete trajectories found: 1
+Time taken to find 1 trajectories: 24.633010387420654
+Total complete trajectories returned this run: 1
+Total explored trajectories during this run: 21314
+DATA: Total unique complete trajectories found: 1
+Total complete trajectories: 1
+Total valid trajectories: 1
+
+UPDATE: Reseting PRM as trajectories were found
+DATA: Search Completed at Time: 47.70517444610596
+DATA: Trajectories explored during that search: 21314
+DATA: Complete trajectories found during that search: 1
+DATA: Valid trajectories found during that search: 1
+DATA: Total explored trajectories: 38404
+DATA: Total complete trajectories: 2
+DATA: Total valid trajectories: 2
+DATA: Estimated simulation time for valid trajectories: 270
+DATA: Total generation time left: 6930
+DATA: Starting search at time: 47.70521831512451
+DATA: Generation time left: 6930
+
+UPDATE: Running search on new world
+UPDATE: Populating trajectory graph
+UPDATE: Searching for trajectories in the world
+Found 1 new complete trajectories
+Time passed since start of PRM search: 19.90712881088257
+Current number of complete trajectories found: 1
+Time taken to find 1 trajectories: 19.907196760177612
+Total complete trajectories returned this run: 1
+Total explored trajectories during this run: 17777
+DATA: Total unique complete trajectories found: 1
+Total complete trajectories: 1
+Total valid trajectories: 1
+
+UPDATE: Reseting PRM as trajectories were found
+DATA: Search Completed at Time: 68.1260347366333
+DATA: Trajectories explored during that search: 17777
+DATA: Complete trajectories found during that search: 1
+DATA: Valid trajectories found during that search: 1
+DATA: Total explored trajectories: 56181
+DATA: Total complete trajectories: 3
+DATA: Total valid trajectories: 3
+DATA: Estimated simulation time for valid trajectories: 405
+DATA: Total generation time left: 6795
+DATA: Starting search at time: 68.12606501579285
+DATA: Generation time left: 6795
+
+UPDATE: Running search on new world
+UPDATE: Populating trajectory graph
+UPDATE: Searching for trajectories in the world
+Found 1 new complete trajectories
+Time passed since start of PRM search: 11.399883031845093
+Current number of complete trajectories found: 1
+Time taken to find 1 trajectories: 11.399956226348877
+Total complete trajectories returned this run: 1
+Total explored trajectories during this run: 8538
+DATA: Total unique complete trajectories found: 1
+Total complete trajectories: 1
+Total valid trajectories: 1
+
+UPDATE: Reseting PRM as trajectories were found
+DATA: Search Completed at Time: 80.03927564620972
+DATA: Trajectories explored during that search: 8538
+DATA: Complete trajectories found during that search: 1
+DATA: Valid trajectories found during that search: 1
+DATA: Total explored trajectories: 64719
+DATA: Total complete trajectories: 4
+DATA: Total valid trajectories: 4
+DATA: Estimated simulation time for valid trajectories: 540
+DATA: Total generation time left: 6660
+DATA: Starting search at time: 80.0393168926239
+DATA: Generation time left: 6660
+
+UPDATE: Running search on new world
+UPDATE: Populating trajectory graph
+UPDATE: Searching for trajectories in the world
+Exiting PRM as we are out of time
+Time taken to find 0 trajectories: 6660.106502532959
+Total complete trajectories returned this run: 0
+Total explored trajectories during this run: 6327843
+DATA: Total unique complete trajectories found: 0
+UPDATE: Reseting PRM as trajectories were found
+DATA: Search Completed at Time: 6740.173475980759
+DATA: Trajectories explored during that search: 6327843
+DATA: Complete trajectories found during that search: 0
+DATA: Valid trajectories found during that search: 0
+DATA: Total explored trajectories: 6392562
+DATA: Total complete trajectories: 4
+DATA: Total valid trajectories: 4
+DATA: Estimated simulation time for valid trajectories: 540
+DATA: Total generation time left: 6660
+/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/GenerateTests/ValidationSystem.py:238: RuntimeWarning: invalid value encountered in true_divide
+  return v / np.linalg.norm(v)
+/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/GenerateTests/ValidationSystem.py:238: RuntimeWarning: invalid value encountered in true_divide
+  return v / np.linalg.norm(v)
+/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/GenerateTests/ValidationSystem.py:238: RuntimeWarning: invalid value encountered in true_divide
+  return v / np.linalg.norm(v)
+/home/autosoftlab/Desktop/RobotTestGeneration/TestGeneration/GenerateTests/ValidationSystem.py:238: RuntimeWarning: invalid value encountered in true_divide
+  return v / np.linalg.norm(v)
+
+-----------------------------------
+DATA: Total search time: 6745.330269813538
+DATA: Estimated simulation time: 540
+DATA: Total overall time: 7285.33028793335
+DATA: Given time: 7200
+DATA: Total explored trajectories: 6392562
+DATA: Total complete trajectories: 4
+DATA: Total valid trajectories: 4
+-----------------------------------
+UPDATE: Test generation completed
+-----------------------------------
+Process finished successfully with time: 6746.1741988658905
